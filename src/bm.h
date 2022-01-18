@@ -5,6 +5,8 @@
 
 
 #include <stdio.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 
 #ifdef __MSDOS__
@@ -24,8 +26,8 @@ typedef unsigned short u_short;
 #define ENGLISH		0			/* anglais */
 #define GERMAN		0			/* allemand */
 
-#define LXIMAGE		640			/* largeur d'une image */
-#define LYIMAGE		340			/* hauteur d'une image */
+#define LXIMAGE()	640			/* largeur d'une image */
+#define LYIMAGE()	340			/* hauteur d'une image */
 
 #define POSXPALETTE	8			/* coin sup/gauche de la palette d'icnes */
 #define POSYPALETTE	8			/* coin sup/gauche de la palette d'icnes */
@@ -258,10 +260,12 @@ typedef struct
   short		dy;				/* hauteur */
   short		dx;				/* largeur */
   short		dxb;			/* largeur en bytes */
-  u_short	nbp;			/* nb de bits/pixel */
+  unsigned short	nbp;			/* nb de bits/pixel */
   short		ccolor;			/* couleur pour effacer  */
   short		scolor;			/* couleur pour dessiner */
   char		*data;			/* pointeur aux donnes */
+  Pt orig;
+  SDL_Texture *texture;
 }
 Pixmap;
 
@@ -294,20 +298,24 @@ Pixmap;
 /* Variables globales */
 /* ------------------ */
 
-extern	short	langue;				/* numro de la langue */
-extern	short	monde;				/* monde actuel (0..n) */
-extern	short	updatescreen;		/* 1 -> cran  mettre  jour */
-extern	short	typejeu;			/* type de jeu (0..1) */
-extern	short	typeedit;			/* 1 -> dition d'un monde */
-extern	short	typetext;			/* 1 -> dition d'un texte */
-extern	short	modetelecom;		/* 1 -> mode tlcommande gauche/droite */
-extern	short	pause;				/* 1 -> pause */
-extern	short	passdaniel;			/* 1 -> toujours construction */
-extern	short	passpower;			/* 1 -> force infinie */
-extern	short	passnice;			/* 1 -> toujours gentil */
-extern	short	passhole;			/* 1 -> ne tombe pas dans trou */
+extern	short	g_langue;				/* numro de la langue */
+extern	short	g_monde;				/* monde actuel (0..n) */
+extern	short	g_updatescreen;		/* 1 -> cran  mettre  jour */
+extern	short	g_typejeu;			/* type de jeu (0..1) */
+extern	short	g_typeedit;			/* 1 -> dition d'un monde */
+extern	short	g_typetext;			/* 1 -> dition d'un texte */
+extern	short	g_modetelecom;		/* 1 -> mode tlcommande gauche/droite */
+extern	short	g_pause;				/* 1 -> pause */
+extern	short	g_passdaniel;			/* 1 -> toujours construction */
+extern	short	g_passpower;			/* 1 -> force infinie */
+extern	short	g_passnice;			/* 1 -> toujours gentil */
+extern	short	g_passhole;			/* 1 -> ne tombe pas dans trou */
 
+extern SDL_Renderer * g_renderer;
+extern SDL_Window *   g_window;
 
+extern int g_rendererType;
+extern Sint32         g_timerInterval;
 
 
 
@@ -319,87 +327,87 @@ extern	short	passhole;			/* 1 -> ne tombe pas dans trou */
 /* bm_pal.c */
 /* -------- */
 
-extern	void	PaletteUseObj	(short icon);
-extern	short	PaletteStatus	(short rang);
-extern	short	PaletteGetPress	(void);
-extern	short	PaletteEvent	(short event, Pt pos);
-extern	void	PaletteNew		(short *pdesc, short type);
+void	PaletteUseObj	(short icon);
+short	PaletteStatus	(short rang);
+short	PaletteGetPress	(void);
+short	PaletteEvent	(short event, Pt pos);
+void	PaletteNew		(short *pdesc, short type);
 
-extern	void	PaletteEditOpen	(short palette[]);
-extern	short	PaletteEditEvent (short palette[], short event, Pt pos);
-extern	void	PaletteEditClose (short palette[]);
+void	PaletteEditOpen	(short palette[]);
+short	PaletteEditEvent (short palette[], short event, Pt pos);
+void	PaletteEditClose (short palette[]);
 
-extern	void	InfoDraw		(short status, short force, short vision,
-								 short mechant, short magic, short cles);
+void	InfoDraw		(short status, short force, short vision,
+							 short mechant, short magic, short cles);
 
-extern	long	PalPartieLg		(void);
-extern	short	PalPartieWrite	(long pos, char file);
-extern	short	PalPartieRead	(long pos, char file);
+int	PalPartieLg		(void);
+short	PalPartieWrite	(int pos, char file);
+short	PalPartieRead	(int pos, char file);
 
 
 /* bm_move.c */
 /* --------- */
 
-extern	void	MoveModifCel	(Pt cel);
-extern	short	MoveGetCel		(Pt cel);
-extern	void	MoveBack		(Pt cel);
-extern	short	MoveNext		(char event, Pt pos);
-extern	void	MoveRedraw		(void);
-extern	short	MoveBuild		(short outil);
-extern	void	MoveScroll		(short quick);
-extern	void	MoveNewMonde	(short freq);
-extern	short	MoveOpen		(void);
-extern	void	MoveClose		(void);
+void	MoveModifCel	(Pt cel);
+short	MoveGetCel		(Pt cel);
+void	MoveBack		(Pt cel);
+short	MoveNext		(char event, Pt pos);
+void	MoveRedraw		(void);
+short	MoveBuild		(short outil);
+void	MoveScroll		(short quick);
+void	MoveNewMonde	(short freq);
+short	MoveOpen		(void);
+void	MoveClose		(void);
 
-extern	long	MovePartieLg	(void);
-extern	short	MovePartieWrite	(long pos, char file);
-extern	short	MovePartieRead	(long pos, char file);
+int	MovePartieLg	(void);
+short	MovePartieWrite	(int pos, char file);
+short	MovePartieRead	(int pos, char file);
 
 
 /* bm_decor.c */
 /* ---------- */
 
-extern	Pt		GraToCel		(Pt gra);
-extern	Pt		CelToGra		(Pt cel);
-extern	short	DecorGetInitCel	(Pt cel);
-extern	void	DecorPutInitCel	(Pt cel, short icon);
-extern	short	DecorGetCel		(Pt cel);
-extern	void	DecorPutCel		(Pt cel, short icon);
-extern	void	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
-extern	Pt		DecorDetCel		(Pt pmouse);
-extern	void	DecorSuperCel	(Pt pmouse);
-extern	short	DecorEvent		(Pt pos, short poscel, short icon);
-extern	void	DecorModif		(Pt cel, short icon);
-extern	Pixmap*	DecorGetPixmap	(void);
-extern	Pt		DecorGetOrigine	(void);
-extern	void	DecorSetOrigine	(Pt origine, short quick);
-extern	void	DecorMake		(short bSuperCel);
-extern	short	DecorNewMonde	(Monde *pmonde);
-extern	short	DecorOpen		(void);
-extern	void	DecorClose		(void);
+Pt		GraToCel		(Pt gra);
+Pt		CelToGra		(Pt cel);
+short	DecorGetInitCel	(Pt cel);
+void	DecorPutInitCel	(Pt cel, short icon);
+short	DecorGetCel		(Pt cel);
+void	DecorPutCel		(Pt cel, short icon);
+void	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
+Pt		DecorDetCel		(Pt pmouse);
+void	DecorSuperCel	(Pt pmouse);
+short	DecorEvent		(Pt pos, short poscel, short icon);
+void	DecorModif		(Pt cel, short icon);
+Pixmap*	DecorGetPixmap	(void);
+Pt		DecorGetOrigine	(void);
+void	DecorSetOrigine	(Pt origine, short quick);
+void	DecorMake		(short bSuperCel);
+short	DecorNewMonde	(Monde *pmonde);
+short	DecorOpen		(void);
+void	DecorClose		(void);
 
-extern	long	DecorPartieLg	(void);
-extern	short	DecorPartieWrite (long pos, char file);
-extern	short	DecorPartieRead	(long pos, char file);
+long	DecorPartieLg	(void);
+short	DecorPartieWrite (long pos, char file);
+short	DecorPartieRead	(long pos, char file);
 
 
 /* bm_icone.c */
 /* ---------- */
 
-extern	short	IfNilRegion		(Reg rg);
-extern	short	IfSectRegion	(Reg r1, Reg r2);
-extern	Reg		OrRegion		(Reg r1, Reg r2);
-extern	Reg		AndRegion		(Reg r1, Reg r2);
-extern	void	IconDrawAll		(void);
-extern	void	IconDrawFlush	(void);
-extern	void	IconDrawOpen	(void);
-extern	short	IconDrawPut		(short ico, short btransp, Pt pos, short posz, Pt cel, Reg clip);
-extern	void	IconDrawUpdate	(Reg rg);
-extern	void	IconDrawClose	(short bdraw);
-extern	Pixmap*	IconGetPixmap	(void);
-extern	short	IconOpen		(void);
-extern	void	IconClose		(void);
-extern	void	IconInit		(void);
+short	IfNilRegion		(Reg rg);
+short	IfSectRegion	(Reg r1, Reg r2);
+Reg		OrRegion		(Reg r1, Reg r2);
+Reg		AndRegion		(Reg r1, Reg r2);
+void	IconDrawAll		(void);
+void	IconDrawFlush	(void);
+void	IconDrawOpen	(void);
+short	IconDrawPut		(short ico, short btransp, Pt pos, short posz, Pt cel, Reg clip);
+void	IconDrawUpdate	(Reg rg);
+void	IconDrawClose	(short bdraw);
+Pixmap*	IconGetPixmap	(void);
+short	IconOpen		(void);
+void	IconClose		(void);
+void	IconInit		(void);
 
 
 /* bm_text.c */
@@ -408,82 +416,82 @@ extern	void	IconInit		(void);
 #define TEXTSIZELIT		10		/* petite taille */
 #define TEXTSIZEMID		21		/* taille moyenne */
 
-extern	Pt		DrawText		(Pixmap *ppm, Pt pos, char *pstring, short size, ShowMode mode);
-extern	Rectangle GetRectText	(Pt pos, char *pstring, short size);
-extern	void	DrawParagraph	(Pixmap *ppm, Rectangle rect, char *pstring,
-								 short size, ShowMode mode);
+Pt		DrawText		(Pixmap *ppm, Pt pos, char *pstring, short size, ShowMode mode);
+Rectangle GetRectText	(Pt pos, char *pstring, short size);
+void	DrawParagraph	(Pixmap *ppm, Rectangle rect, char *pstring,
+							 short size, ShowMode mode);
 
-extern	short	EditEvent		(short key, Pt pos);
-extern	short	EditOpen		(char *p, short max, Rectangle rect);
-extern	short	EditClose		(void);
+short	EditEvent		(short key, Pt pos);
+short	EditOpen		(char *p, short max, Rectangle rect);
+short	EditClose		(void);
 
 
 /* bm_smaky.c */
 /* ---------- */
 
-extern	void	InitRandomEx	(short g, short min, short max, char *pex);
-extern	short	GetRandomEx		(short g, short min, short max, char *pex);
-extern	short	GetRandom		(short g, short min, short max);
-extern	void	StartRandom		(short g, short mode);
+void	InitRandomEx	(short g, short min, short max, char *pex);
+short	GetRandomEx		(short g, short min, short max, char *pex);
+short	GetRandom		(short g, short min, short max);
+void	StartRandom		(short g, short mode);
 
-extern	short	PrintScreen		(Pt p1, Pt p2);
+short	PrintScreen		(Pt p1, Pt p2);
 
-extern	void	MusicStart		(short song);
-extern	void	MusicStop		(void);
-extern	void	PlayNoiseVolume	(short volume);
-extern	void	PlayMusicVolume	(short volume);
-extern	short	IfPlayReady		(void);
-extern	void	PlaySoundLoop	(short mode);
-extern	void	PlaySound		(short sound);
+void	MusicStart		(short song);
+void	MusicStop		(void);
+void	PlayNoiseVolume	(short volume);
+void	PlayMusicVolume	(short volume);
+short	IfPlayReady		(void);
+void	PlaySoundLoop	(short mode);
+void	PlaySound		(short sound);
 
-extern	void	OpenTime		(void);
-extern	void	CloseTime		(short t);
+void	OpenTime		(void);
+void	CloseTime		(short t);
 
-extern	void	PosMouse		(Pt pos);
-extern	short	IfMouse			(void);
-extern	void	ShowMouse		(void);
-extern	void	HideMouse		(void);
+void	PosMouse		(Pt pos);
+short	IfMouse			(void);
+void	ShowMouse		(void);
+void	HideMouse		(void);
 
-extern	void	ClrEvents		(void);
-extern	short	GetEvent		(Pt *ppos);
-extern	KeyStatus GetKeyStatus	(void);
-extern	short	IfColor			(void);
-extern	void	ModColor		(short color, short red, short green, short blue);
-extern	void	GetColor		(short color, short *pred, short *pgreen, short *pblue);
-extern	void	CacheIcon		(short numero);
-extern	short	GetIcon			(Pixmap *ppm, short numero, short mode);
-extern	short	GetPixmap		(Pixmap *ppm, Pt dim, short fill, short colormode);
-extern	short	TestHLine		(Pixmap *ppm, short y);
-extern	short	TestVLine		(Pixmap *ppm, short x);
-extern	short	GetImage		(Pixmap *ppm, short numero);
-extern	short	GivePixmap		(Pixmap *ppm);
-extern	void	DuplPixel		(Pixmap *ppms, Pixmap *ppmd);
-extern	void	ScrollPixel		(Pixmap *ppm, Pt shift, char color, Rectangle *pzone);
-extern	void	ScrollPixelRect	(Pixmap *ppm, Pt od, Pt dim, Pt shift, char color, Rectangle *pzone);
-extern	short	CopyPixel		(Pixmap *ppms, Pt os,
+void	ClrEvents		(void);
+short	GetEvent		(Pt *ppos);
+KeyStatus GetKeyStatus	(void);
+short	IfColor			(void);
+void	ModColor		(short color, short red, short green, short blue);
+void	GetColor		(short color, short *pred, short *pgreen, short *pblue);
+void	CacheIcon		(short numero);
+short	GetIcon			(Pixmap *ppm, short numero, short mode);
+short	GetPixmap		(Pixmap *ppm, Pt dim, short fill, short colormode);
+short	TestHLine		(Pixmap *ppm, short y);
+short	TestVLine		(Pixmap *ppm, short x);
+short	GetImage		(Pixmap *ppm, short numero);
+short	GivePixmap		(Pixmap *ppm);
+void	DuplPixel		(Pixmap *ppms, Pixmap *ppmd);
+void	ScrollPixel		(Pixmap *ppm, Pt shift, char color, Rectangle *pzone);
+void	ScrollPixelRect	(Pixmap *ppm, Pt od, Pt dim, Pt shift, char color, Rectangle *pzone);
+short	CopyPixel		(Pixmap *ppms, Pt os,
 								 Pixmap *ppmd, Pt od,
 								 Pt dim, ShowMode mode);
-extern	void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color);
-extern	void	DrawRect		(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
-extern	void	DrawFillRect	(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
-extern	char	GetPixel		(Pixmap *ppm, Pt pos);
-extern	void	BlackScreen		(void);
-extern	short	SavePixmap		(Pixmap *ppm);
-extern	short	RestorePixmap	(Pixmap *ppm);
+void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color);
+void	DrawRect		(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
+void	DrawFillRect	(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
+char	GetPixel		(Pixmap *ppm, Pt pos);
+void	BlackScreen		(void);
+short	SavePixmap		(Pixmap *ppm);
+short	RestorePixmap	(Pixmap *ppm);
 
-extern	short	FileRead		(void *pdata, long pos, short nb, char file);
-extern	short	FileWrite		(void *pdata, long pos, short nb, char file);
-extern	long	FileGetLength	(char file);
-extern	short	FileDelete		(char file);
-extern	short	FileRename		(char oldfile, char newfile);
+short	FileRead		(void *pdata, long pos, short nb, char file);
+short	FileWrite		(void *pdata, long pos, short nb, char file);
+long	FileGetLength	(char file);
+short	FileDelete		(char file);
+short	FileRename		(char oldfile, char newfile);
 
-extern	void	FatalError		(short err);
-extern	void	OpenMachine		(void);
-extern	void	CloseMachine	(void);
+void	FatalError		(short err);
+int	OpenMachine		(void);
+void	CloseMachine	(void);
 
-extern	long	MachinePartieLg		(void);
-extern	short	MachinePartieWrite	(long pos, char file);
-extern	short	MachinePartieRead	(long pos, char file);
+long	MachinePartieLg		(void);
+short	MachinePartieWrite	(long pos, char file);
+short	MachinePartieRead	(long pos, char file);
 
-extern	void	SetDemo			(char bDemo);
-extern	char	GetDemo			(void);
+void	SetDemo			(char bDemo);
+char	GetDemo			(void);

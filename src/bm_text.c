@@ -215,6 +215,8 @@ void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 		GetIcon(&pmchar, ICO_CHAR_MID+icon, 1);
 		ppmchar = &pmchar;
 	}
+	/*src.x += ppmchar->orig.x;
+        src.y += ppmchar->orig.y;*/
 	CopyPixel(ppmchar, src, ppm, dst, dim, mode);
 
 	(*ppos).x += dim.x;

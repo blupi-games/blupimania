@@ -7,14 +7,9 @@
 #include <string.h>
 #include <malloc.h>
 #include <sys/file.h>
-#include <smakylib.h>
-#include <smaky.h>
 #include <errno.h>
-#include <audio.h>
-#include <tcolor.h>
 
 #include "bm.h"
-#include "blupix.h"
 
 
 
@@ -25,7 +20,7 @@
 /* ------- */
 /* En-tte */
 /* ------- */
-
+#if 0
 u_long	_stksize	= 8000L;				/* longueur du tas et de la pile  */
 u_long	_SMASOVER	= 0L;					/* 0: pas d'entre overlay, 1: ou */
 u_char	_SMAPRIO	= 11;					/* priorit                       */
@@ -36,7 +31,7 @@ u_short	_SMADIS[]	= {640,2000,340,2000};	/* largeur+hauteur (min+max)      */
 u_short	_SMASYN		= 2;     				/* niveau du haut-parleur         */
 u_char	_SMAGC[]	= GCTEXT;				/* fonte                          */
 char	_SMAIDE[]	= "(C)  Daniel ROUX et EPSITEC-system sa";
-
+#endif
 
 
 
@@ -63,7 +58,7 @@ char	_SMAIDE[]	= "(C)  Daniel ROUX et EPSITEC-system sa";
 
 typedef struct
 {
-  Image		*head;			/* pointe l'en-tte */
+  void		*head;			/* pointe l'en-tte */
   char		*clut;			/* pointe la clut */
   char		*data;			/* pointe l'image code */
 }
@@ -75,8 +70,10 @@ ImageSmaky;
 /* Variables globales internes */
 /* --------------------------- */
 
+#if 0
 static Windesc		pgradesc;					/* pointeur au descripteur de fentre */
 static u_long		chres;						/* canal des ressources */
+#endif
 static Pixmap		pmicon1c = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (chair) */
 static Pixmap		pmicon1m = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (masque) */
 static Pixmap		pmicon2c = {0,0,0,0,0,0,0};	/* pixmap des icnes2 (chair) */
@@ -88,9 +85,9 @@ static Pixmap		pmicon4m = {0,0,0,0,0,0,0};	/* pixmap des icnes4 (masque) */
 static Pt			origine;					/* coin sup/gauche de l'origine */
 static long			atime = 0;					/* temps de dbut */
 
-static u_long		nextrand[10];				/* valeurs alatoires suivantes */
+static unsigned int		nextrand[10];				/* valeurs alatoires suivantes */
 
-static short		colormode = 0;				/* 1 = couleur possible */
+static short		colormode = 1;				/* 1 = couleur possible */
 static unsigned long tcolcanal;					/* canal TCOLOR */
 
 static unsigned int	adcanal;					/* canal module audio */
@@ -102,8 +99,8 @@ static short		sound1 = 0;					/* bruitages */
 static short		sound2 = 0;					/* musiques */
 static int			filsson = 0;				/* son  entendre */
 static int			filsrep = 0;				/* pas de rptition */
-static u_short		filsabort = 0;				/* fin du processus fils */
-static u_short		visumouse = 1;				/* 1 = souris visible */
+static unsigned short		filsabort = 0;				/* fin du processus fils */
+static unsigned short		visumouse = 1;				/* 1 = souris visible */
 static Pt			lastmouse = {0,0};			/* dernire position de la souris */
 static KeyStatus	keystatus;					/* tat des flches du clavier */
 static char			demo = 0;					/* 1 = mode dmo */
@@ -114,6 +111,7 @@ static Pixmap		pmsave = {0,0,0,0,0,0,0};	/* pixmap sauv en mmoire tendue (XMS
 /* Sauvetage d'une partie du descripteur de fentre */
 /* ------------------------------------------------ */
 
+#if 0
 static Point	savedf;			/* origine */
 static Point	savedfd;		/* dimensions */
 static Point	savedff;		/* origine fentre */
@@ -126,7 +124,7 @@ static short	savedfiiy;		/* increment si y=y+1 */
 static u_short	savedfcnb;		/* nombre de couleurs (2, 4, 16 ou 256) */
 static u_char	savedfcnp;		/* nombre de plans (1, 2, 4 ou 8) */
 static u_char	savedfcmd;		/* mode (0=noir-blanc, 1=couleur) */
-
+#endif
 
 
 
@@ -216,14 +214,14 @@ void StartRandom (short g, short mode)
 {
 	long		datebcd;
 
-	if ( mode == 0 )
+	//if ( mode == 0 )
 	{
 		nextrand[g] = 33554393;		/* grand nombre premier */
 	}
-	else
+	/*else
 	{
 		L_rdclock(&datebcd, &nextrand[g]);
-	}
+	}*/
 }
 
 
@@ -239,6 +237,7 @@ void StartRandom (short g, short mode)
 
 static void FilsSound (void)
 {
+#if 0
 	while ( filsabort == 0 )
 	{
 		if ( filsson != 0 )
@@ -256,6 +255,7 @@ static void FilsSound (void)
 		}
 		N_delms(5);			/* attend un poil ... */
 	}
+#endif
 }
 
 
@@ -379,7 +379,7 @@ void OpenTime (void)
 {
 	long		hightotal,highunused,lowunused;
 
-	N_getsytime(&hightotal, &atime, &highunused, &lowunused);
+//	N_getsytime(&hightotal, &atime, &highunused, &lowunused);
 }
 
 
@@ -394,6 +394,7 @@ void OpenTime (void)
 
 void CloseTime (short t)
 {
+#if 0
 	long		hightotal,lowtotal,highunused,lowunused;
 	long		del;
 
@@ -410,6 +411,7 @@ void CloseTime (short t)
 	{
 		N_delms(1);		/* attente minimale */
 	}
+#endif
 }
 
 
@@ -425,6 +427,7 @@ void CloseTime (short t)
 
 void PosMouse (Pt pos)
 {
+#if 0
 	Point		p;
 
 	p.x = pos.x + origine.x;
@@ -435,6 +438,7 @@ void PosMouse (Pt pos)
 	asm(".word 0x4E46");				/* LIB */
 	asm(".word 145");					/* ?PMOUSE */
 	asm("moveml sp@+,d4/d7");			/* POP */
+#endif
 }
 
 
@@ -466,6 +470,15 @@ short IfMouse (void)
 
 static Pt getmousepos (void)
 {
+  Pt  pos;
+  Sint32 x, y;
+
+  SDL_GetMouseState (&x, &y);
+  pos.x = x;
+  pos.y = y;
+
+  return pos;
+#if 0
 	int		err;
 	Point	pos;
 	Pt		ret;
@@ -477,6 +490,7 @@ static Pt getmousepos (void)
 	ret.x = pos.x - origine.x;
 	ret.y = pos.y - origine.y;
 	return ret;
+#endif
 }
 
 
@@ -493,8 +507,9 @@ void HideMouse(void)
 	if ( visumouse == 1 )
 	{
 		visumouse = 0;
-		printf("%c",AFCCMO);		/* cache la souris */
+		//printf("%c",AFCCMO);		/* cache la souris */
 	}
+
 }
 
 
@@ -511,7 +526,7 @@ void ShowMouse(void)
 	if ( visumouse == 0 )
 	{
 		visumouse = 1;
-		printf("%c",AFSCMO);		/* montre la souris */
+		//printf("%c",AFSCMO);		/* montre la souris */
 	}
 }
 
@@ -568,13 +583,13 @@ short GetEvent (Pt *ppos)
 	long		key, maj;
 
 	*ppos = lastmouse;					/* rend la dernire position de la souris */
-
+#if 0
 	N_settim(0);						/* met un timeout nul */
 	key = L_getkey();					/* lecture du clavier sans attendre */
 	N_settim(0xFFFF);					/* remet un timeout infini */
-
+#endif
 	lastmouse = getmousepos();			/* lit la position de la souris */
-
+#if 0
 	if ( errno )			return 0;	/* retourne si timeout */
 
 	if ( key>>16 == 'D' )  keystatus = STLEFT;
@@ -587,7 +602,7 @@ short GetEvent (Pt *ppos)
 	if ( key>>16 == 0x78 )  keystatus = STUP;
 	if ( key>>16 == 0x72 )  keystatus = STDOWN;
 
-	if ( typejeu == 1 && modetelecom == 0 && pause == 0 )	/* tlcommand en gauche/droite ? */
+	if ( g_typejeu == 1 && g_modetelecom == 0 && g_pause == 0 )	/* tlcommand en gauche/droite ? */
 	{
 		if ( key>>16 == 0x77 )  keystatus = STLEFT;
 		if ( key>>16 == 0x73 )  keystatus = STRIGHT;
@@ -618,7 +633,7 @@ short GetEvent (Pt *ppos)
 	maj = key&0xFF;
 	if ( maj >= 'a' && maj <= 'z' )  maj -= 'a'-'A';
 
-	if ( typetext == 0 )
+	if ( g_typetext == 0 )
 	{
 		if ( key>>16 ==  'D' )		return KEYLEFT;
 		if ( key>>16 ==  'F' )		return KEYRIGHT;
@@ -698,7 +713,7 @@ short GetEvent (Pt *ppos)
 
 		if ( key == '' )	return KEYCCEDILLE;
 	}
-
+#endif
 	return (short)key;
 }
 
@@ -746,6 +761,7 @@ short IfColor (void)
 
 void ModColor (short color, short red, short green, short blue)
 {
+#if 0
 	unsigned long	nocoul = color;
 	RGBColor		coulmod;
 
@@ -756,6 +772,7 @@ void ModColor (short color, short red, short green, short blue)
 	coulmod.b = (blue<<8)+blue;
 
 	tcol_putclut(tcolcanal, TCFORCE, &nocoul, &coulmod);
+#endif
 }
 
 
@@ -770,6 +787,7 @@ void ModColor (short color, short red, short green, short blue)
 
 void GetColor (short color, short *pred, short *pgreen, short *pblue)
 {
+#if 0
 	unsigned long	nocoul = color;
 	RGBColor		coulcherche;
 	RGBColor		coultrouve;
@@ -788,6 +806,7 @@ void GetColor (short color, short *pred, short *pgreen, short *pblue)
 		*pgreen = coultrouve.g>>8;
 		*pblue  = coultrouve.b>>8;
 	}
+#endif
 }
 
 
@@ -933,8 +952,6 @@ void ScrollPixel (Pixmap *ppm, Pt shift, char color, Rectangle *pzone)
 
 short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 {
-	long		m;					/* mode pour gra2 */
-	u_long		csf,ccf;			/* sauvetage des couleurs */
 	char		*ps,*pd;			/* ^source,^destination */
 	short		is,id;				/* Iy source, Iy destination */
 	Rectangle	rect;				/* rectangle pour la souris */
@@ -967,7 +984,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 			if ( dim.y <= 0 )  return 1;
 		}
 	}
-
+#if 0
 	switch (mode)
 	{
 		case MODEOR:	m = SETDOT; break;
@@ -975,14 +992,9 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 		case MODEXOR:	m = INVDOT; break;
 		default:		m = LOADDOT;
 	}
-
+#endif
 	if ( ppms == 0 )				/* source dans l'cran ? */
 	{
-		rect.p1.x = os.x;
-		rect.p1.y = os.y;
-		rect.p2.x = os.x + dim.x;
-		rect.p2.y = os.y + dim.y;
-		IfHideMouse(rect);			/* cache la souris */
 		os.x += origine.x;
 		os.y += origine.y;
 		ps = 0;
@@ -990,17 +1002,14 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	}
 	else
 	{
+                os.x += ppms->orig.x;
+                os.y += ppms->orig.y;
 		ps = ppms->data;
 		is = ppms->dxb;
 	}
 
 	if ( ppmd == 0 )				/* destination dans l'cran ? */
 	{
-		rect.p1.x = od.x;
-		rect.p1.y = od.y;
-		rect.p2.x = od.x + dim.x;
-		rect.p2.y = od.y + dim.y;
-		IfHideMouse(rect);			/* cache la souris */
 		od.x += origine.x;
 		od.y += origine.y;
 		pd = 0;
@@ -1008,10 +1017,29 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	}
 	else
 	{
+                od.x += ppmd->orig.x;
+                od.y += ppmd->orig.y;
 		pd = ppmd->data;
 		id = ppmd->dxb;
 	}
 
+	  SDL_Rect srcRect, dstRect;
+          srcRect.x = os.x;
+          srcRect.y = os.y;
+          srcRect.w = dim.x;
+          srcRect.h = dim.y;
+          dstRect.x = od.x;
+          dstRect.y = od.y;
+          dstRect.w = dim.x;
+          dstRect.h = dim.y;
+
+          SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
+          SDL_SetRenderTarget (g_renderer, ppmd ? ppmd->texture : NULL);
+          SDL_RenderCopy (
+            g_renderer, ppms ? ppms->texture : NULL, &srcRect, &dstRect);
+          SDL_SetRenderTarget (g_renderer, target);
+
+#if 0
 	if ( pgradesc->dfcnp <= 1 )
 	{										/* noir-blanc */
 		if ( (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
@@ -1061,6 +1089,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	}
 
 	ShowMouse();							/* remet la souris si ncessaire */
+#endif
 	return 0;
 }
 
@@ -1076,6 +1105,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 
 void OpenGraDesc (Pixmap *ppm)
 {
+#if 0
 	if ( ppm == 0 )
 	{
 		HideMouse();
@@ -1117,6 +1147,7 @@ void OpenGraDesc (Pixmap *ppm)
 	else                  pgradesc->dfcmd = 2;
 
 	pgradesc->dfabs = ppm->data;
+#endif
 }
 
 /* ------------ */
@@ -1130,6 +1161,7 @@ void OpenGraDesc (Pixmap *ppm)
 
 void CloseGraDesc (Pixmap *ppm)
 {
+#if 0
 	if ( ppm == 0 )
 	{
 		ShowMouse();
@@ -1148,6 +1180,7 @@ void CloseGraDesc (Pixmap *ppm)
 	pgradesc->dfcnb = savedfcnb;
 	pgradesc->dfcmd = savedfcmd;
 	pgradesc->dfabs = savedfabs;
+#endif
 }
 
 
@@ -1166,6 +1199,7 @@ void CloseGraDesc (Pixmap *ppm)
 
 void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 {
+#if 0
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;
 	Point		p, d;
@@ -1218,6 +1252,7 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 	pgradesc->dfccf = ccf;				/* restitue les couleurs */
 
 	CloseGraDesc(ppm);
+#endif
 }
 
 
@@ -1236,6 +1271,7 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 
 void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 {
+#if 0
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;
 	Point		p, d;
@@ -1313,6 +1349,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 	pgradesc->dfccf = ccf;				/* restitue les couleurs */
 
 	CloseGraDesc(ppm);
+#endif
 }
 
 
@@ -1332,6 +1369,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 
 void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 {
+#if 0
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;
 	Point		p, d;
@@ -1416,6 +1454,7 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 
 	close:
 	CloseGraDesc(ppm);
+#endif
 }
 
 
@@ -1568,11 +1607,13 @@ short TestVLine (Pixmap *ppm, short x)
 
 static int lib_pdump (int mode)
 {
+#if 0
 	asm("moveml d3/d7,sp@-");			/* PUSH */
 	asm("movel %0,d3" : : "g" (mode));	/* D3 <-- mode */
 	asm(".word 0x4E46");				/* LIB */
 	asm(".word 0x003C");				/* ?PDUMP */
 	asm("moveml sp@+,d3/d7");			/* POP */
+#endif
 	return 0;							/* ? */
 }
 
@@ -1587,6 +1628,7 @@ static int lib_pdump (int mode)
 
 short PrintScreen (Pt p1, Pt p2)
 {
+#if 0
 	Point		coin, dim;
 	int			nowdo, err;
 
@@ -1605,6 +1647,7 @@ short PrintScreen (Pt p1, Pt p2)
 	L_kilwdo(nowdo);					/* dtruit la sous-fentre cre */
 
 	return err;
+#endif
 }
 
 
@@ -1652,10 +1695,12 @@ static int UnloadImage(ImageSmaky *pim)
 
 static void LoadCLUT (void *ptable)
 {
+#if 0
 	if ( colormode )
 	{
 		tcol_loadclut(tcolcanal, TCTABLE, 0, ptable, 0);
 	}
+#endif
 }
 
 
@@ -1682,29 +1727,45 @@ static void ClearMem (char *pt, int lg, int fill)
 	Charge un fichier image cod, si ncessaire.
  */
 
-static int LoadImage(int numero, ImageSmaky *pim)
+static int LoadImage(int numero, Pixmap *pim)
 {
 	int			err = 1;
-	FILE		*channel;				/* descripteur du fichier */
-	char		name[24];				/* nom de l'image BLUPIXnn.IMAGE */
+	char		name[4096];				/* nom de l'image BLUPIXnn.IMAGE */
 
-	pim->head = NULL;
-	pim->clut = NULL;
 	pim->data = NULL;
 
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
-		if ( numero == 36 )  sprintf(name, "(:,#:)BLUPI_X.COLOR");
-		else                 sprintf(name, "(:,#:)BLUPIX%02d.COLOR", numero);
+		if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
+		else                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.color.png", SDL_GetBasePath (), numero);
 	}
 	else
 	{
-		if ( numero == 36 )  sprintf(name, "(:,#:)BLUPI_X.IMAGE");
-		else                 sprintf(name, "(:,#:)BLUPIX%02d.IMAGE", numero);
+		if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.image.png", SDL_GetBasePath ());
+		else                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.image.png", SDL_GetBasePath (), numero);
 	}
 
-	if ( (channel=fopen(name,"r")) == NULL )  goto error;	/* ouvre le fichier */
+	SDL_Surface * surface = IMG_Load (name);
+        SDL_Texture * texture = SDL_CreateTextureFromSurface (g_renderer, surface);
+        SDL_FreeSurface (surface);
 
+        Uint32        format;
+        Sint32        access, ow, oh;
+        SDL_QueryTexture (texture, &format, &access, &ow, &oh);
+        pim->dx = ow;
+        pim->dy = oh;
+
+        pim->texture = SDL_CreateTexture (
+          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, pim->dx,
+          pim->dy);
+
+        SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
+        SDL_SetRenderTarget (g_renderer, pim->texture);
+        SDL_RenderCopy(g_renderer, texture, NULL, NULL);
+        SDL_DestroyTexture(texture);
+        SDL_SetRenderTarget (g_renderer, target);
+
+#if 0
 	pim->head = malloc(sizeof(Image));
 	if ( pim->head == NULL )  goto error;
 	fread( pim->head, 1, sizeof(Image), channel );			/* lit l'en-tte */
@@ -1724,17 +1785,15 @@ static int LoadImage(int numero, ImageSmaky *pim)
 	{
 		LoadCLUT(pim->clut);								/* change la clut */
 	}
+#endif
 	err = 0;												/* chargement image ok */
 
 	error:
 	if ( err )
 	{
-		if ( pim->head != NULL )  free(pim->head);			/* libre l'en-tte */
-		if ( pim->clut != NULL )  free(pim->clut);			/* libre la clut */
 		if ( pim->data != NULL )  free(pim->data);			/* libre le data */
 	}
-
-	fclose(channel);										/* ferme le fichier */
+										/* ferme le fichier */
 	return err;
 }
 
@@ -1756,6 +1815,7 @@ static int LoadImage(int numero, ImageSmaky *pim)
 
 short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 {
+#if 0
 	int		nbp = 1;
 
 	if ( colormode )
@@ -1797,6 +1857,7 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 	{
 		ClearMem( ppm->data, ((u_long)ppm->dxb)*((u_long)ppm->dy), fill);
 	}
+#endif
 	return 0;
 }
 
@@ -1835,11 +1896,10 @@ short GivePixmap(Pixmap *ppm)
 short GetImage(Pixmap *ppm, short numero)
 {
 	int			err;
-	ImageSmaky	im;
 
-	err = LoadImage(numero, &im);				/* charge l'image */
+	err = LoadImage(numero, ppm);				/* charge l'image */
 	if ( err )  goto error;
-
+#if 0
 	if ( ppm->data == 0            ||
 		 ppm->dx != im.head->imdlx ||
 		 ppm->dy != im.head->imdly )
@@ -1867,7 +1927,8 @@ short GetImage(Pixmap *ppm, short numero)
 	}
 
 	UnloadImage(&im);							/* libre l'image smaky code */
-
+#endif
+error:
 	return err;
 }
 
@@ -1914,7 +1975,7 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 	ppm->dy     = LYICO;
 	if ( colormode && (numero&ICONMASK) < ICOMOFF )
 	{
-		ppm->nbp = pgradesc->dfcnp;		/* 4 bit/pixel car couleur */
+		ppm->nbp = 8; //pgradesc->dfcnp;		/* 4 bit/pixel car couleur */
 	}
 	else
 	{
@@ -1930,24 +1991,24 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 		no = numero;
 		if ( (numero&ICONMASK) < 128*1 )
 		{
-			ppm->data  = pmicon1c.data;
+			ppm->texture  = pmicon1c.texture;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*2 )
 		{
-			ppm->data  = pmicon2c.data;
+			ppm->texture  = pmicon2c.texture;
 			no -= 128*1;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*3 )
 		{
-			ppm->data  = pmicon3c.data;
+			ppm->texture  = pmicon3c.texture;
 			no -= 128*2;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*4 )
 		{
-			ppm->data  = pmicon4c.data;
+			ppm->texture  = pmicon4c.texture;
 			no -= 128*3;
 			goto data;
 		}
@@ -1959,24 +2020,24 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 		no = numero;
 		if ( (numero&ICONMASK) < 128*1 )
 		{
-			ppm->data  = pmicon1m.data;
+			ppm->texture  = pmicon1m.texture;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*2 )
 		{
-			ppm->data  = pmicon2m.data;
+			ppm->texture  = pmicon2m.texture;
 			no -= 128*1;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*3 )
 		{
-			ppm->data  = pmicon3m.data;
+			ppm->texture  = pmicon3m.texture;
 			no -= 128*2;
 			goto data;
 		}
 		if ( (numero&ICONMASK) < 128*4 )
 		{
-			ppm->data  = pmicon4m.data;
+			ppm->texture  = pmicon4m.texture;
 			no -= 128*3;
 			goto data;
 		}
@@ -1984,8 +2045,10 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 	}
 
 	data:
-	ppm->data += (LXICO/8L)*((no&ICONMASK)%16)*ppm->nbp;
-	ppm->data += (160L*LYICO)*((no&ICONMASK)/16)*ppm->nbp;
+	//ppm->data += (LXICO/8L)*((no&ICONMASK)%16)*ppm->nbp;
+	//ppm->data += (160L*LYICO)*((no&ICONMASK)/16)*ppm->nbp;
+        ppm->orig.x = LXICO * ((no&ICONMASK)%16);
+        ppm->orig.y = LYICO * ((no&ICONMASK)/16);
 
 	switch ( no&(~ICONMASK) )
 	{
@@ -1995,21 +2058,25 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 			break;
 
 		case UR:
-			ppm->data += (LXICO/8L/2)*ppm->nbp;
+			//ppm->data += (LXICO/8L/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
+                        ppm->orig.x += LXICO / 2;
 			break;
 
 		case DL:
-			ppm->data += (160L*LYICO/2)*ppm->nbp;
+			//ppm->data += (160L*LYICO/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
+                        ppm->orig.y += LYICO / 2;
 			break;
 
 		case DR:
-			ppm->data += (160L*LYICO/2 + LXICO/8L/2)*ppm->nbp;
+			//ppm->data += (160L*LYICO/2 + LXICO/8L/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
+                        ppm->orig.x += LXICO / 2;
+                        ppm->orig.y += LYICO / 2;
 			break;
 	}
 
@@ -2033,24 +2100,28 @@ static int LoadIcon(void)
 
 	err = GetImage(&pmicon1c, IMAICON+0);			/* charge l'image des icnes */
 	if ( err )  return err;
+        SDL_SetTextureBlendMode(pmicon1c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon1m, IMAICON+0+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon2c, IMAICON+1);			/* charge l'image des icnes */
 	if ( err )  return err;
+        SDL_SetTextureBlendMode(pmicon2c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon2m, IMAICON+1+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon3c, IMAICON+2);			/* charge l'image des icnes */
 	if ( err )  return err;
+        SDL_SetTextureBlendMode(pmicon3c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon3m, IMAICON+2+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon4c, IMAICON+3);			/* charge l'image des icnes */
 	if ( err )  return err;
+        SDL_SetTextureBlendMode(pmicon4c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon4m, IMAICON+3+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
@@ -2083,7 +2154,7 @@ Prog. Rapide     \0\
 \0\
 Sauve Prend Pause\0";
 
-	L_afmenu(menu);		/* affiche les soft-keys */
+//	L_afmenu(menu);		/* affiche les soft-keys */
 }
 
 
@@ -2098,6 +2169,9 @@ Sauve Prend Pause\0";
 
 void BlackScreen (void)
 {
+    SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 255);
+    SDL_RenderClear (g_renderer);
+#if 0
 	int		i;
 	u_char	t;
 	Trame88	trame;
@@ -2124,6 +2198,7 @@ void BlackScreen (void)
 	);
 
 	ShowMouse();				/* remet la souris */
+#endif
 }
 
 
@@ -2284,6 +2359,7 @@ short FileRename (char oldfile, char newfile)
 
 void FatalError (short err)
 {
+#if 0
 	short		dberr;
 	Point		pos;
 	char		text[] = "Pas assez de mmoire pendant le jeu !\n\n1) Cliquez VU ou appuyez RETURN\n2) Arrtez le SMAKY\n3) Redmarrez ...";
@@ -2296,6 +2372,7 @@ void FatalError (short err)
 	}
 
 	exit(err);								/* retour dans MAIN */
+#endif
 }
 
 
@@ -2331,6 +2408,7 @@ short IfFileExist (char *pfilename)
 
 short CheckMem (u_long flags)
 {
+#if 0
 	long		total, biggest;
 	long		mem = 0;
 
@@ -2345,6 +2423,7 @@ short CheckMem (u_long flags)
 	if ( flags & 1<<3 )         mem += MEMMUSIC;
 
 	return ( mem < total );
+#endif
 }
 
 
@@ -2361,6 +2440,7 @@ short CheckMem (u_long flags)
 
 short DboxMem (void)
 {
+#if 0
 	int			err;
 	char		ligne[5] = "";
 	u_long		dbcanal;
@@ -2444,6 +2524,7 @@ short DboxMem (void)
 	if ( flags & 1<<3 )  sound2 = 1;		/* musiques */
 
 	if ( touche == F13 || touche == F14 || touche == F15 )  return 1;
+#endif
 	return 0;
 }
 
@@ -2484,8 +2565,62 @@ static void FatalLoad(char *name, int err)
 	Ouverture gnrale, chargement des librairies, gencar, etc.
  */
 
-void OpenMachine(void)
+int OpenMachine(void)
 {
+  int res = SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
+  if (res < 0)
+  {
+    SDL_Log ("Unable to initialize SDL: %s", SDL_GetError ());
+    return EXIT_FAILURE;
+  }
+
+  g_window = SDL_CreateWindow (
+      "Blupimania", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+      LXIMAGE (), LYIMAGE (), 0);
+
+  if (!g_window)
+  {
+    printf ("%s", SDL_GetError ());
+    return EXIT_FAILURE;
+  }
+
+  g_renderer = SDL_CreateRenderer (
+    g_window, -1, g_rendererType | SDL_RENDERER_TARGETTEXTURE);
+  if (!g_renderer)
+  {
+    printf ("%s", SDL_GetError ());
+    SDL_DestroyWindow (g_window);
+    return EXIT_FAILURE;
+  }
+
+  SDL_RenderSetLogicalSize (g_renderer, LXIMAGE (), LYIMAGE ());
+
+  const int renders = SDL_GetNumRenderDrivers ();
+  for (int i = 0; i < renders; ++i)
+  {
+    SDL_RendererInfo info = {0};
+    if (SDL_GetRenderDriverInfo (i, &info))
+    {
+      SDL_LogError (SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: failed\n", i);
+      continue;
+    }
+
+    SDL_LogInfo (
+      SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: name=%s", i, info.name);
+    SDL_LogInfo (
+      SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: flags=%u", i, info.flags);
+    SDL_LogInfo (
+      SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: num_texture_formats=%u", i,
+      info.num_texture_formats);
+    SDL_LogInfo (
+      SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: max_texture_width=%u", i,
+      info.max_texture_width);
+    SDL_LogInfo (
+      SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: max_texture_height=%u", i,
+      info.max_texture_height);
+  }
+
+#if 0
 	int			err;					/* erreur rendue */
 	long		pid;					/* identificateur du processus cr */
 	u_short		pino;					/* numro du processus cre */
@@ -2531,20 +2666,23 @@ void OpenMachine(void)
 	if ( sound2 )  audio_cache(&adcanal, "(:,#:)BLUPIX02.AUDIO", &adcanalson2, &adnombre);
 
 	err = N_cretask(FilsSound, 200, 10, "BLUPIX_PLAY", 0, 0, &pid, &pino);
-
-	err = LoadIcon();					/* charge l'image des icnes */
+#endif
+	int err = LoadIcon();					/* charge l'image des icnes */
+#if 0
 	if ( err )  FatalLoad("icnes", err);
 
-	origine.x = ((pgradesc->dfd.x)-LXIMAGE)/2;
-	origine.y = ((pgradesc->dfd.y)-LYIMAGE)/2;
+	origine.x = ((pgradesc->dfd.x)-LXIMAGE())/2;
+	origine.y = ((pgradesc->dfd.y)-LYIMAGE())/2;
 
 	StartRandom(0, 0);					/* coup de sac du gnrateur alatoire toto */
 	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
 
 	L_repkey(-1, 0);					/* pas de repeat automatique */
+#endif
 	keystatus = 0;
-
+#if 0
 	AfMenu();							/* affiche les soft-keys */
+#endif
 }
 
 
@@ -2558,6 +2696,7 @@ void OpenMachine(void)
 
 void CloseMachine(void)
 {
+#if 0
 	short		max;
 
 	GivePixmap(&pmicon1c);			/* libre les pixmap des icnes */
@@ -2594,6 +2733,7 @@ void CloseMachine(void)
 	res_clolib();					/* fermeture du module RES */
 	gra2_close();					/* fermeture du module GRA2 */
 	ShowMouse();					/* remet la souris */
+#endif
 }
 
 

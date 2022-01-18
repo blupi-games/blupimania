@@ -177,7 +177,7 @@ static short tabicontombetankn[] = {OPREPEAT,9,1,10, OPTERM};
 static short tabmovetombetankbe[] = {OPLIST,9,  6,2,0, 7,1,0, 6,2,0, 6,1,0, 6,2,0, 7,1,5,
 												6,2,10, 0,0,15, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
-									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20,
+									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20, 
 									 OPSOUND,	SOUND_CAISSE,
 									 OPLIST,2,	0,0,-20, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
@@ -185,7 +185,7 @@ static short tabmovetombetankbe[] = {OPLIST,9,  6,2,0, 7,1,0, 6,2,0, 6,1,0, 6,2,
 static short tabmovetombetankbo[] = {OPLIST,9,  -6,-2,0, -7,-1,0, -6,-2,0, -6,-1,0, -6,-2,0, -7,-1,5,
 												-6,-2,10, 0,0,15, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
-									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20,
+									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20, 
 									 OPSOUND,	SOUND_CAISSE,
 									 OPLIST,2,	0,0,-20, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
@@ -193,7 +193,7 @@ static short tabmovetombetankbo[] = {OPLIST,9,  -6,-2,0, -7,-1,0, -6,-2,0, -6,-1
 static short tabmovetombetankbn[] = {OPLIST,9,  5,-3,0, 5,-2,0, 5,-3,0, 6,-2,0, 5,-3,0, 5,-2,5,
 												5,-3,10, 0,0,15, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
-									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20,
+									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20, 
 									 OPSOUND,	SOUND_CAISSE,
 									 OPLIST,2,	0,0,-20, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
@@ -201,7 +201,7 @@ static short tabmovetombetankbn[] = {OPLIST,9,  5,-3,0, 5,-2,0, 5,-3,0, 6,-2,0, 
 static short tabmovetombetankbs[] = {OPLIST,9,  -5,3,0, -5,2,0, -5,3,0, -6,2,0, -5,3,0, -5,2,5,
 												-5,3,10, 0,0,15, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
-									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20,
+									 OPLIST,4,	0,0,-20, 0,0,-15, 0,0,15, 0,0,20, 
 									 OPSOUND,	SOUND_CAISSE,
 									 OPLIST,2,	0,0,-20, 0,0,20,
 									 OPSOUND,	SOUND_CAISSE,
@@ -1107,7 +1107,7 @@ short* ConvActionToTabIcon (Action action, short typemarche)
 		case AC_STOP_O:			return tabiconstopo;
 		case AC_STOP_S:			return tabiconstops;
 		case AC_STOP_N:			return tabiconstopn;
-
+			
 		case AC_MARCHE_E:
 			if ( typemarche == 1 )	return tabiconmarchefe;
 			else					return tabiconmarchee;
@@ -1120,7 +1120,7 @@ short* ConvActionToTabIcon (Action action, short typemarche)
 		case AC_MARCHE_N:
 			if ( typemarche == 1 )	return tabiconmarchefn;
 			else					return tabiconmarchen;
-
+			
 		case AC_RECULE_E:
 			if ( typemarche == 1 )	return tabiconmarchefre;
 			else					return tabiconmarchee;
@@ -1133,116 +1133,116 @@ short* ConvActionToTabIcon (Action action, short typemarche)
 		case AC_RECULE_N:
 			if ( typemarche == 1 )	return tabiconmarchefrn;
 			else					return tabiconmarchen;
-
+			
 		case AC_TOURNE_NE:		return tabicontournene;
 		case AC_TOURNE_SO:		return tabicontourneso;
 		case AC_TOURNE_ES:		return tabicontournees;
 		case AC_TOURNE_ON:		return tabicontourneon;
-
+			
 		case AC_TOURNE_SE:		return tabicontournese;
 		case AC_TOURNE_NO:		return tabicontourneno;
 		case AC_TOURNE_OS:		return tabicontourneos;
 		case AC_TOURNE_EN:		return tabicontourneen;
-
+			
 		case AC_SAUTE1_E:		return tabiconsaute1e;
 		case AC_SAUTE1_O:		return tabiconsaute1o;
 		case AC_SAUTE1_S:		return tabiconsaute1s;
 		case AC_SAUTE1_N:		return tabiconsaute1n;
-
+			
 		case AC_SAUTE2_E:		return tabiconsaute2e;
 		case AC_SAUTE2_O:		return tabiconsaute2o;
 		case AC_SAUTE2_S:		return tabiconsaute2s;
 		case AC_SAUTE2_N:		return tabiconsaute2n;
-
+			
 		case AC_SAUTEDET_E:		return tabiconsautedete;
 		case AC_SAUTEDET_O:		return tabiconsautedeto;
 		case AC_SAUTEDET_S:		return tabiconsautedets;
 		case AC_SAUTEDET_N:		return tabiconsautedetn;
-
+			
 		case AC_TOMBE_E:		return tabicontombee;
 		case AC_TOMBE_O:		return tabicontombeo;
 		case AC_TOMBE_S:		return tabicontombes;
 		case AC_TOMBE_N:		return tabicontomben;
-
+			
 		case AC_TOMBE_TANK_E:	return tabicontombetanke;
 		case AC_TOMBE_TANK_O:	return tabicontombetanko;
 		case AC_TOMBE_TANK_S:	return tabicontombetanks;
 		case AC_TOMBE_TANK_N:	return tabicontombetankn;
-
+			
 		case AC_TOMBE_TANKB_E:	return tabicontombetankbe;
 		case AC_TOMBE_TANKB_O:	return tabicontombetankbo;
 		case AC_TOMBE_TANKB_S:	return tabicontombetankbs;
 		case AC_TOMBE_TANKB_N:	return tabicontombetankbn;
-
+			
 		case AC_BOIT_E:			return tabiconboite;
 		case AC_BOIT_O:			return tabiconboito;
 		case AC_BOIT_S:			return tabiconboits;
 		case AC_BOIT_N:			return tabiconboitn;
-
+			
 		case AC_BOITX_E:		return tabiconboitxe;
 		case AC_BOITX_O:		return tabiconboitxo;
 		case AC_BOITX_S:		return tabiconboitxs;
 		case AC_BOITX_N:		return tabiconboitxn;
-
+			
 		case AC_TOURTE_E:
 		case AC_TOURTE_O:
 		case AC_TOURTE_S:
 		case AC_TOURTE_N:		return tabicontourte;
-
+			
 		case AC_PIANO_O:		return tabiconpianoo;
-
+			
 		case AC_EXPLOSE_E:		return tabiconexplosee;
 		case AC_EXPLOSE_O:		return tabiconexploseo;
 		case AC_EXPLOSE_S:		return tabiconexploses;
 		case AC_EXPLOSE_N:		return tabiconexplosen;
-
+			
 		case AC_START_E:		return tabiconstarte;
 		case AC_START_O:		return tabiconstarto;
 		case AC_START_S:		return tabiconstarts;
 		case AC_START_N:		return tabiconstartn;
-
+			
 		case AC_REPOS_E:		return tabiconrepose;
 		case AC_REPOS_O:		return tabiconreposo;
 		case AC_REPOS_S:		return tabiconreposs;
 		case AC_REPOS_N:		return tabiconreposn;
-
+			
 		case AC_DORT_E:			return tabicondorte;
 		case AC_DORT_O:			return tabicondorto;
 		case AC_DORT_S:			return tabicondorts;
 		case AC_DORT_N:			return tabicondortn;
-
+			
 		case AC_YOUPIE_E:		return tabiconyoupiee;
 		case AC_YOUPIE_O:		return tabiconyoupieo;
 		case AC_YOUPIE_S:		return tabiconyoupies;
 		case AC_YOUPIE_N:		return tabiconyoupien;
-
+			
 		case AC_NON_E:			return tabiconnone;
 		case AC_NON_O:			return tabiconnono;
 		case AC_NON_S:			return tabiconnons;
 		case AC_NON_N:			return tabiconnonn;
-
+			
 		case AC_POUSSE_E:		return tabiconpoussee;
 		case AC_POUSSE_O:		return tabiconpousseo;
 		case AC_POUSSE_S:		return tabiconpousses;
 		case AC_POUSSE_N:		return tabiconpoussen;
-
+			
 		case AC_NPOUSSE_E:		return tabiconpoussee;
 		case AC_NPOUSSE_O:		return tabiconpousseo;
 		case AC_NPOUSSE_S:		return tabiconpousses;
 		case AC_NPOUSSE_N:		return tabiconpoussen;
-
+			
 		case AC_CAISSE_E:
 		case AC_CAISSE_O:
 		case AC_CAISSE_S:
 		case AC_CAISSE_N:
 		case AC_CAISSE_T:		return tabiconcaisse;
-
+			
 		case AC_CAISSEV_E:
 		case AC_CAISSEV_O:
 		case AC_CAISSEV_S:
 		case AC_CAISSEV_N:
 		case AC_CAISSEV_T:		return tabiconcaissev;
-
+			
 		case AC_CAISSEO_E:
 		case AC_CAISSEO_O:
 		case AC_CAISSEO_S:
@@ -1252,90 +1252,90 @@ short* ConvActionToTabIcon (Action action, short typemarche)
 		case AC_CAISSEOD_S:
 		case AC_CAISSEOD_N:
 		case AC_CAISSEO_T:		return tabiconcaisseo;
-
+			
 		case AC_CAISSEG_E:
 		case AC_CAISSEG_O:
 		case AC_CAISSEG_S:
 		case AC_CAISSEG_N:
 		case AC_CAISSEG_T:		return tabiconcaisseg;
-
+			
 		case AC_VISION_E:		return tabiconvisione;
 		case AC_VISION_O:		return tabiconvisiono;
 		case AC_VISION_S:		return tabiconvisions;
 		case AC_VISION_N:		return tabiconvisionn;
-
+			
 		case AC_DEPART_E:		return tabicondeparte;
 		case AC_BALLON_E:		return tabiconballone;
-
+			
 		case AC_ARRIVEE_E:		return tabiconarriveee;
 		case AC_ARRIVEE_O:		return tabiconarriveeo;
 		case AC_ARRIVEE_S:		return tabiconarrivees;
 		case AC_ARRIVEE_N:		return tabiconarriveen;
-
+			
 		case AC_ARRIVEE_M:		return tabiconarriveem;
 		case AC_BALLON_M:		return tabiconballonm;
-
+			
 		case AC_MAGIC_E:		return tabiconmagice;
 		case AC_MAGIC_O:		return tabiconmagico;
 		case AC_MAGIC_S:		return tabiconmagics;
 		case AC_MAGIC_N:		return tabiconmagicn;
-
+			
 		case AC_ELECTRO_O:		return tabiconelectroo;
-
+			
 		case AC_TELE_N:			return tabicontelen;
-
+			
 		case AC_MECHANT_E:		return tabiconmechante;
 		case AC_MECHANT_O:		return tabiconmechanto;
 		case AC_MECHANT_S:		return tabiconmechants;
 		case AC_MECHANT_N:		return tabiconmechantn;
-
+			
 		case AC_GLISSE_E:		return tabiconglissee;
 		case AC_GLISSE_O:		return tabiconglisseo;
 		case AC_GLISSE_S:		return tabiconglisses;
 		case AC_GLISSE_N:		return tabiconglissen;
-
+			
 		case AC_LIVRE_E:		return tabiconlivree;
 		case AC_LIVRE_O:		return tabiconlivreo;
 		case AC_LIVRE_S:		return tabiconlivres;
 		case AC_LIVRE_N:		return tabiconlivren;
-
+			
 		case AC_MUSIQUE_E:		return tabiconmusiquee;
 		case AC_MUSIQUE_O:		return tabiconmusiqueo;
 		case AC_MUSIQUE_S:		return tabiconmusiques;
 		case AC_MUSIQUE_N:		return tabiconmusiquen;
-
+			
 		case AC_CLE_E:			return tabiconclee;
 		case AC_CLE_O:			return tabiconcleo;
 		case AC_CLE_S:			return tabiconcles;
 		case AC_CLE_N:			return tabiconclen;
-
+			
 		case AC_PORTE_E:		return tabiconportee;
 		case AC_PORTE_O:		return tabiconporteo;
 		case AC_PORTE_S:		return tabiconportes;
 		case AC_PORTE_N:		return tabiconporten;
-
+			
 		case AC_REFLEXION_E:	return tabiconreflexione;
 		case AC_REFLEXION_O:	return tabiconreflexiono;
 		case AC_REFLEXION_S:	return tabiconreflexions;
 		case AC_REFLEXION_N:	return tabiconreflexionn;
-
+			
 		case AC_HAUSSE_E:		return tabiconhaussee;
 		case AC_HAUSSE_O:		return tabiconhausseo;
 		case AC_HAUSSE_S:		return tabiconhausses;
 		case AC_HAUSSE_N:		return tabiconhaussen;
-
+			
 		case AC_YOYO_E:			return tabiconyoyoe;
 		case AC_YOYO_O:			return tabiconyoyoo;
 		case AC_YOYO_S:			return tabiconyoyos;
 		case AC_YOYO_N:			return tabiconyoyon;
-
+			
 		case AC_BAISSE_O:		return tabiconbaisseo;
-
+		
 		case AC_TANK:			return tabicontank;
-
+		
 		default:				break;
 	}
-
+	
 	return NULL;
 }
 
@@ -1360,22 +1360,22 @@ short* ConvActionToTabMove (Action action)
 		case AC_TOURNE_NO:
 		case AC_TOURNE_OS:
 		case AC_TOURNE_EN:		return tabmovetourne;
-
+			
 		case AC_SAUTE1_E:		return tabmovesaute1e;
 		case AC_SAUTE1_O:		return tabmovesaute1o;
 		case AC_SAUTE1_S:		return tabmovesaute1s;
 		case AC_SAUTE1_N:		return tabmovesaute1n;
-
+			
 		case AC_SAUTE2_E:		return tabmovesaute2e;
 		case AC_SAUTE2_O:		return tabmovesaute2o;
 		case AC_SAUTE2_S:		return tabmovesaute2s;
 		case AC_SAUTE2_N:		return tabmovesaute2n;
-
+			
 		case AC_SAUTEDET_E:		return tabmovesautedete;
 		case AC_SAUTEDET_O:		return tabmovesautedeto;
 		case AC_SAUTEDET_S:		return tabmovesautedets;
 		case AC_SAUTEDET_N:		return tabmovesautedetn;
-
+			
 		case AC_TOMBE_E:
 		case AC_TOMBE_TANK_E:	return tabmovetombee;
 		case AC_TOMBE_O:
@@ -1384,96 +1384,96 @@ short* ConvActionToTabMove (Action action)
 		case AC_TOMBE_TANK_S:	return tabmovetombes;
 		case AC_TOMBE_N:
 		case AC_TOMBE_TANK_N:	return tabmovetomben;
-
+			
 		case AC_TOMBE_TANKB_E:	return tabmovetombetankbe;
 		case AC_TOMBE_TANKB_O:	return tabmovetombetankbo;
 		case AC_TOMBE_TANKB_S:	return tabmovetombetankbs;
 		case AC_TOMBE_TANKB_N:	return tabmovetombetankbn;
-
+			
 		case AC_BOIT_E:
 		case AC_BOIT_O:
 		case AC_BOIT_S:
 		case AC_BOIT_N:			return tabmoveboit;
-
+			
 		case AC_BOITX_E:		return tabmoveboitxe;
 		case AC_BOITX_O:		return tabmoveboitxo;
 		case AC_BOITX_S:		return tabmoveboitxs;
 		case AC_BOITX_N:		return tabmoveboitxn;
-
+			
 		case AC_EXPLOSE_E:
 		case AC_EXPLOSE_O:
 		case AC_EXPLOSE_S:
 		case AC_EXPLOSE_N:		return tabmoveexplose;
-
+			
 		case AC_YOUPIE_E:
 		case AC_YOUPIE_O:
 		case AC_YOUPIE_S:
 		case AC_YOUPIE_N:		return tabmoveyoupie;
-
+			
 		case AC_CAISSEOD_E:		return tabmovecaissee;
 		case AC_CAISSEOD_O:		return tabmovecaisseo;
 		case AC_CAISSEOD_S:		return tabmovecaisses;
 		case AC_CAISSEOD_N:		return tabmovecaissen;
-
+			
 		case AC_CAISSE_T:		return tabmovecaisset;
 		case AC_CAISSEV_T:		return tabmovecaissevt;
 		case AC_CAISSEO_T:		return tabmovecaisseot;
 		case AC_CAISSEG_T:		return tabmovecaissegt;
-
+			
 		case AC_VISION_E:		return tabmovevisione;
 		case AC_VISION_O:		return tabmovevisiono;
 		case AC_VISION_S:		return tabmovevisions;
 		case AC_VISION_N:		return tabmovevisionn;
-
+			
 		case AC_DEPART_E:		return tabmovedeparte;
 		case AC_BALLON_E:		return tabmoveballone;
-
+			
 		case AC_ARRIVEE_E:		return tabmovearriveee;
 		case AC_ARRIVEE_O:		return tabmovearriveeo;
 		case AC_ARRIVEE_S:		return tabmovearrivees;
 		case AC_ARRIVEE_N:		return tabmovearriveen;
-
+			
 		case AC_ARRIVEE_M:		return tabmovearriveem;
 		case AC_BALLON_M:		return tabmoveballonm;
-
+			
 		case AC_MAGIC_E:		return tabmovemagice;
 		case AC_MAGIC_O:		return tabmovemagico;
 		case AC_MAGIC_S:		return tabmovemagics;
 		case AC_MAGIC_N:		return tabmovemagicn;
-
+			
 		case AC_MECHANT_E:
 		case AC_MECHANT_O:
 		case AC_MECHANT_S:
 		case AC_MECHANT_N:		return tabmovemechant;
-
+			
 		case AC_GLISSE_E:		return tabmoveglissee;
 		case AC_GLISSE_O:		return tabmoveglisseo;
 		case AC_GLISSE_S:		return tabmoveglisses;
 		case AC_GLISSE_N:		return tabmoveglissen;
-
+			
 		case AC_LIVRE_E:
 		case AC_LIVRE_O:
 		case AC_LIVRE_S:
 		case AC_LIVRE_N:		return tabmovelivre;
-
+		
 		case AC_MUSIQUE_E:		return tabmovemusiquee;
 		case AC_MUSIQUE_O:		return tabmovemusiqueo;
 		case AC_MUSIQUE_S:		return tabmovemusiques;
 		case AC_MUSIQUE_N:		return tabmovemusiquen;
-
+			
 		case AC_CLE_E:			return tabmoveclee;
 		case AC_CLE_O:			return tabmovecleo;
 		case AC_CLE_S:			return tabmovecles;
 		case AC_CLE_N:			return tabmoveclen;
-
+			
 		case AC_PORTE_E:
 		case AC_PORTE_O:
 		case AC_PORTE_S:
 		case AC_PORTE_N:		return tabmoveporte;
-
+		
 		default:				break;
 	}
-
+	
 	return NULL;
 }
 
@@ -1509,7 +1509,7 @@ short* ConvObjetToTabIcon (Objet objet)
 		case OB_DEPART:			return tabicondepartob;
 		case OB_TROPBU:			return tabicontropbu;
 	}
-
+	
 	return 0;
 }
 

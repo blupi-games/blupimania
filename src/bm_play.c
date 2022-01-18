@@ -227,20 +227,25 @@ Joueur;
 /* Variables globales externes */
 /* --------------------------- */
 
-short		langue = 0;						/* numro de la langue */
-short		monde;							/* monde actuel */
-short		updatescreen;					/* 1 -> cran  mettre  jour */
-short		typejeu;						/* type de jeu (0..1) */
-short		typeedit;						/* 1 -> dition d'un monde */
-short		typetext;						/* 1 -> dition d'un texte */
-short		modetelecom;					/* 1 -> mode tlcommande gauche/droite */
-short		pause;							/* 1 -> pause */
-short		passdaniel;						/* 1 -> toujours construction */
-short		passpower;						/* 1 -> force infinie */
-short		passnice;						/* 1 -> toujours gentil */
-short		passhole;						/* 1 -> ne tombe pas dans trou */
-short		construit;						/* 1 -> construit */
+short		g_langue = 0;						/* numro de la langue */
+short		g_monde;							/* monde actuel */
+short		g_updatescreen;					/* 1 -> cran  mettre  jour */
+short		g_typejeu;						/* type de jeu (0..1) */
+short		g_typeedit;						/* 1 -> dition d'un monde */
+short		g_typetext;						/* 1 -> dition d'un texte */
+short		g_modetelecom;					/* 1 -> mode tlcommande gauche/droite */
+short		g_pause;							/* 1 -> pause */
+short		g_passdaniel;						/* 1 -> toujours construction */
+short		g_passpower;						/* 1 -> force infinie */
+short		g_passnice;						/* 1 -> toujours gentil */
+short		g_passhole;						/* 1 -> ne tombe pas dans trou */
+short		g_construit;						/* 1 -> construit */
 
+SDL_Renderer * g_renderer;
+SDL_Window *   g_window;
+
+int g_rendererType   = 0;
+int			g_timerInterval = 100;	// inverval = 50ms
 
 
 /* --------------------------- */
@@ -283,14 +288,14 @@ static char		randomexsuivant[30];		/* tirage exclusif texte si russi */
 typedef struct
 {
 	short		ident;						/* identificateur */
-	long		lg[10];						/* longueurs */
+	int		lg[10];						/* longueurs */
 	short		reserve[10];				/* rserve */
 }
 Header;
 
 typedef struct
 {
-	long		check;						/* vrification */
+	int		check;						/* vrification */
 	short		monde;						/* monde actuel */
 	short		typejeu;					/* type de jeu (0..1) */
 	char		banque;						/* banque utilise */
@@ -300,9 +305,9 @@ Partie;
 
 
 
-extern	void	AnimDrawInit	(void);
-extern	void	PlayRelease		(void);
-extern	void	FatalBreak		(short err);
+	void	AnimDrawInit	(void);
+static	void	PlayRelease		(void);
+	void	FatalBreak		(short err);
 
 
 
@@ -387,7 +392,7 @@ static short tabpalette0[] =
 /* ----------- */
 
 /*
-	Fait entendre un bruitage seulement s'il n'y a pas dj une musique en cours.
+	Fait entendre un bruitage seulement s'il n'y a pas déjà une musique en cours.
  */
 
 void PlayEvSound (short sound)
@@ -406,7 +411,7 @@ void PlayEvSound (short sound)
 
 /*
 	Met un nombre entier positif en base dix dans un buffer.
-	Si nbdigits = 0, met juste le nombre ncessaire de digits.
+	Si nbdigits = 0, met juste le nombre nécessaire de digits.
  */
 
 void PutNum (char **ppch, short num, short nbdigits)
@@ -537,8 +542,8 @@ void MondeMax (char banque)
 
 	if ( GetDemo() == 1 && maxmonde > max )  maxmonde = max;
 
-	if ( construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
-	if ( GetDemo() == 1 && construit )  maxmonde = 1;
+	if ( g_construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
+	if ( GetDemo() == 1 && g_construit )  maxmonde = 1;
 }
 
 
@@ -584,7 +589,7 @@ short MondeRead (short monde, char banque)
 	short           err = 0;
 	short           max;
 
-	if ( construit && GetDemo() == 0 )  max = maxmonde-1;
+	if ( g_construit && GetDemo() == 0 )  max = maxmonde-1;
 	else                                max = maxmonde;
 
 	if ( monde >= max )  goto vide;
@@ -656,7 +661,7 @@ short JoueurRead (void)
 		fj.musicvolume = 10-3;
 	}
 
-	modetelecom = fj.modetelecom;
+	   g_modetelecom = fj.modetelecom;
 
 	PlayNoiseVolume(fj.noisevolume);
 	PlayMusicVolume(fj.musicvolume);
@@ -897,9 +902,9 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
 		rect.p1.x = 113;
-		rect.p1.y = LYIMAGE-319;
+		rect.p1.y = LYIMAGE()-319;
 		rect.p2.x = 113+446;
-		rect.p2.y = LYIMAGE-319+72;
+		rect.p2.y = LYIMAGE()-319+72;
 		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
 	}
 
@@ -913,9 +918,9 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
 		rect.p1.x = 85;
-		rect.p1.y = LYIMAGE-275;
+		rect.p1.y = LYIMAGE()-275;
 		rect.p2.x = 85+470;
-		rect.p2.y = LYIMAGE-275+163;
+		rect.p2.y = LYIMAGE()-275+163;
 		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
 	}
 
@@ -923,17 +928,19 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	{
 		ptx = txfini[phase-PHASE_FINI0];
 		rect.p1.x = 85;
-		rect.p1.y = LYIMAGE-266;
+		rect.p1.y = LYIMAGE()-266;
 		rect.p2.x = 85+470;
-		rect.p2.y = LYIMAGE-266+190;
+		rect.p2.y = LYIMAGE()-266+190;
 		DrawParagraph(&pmimage, rect, ptx, TEXTSIZEMID, MODEOR);
 	}
 
+	Pt dim = {pmimage.dy, pmimage.dx};
+        Pt orig = {0, 0};
 	CopyPixel									/* affiche l'image de base */
 	(
-		&pmimage, (p.y=0, p.x=0, p),
-		0, (p.y=0, p.x=0, p),
-		(p.y=pmimage.dy, p.x=pmimage.dx, p), MODELOAD
+		&pmimage, orig,
+		0, orig,
+		dim, MODELOAD
 	);
 
 	if ( phase == PHASE_PLAY )
@@ -1106,7 +1113,7 @@ void DrawJoueur (void)
 	Pt			pos;
 
 	pos.x = 241;
-	pos.y = LYIMAGE-297-1;
+	pos.y = LYIMAGE()-297-1;
 
 	for ( i=0 ; i<MAXJOUEUR ; i++ )
 	{
@@ -1131,7 +1138,7 @@ void DrawVitesse (void)
 	Pt			pos;
 
 	pos.x = 31;
-	pos.y = LYIMAGE-292-1;
+	pos.y = LYIMAGE()-292-1;
 
 	for ( i=0 ; i<3 ; i++ )
 	{
@@ -1156,7 +1163,7 @@ void DrawScroll (void)
 	Pt			pos;
 
 	pos.x = 272;
-	pos.y = LYIMAGE-292-1;
+	pos.y = LYIMAGE()-292-1;
 
 	for ( i=0 ; i<2 ; i++ )
 	{
@@ -1191,13 +1198,13 @@ void DrawVolume (short pot, short volume)
 		rect.p2.x = 21+40+16+10+4;
 	}
 
-	rect.p1.y = LYIMAGE-135-1+3;
-	rect.p2.y = LYIMAGE-135-1+3+((10-volume)*50/10);
+	rect.p1.y = LYIMAGE()-135-1+3;
+	rect.p2.y = LYIMAGE()-135-1+3+((10-volume)*50/10);
 
 	DrawFillRect(0, rect, MODELOAD, COLORBLANC);
 
 	rect.p1.y = rect.p2.y;
-	rect.p2.y = LYIMAGE-135-1+3+50;
+	rect.p2.y = LYIMAGE()-135-1+3+50;
 
 	DrawFillRect(0, rect, MODELOAD, COLORROUGE);
 }
@@ -1243,7 +1250,7 @@ void DrawTelecom (void)
 	Pt			pos;
 
 	pos.x = 272;
-	pos.y = LYIMAGE-172-1;
+	pos.y = LYIMAGE()-172-1;
 
 	for ( i=0 ; i<2 ; i++ )
 	{
@@ -1268,7 +1275,7 @@ void DrawCouleur (void)
 	Pt			pos;
 
 	pos.x = 146;
-	pos.y = LYIMAGE-101-1;
+	pos.y = LYIMAGE()-101-1;
 
 	for ( i=0 ; i<5 ; i++ )
 	{
@@ -1294,7 +1301,7 @@ void DrawArrows (char mode)
 	Pt			src, dst, dim;
 	Rectangle	rect;
 
-	if ( typejeu == 0 || pause )
+	if ( g_typejeu == 0 || g_pause )
 	{
 		icon = ICO_ARROWS;
 	}
@@ -1307,7 +1314,7 @@ void DrawArrows (char mode)
 	src.y = 0;
 
 	dst.x = 7;
-	dst.y = LYIMAGE-92-1;
+	dst.y = LYIMAGE()-92-1;
 
 	dim.x = 54;
 	dim.y = 52;
@@ -1321,7 +1328,7 @@ void DrawArrows (char mode)
 		dim.y = 16;
 
 		dst.x = 7+9;
-		dst.y = LYIMAGE-92-1+26;
+		dst.y = LYIMAGE()-92-1+26;
 		src.x = 0;
 		src.y = 52;
 		if ( mode == KEYGOFRONT )  src.x = 15;
@@ -1329,7 +1336,7 @@ void DrawArrows (char mode)
 		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette avant/arrire */
 
 		dst.x = 7+29;
-		dst.y = LYIMAGE-92-1+26;
+		dst.y = LYIMAGE()-92-1+26;
 		src.x = 54;
 		src.y = 0;
 		if ( mode == KEYGOLEFT  )  src.y = 15;
@@ -1337,12 +1344,12 @@ void DrawArrows (char mode)
 		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette gauche/droite */
 	}
 
-	if ( typeedit )
+	if ( g_typeedit )
 	{
 		rect.p1.x = 26;
-		rect.p1.y = LYIMAGE-1-28;
+		rect.p1.y = LYIMAGE()-1-28;
 		rect.p2.x = 26+36;
-		rect.p2.y = LYIMAGE-1-28+18;
+		rect.p2.y = LYIMAGE()-1-28+18;
 		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface pause + disquette */
 	}
 }
@@ -1361,14 +1368,14 @@ void DrawPause (void)
 	Pixmap		pm;
 	Pt			src, dst, dim;
 
-	if ( typeedit )  return;
+	if ( g_typeedit )  return;
 
-	if ( pause )  src.x = 20;
+	if ( g_pause )  src.x = 20;
 	else          src.x = 0;
 	src.y = 0;
 
 	dst.x = 26;
-	dst.y = LYIMAGE-1-28;
+	dst.y = LYIMAGE()-1-28;
 
 	dim.x = 18;
 	dim.y = 18;
@@ -1464,24 +1471,24 @@ void DrawObjectif (void)
 	{
 		case PHASE_RECOMMENCE:
 			rect.p1.x = 130;
-			rect.p1.y = LYIMAGE-230;
+			rect.p1.y = LYIMAGE()-230;
 			rect.p2.x = 130+419;
-			rect.p2.y = LYIMAGE-230+102;
+			rect.p2.y = LYIMAGE()-230+102;
 			break;
 		case PHASE_DEPLACE:
 			rect.p1.x = 415;
-			rect.p1.y = LYIMAGE-160;
+			rect.p1.y = LYIMAGE()-160;
 			rect.p2.x = 415+181;
-			rect.p2.y = LYIMAGE-160+63;
+			rect.p2.y = LYIMAGE()-160+63;
 			break;
 		default:
 			rect.p1.x = 49;
-			rect.p1.y = LYIMAGE-254;
+			rect.p1.y = LYIMAGE()-254;
 			rect.p2.x = 49+343;
-			rect.p2.y = LYIMAGE-254+130;
+			rect.p2.y = LYIMAGE()-254+130;
 	}
 
-	if ( construit && monde == maxmonde-1 )
+	if ( g_construit && g_monde == maxmonde-1 )
 	{
 		if ( GetDemo() == 0 || *ptext == 0 )
 		{
@@ -1510,15 +1517,15 @@ void RectStatusBar (Rectangle *prect)
 		case PHASE_OBJECTIF:
 		case PHASE_PRIVE:
 			prect->p1.x = 488;
-			prect->p1.y = LYIMAGE-168;
+			prect->p1.y = LYIMAGE()-168;
 			prect->p2.x = 488+113;
-			prect->p2.y = LYIMAGE-168+12;
+			prect->p2.y = LYIMAGE()-168+12;
 			break;
 		case PHASE_ATTENTE:
 			prect->p1.x = 170;
-			prect->p1.y = LYIMAGE-113;
+			prect->p1.y = LYIMAGE()-113;
 			prect->p2.x = 170+309;
-			prect->p2.y = LYIMAGE-113+12;
+			prect->p2.y = LYIMAGE()-113+12;
 			break;
 		default:
 			return;
@@ -1625,7 +1632,7 @@ short DetectStatusBar (Pt pos, short max, Rectangle *prect)
 	if ( monde > max-1 )  monde = max-1;
 
 	progres = fj.progres[fj.joueur][fj.niveau[fj.joueur]];
-	if ( !construit && monde > progres )  monde = progres;
+	if ( !g_construit && monde > progres )  monde = progres;
 
 	return monde;
 }
@@ -1644,12 +1651,12 @@ void DrawNumMonde (void)
 	Pixmap		pm;
 	Pt			pos, src, dim;
 
-	if ( construit && GetDemo() == 1 )  return;
+	if ( g_construit && GetDemo() == 1 )  return;
 
 	pos.x = 557;
-	pos.y = LYIMAGE-249;
+	pos.y = LYIMAGE()-249;
 
-	DrawBigNum(pos, monde+1);						/* dessine le numro du monde */
+	DrawBigNum(pos, g_monde+1);						/* dessine le numro du monde */
 
 	src.x = 0;
 	src.y = 0;
@@ -1658,10 +1665,10 @@ void DrawNumMonde (void)
 	dim.y = 50;
 
 	pos.x = 478,
-	pos.y = LYIMAGE-283-1;
+	pos.y = LYIMAGE()-283-1;
 
-	if ( monde < maxmonde-1 &&
-		 (construit || monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
+	if ( g_monde < maxmonde-1 &&
+		 (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
 	{
 		GetIcon(&pm, ICO_ARROWUP+1, 1);
 	}
@@ -1671,9 +1678,9 @@ void DrawNumMonde (void)
 	}
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche suprieure (+) */
 
-	pos.y = LYIMAGE-230-1;
+	pos.y = LYIMAGE()-230-1;
 
-	if ( monde > 0 )
+	if ( g_monde > 0 )
 	{
 		GetIcon(&pm, ICO_ARROWDOWN+1, 1);
 	}
@@ -1684,7 +1691,7 @@ void DrawNumMonde (void)
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche infrieure (-) */
 
 	if ( phase == PHASE_DEPLACE )  return;
-	DrawStatusBar(monde, maxmonde-1);				/* dessine la barre d'avance */
+	DrawStatusBar(g_monde, maxmonde-1);				/* dessine la barre d'avance */
 }
 
 
@@ -1699,14 +1706,14 @@ void DrawNumMonde (void)
 void TrackingStatusBar (Pt pos)
 {
 	Rectangle	rect;
-	short		newmonde = monde;
+	short		newmonde = g_monde;
 	short		key;
 
 	RectStatusBar(&rect);
 
-	monde = DetectStatusBar(pos, maxmonde, &rect);
+	   g_monde = DetectStatusBar(pos, maxmonde, &rect);
 	DrawNumMonde();							/* affiche le numro du monde */
-	MondeRead(monde, banque);				/* lit le nouveau monde sur disque */
+	MondeRead(g_monde, banque);				/* lit le nouveau monde sur disque */
 	DrawObjectif();							/* affiche l'objectif */
 
 	while ( 1 )
@@ -1715,11 +1722,11 @@ void TrackingStatusBar (Pt pos)
 		if ( key == KEYCLICREL )  break;
 
 		newmonde = DetectStatusBar(pos, maxmonde, &rect);
-		if ( monde != newmonde )
+		if ( g_monde != newmonde )
 		{
-			monde = newmonde;
+			         g_monde = newmonde;
 			DrawNumMonde();					/* affiche le numro du monde */
-			MondeRead(monde, banque);		/* lit le nouveau monde sur disque */
+			MondeRead(g_monde, banque);		/* lit le nouveau monde sur disque */
 			DrawObjectif();					/* affiche l'objectif */
 		}
 	}
@@ -1792,7 +1799,7 @@ short MondeDuplique (short m)
 	Monde		temp;
 
 	max = maxmonde;
-	if ( construit )  max --;
+	if ( g_construit )  max --;
 
 	if ( m >= max )  return 1;
 
@@ -1804,7 +1811,7 @@ short MondeDuplique (short m)
 	}
 	DrawStatusBar(100, 100);
 
-	monde ++;
+	   g_monde ++;
 	maxmonde ++;
 	return 0;
 }
@@ -1825,7 +1832,7 @@ short MondeDetruit (short m)
 	Monde		temp;
 
 	max = maxmonde;
-	if ( construit )  max --;
+	if ( g_construit )  max --;
 
 	if ( m >= max )  return 1;
 
@@ -1866,7 +1873,7 @@ short MondeDetruit (short m)
 	Retourne la longueur ncessaire pour sauver les variables de la partie en cours.
  */
 
-long PlayPartieLg (void)
+int PlayPartieLg (void)
 {
 	return
 		sizeof(Monde) +
@@ -1881,7 +1888,7 @@ long PlayPartieLg (void)
 	Sauve les variables de la partie en cours.
  */
 
-short PlayPartieWrite (long pos, char file)
+short PlayPartieWrite (int pos, char file)
 {
 	short		err;
 	Partie		partie;
@@ -1889,8 +1896,8 @@ short PlayPartieWrite (long pos, char file)
 	memset(&partie, 0, sizeof(Partie));
 
 	partie.check = 123456;
-	partie.monde = monde;
-	partie.typejeu = typejeu;
+	partie.monde = g_monde;
+	partie.typejeu = g_typejeu;
 	partie.banque = banque;
 
 	err = FileWrite(&partie, pos, sizeof(Partie), file);
@@ -1909,7 +1916,7 @@ short PlayPartieWrite (long pos, char file)
 	Lit les variables de la partie en cours.
  */
 
-short PlayPartieRead (long pos, char file)
+short PlayPartieRead (int pos, char file)
 {
 	short		err;
 	Partie		partie;
@@ -1920,8 +1927,8 @@ short PlayPartieRead (long pos, char file)
 
 	if ( partie.check != 123456 )  return 1;
 
-	monde = partie.monde;
-	typejeu = partie.typejeu;
+	   g_monde = partie.monde;
+	   g_typejeu = partie.typejeu;
 	banque = partie.banque;
 
 	if ( banque < 'I' )
@@ -1993,7 +2000,7 @@ short PartieCheckFile ()
 
 short PartieSauve (short rang)
 {
-	long		pos;
+	int		pos;
 	short		err;
 
 	PartieCheckFile();					/* adapte le fichier si ncessaire */
@@ -2036,7 +2043,7 @@ short PartieSauve (short rang)
 
 short PartiePrend (short rang)
 {
-	long		pos;
+	int		pos;
 	short		err;
 
 	err = PartieCheckFile();			/* fichier ok ? */
@@ -2074,7 +2081,7 @@ short PartiePrend (short rang)
 	IconDrawClose(1);
 
 	ChangeCouleur();					/* change les couleurs */
-	MusicStart(4+monde);
+	MusicStart(4+g_monde);
 
 	return 0;
 }
@@ -2361,12 +2368,12 @@ void JoueurEditOpen (void)
 	Rectangle	rect;
 
 	rect.p1.x = 299;
-	rect.p1.y = LYIMAGE-297+fj.joueur*40;
+	rect.p1.y = LYIMAGE()-297+fj.joueur*40;
 	rect.p2.x = 299+180;
 	rect.p2.y = rect.p1.y+23;
 	EditOpen(fj.nom[fj.joueur], MAXNOMJ, rect);
 
-	typetext = 1;
+	   g_typetext = 1;
 }
 
 
@@ -2381,7 +2388,7 @@ void JoueurEditOpen (void)
 void JoueurEditClose (void)
 {
 	EditClose();
-	typetext = 0;
+	   g_typetext = 0;
 }
 
 
@@ -2409,7 +2416,7 @@ void DrawIdent (void)
 	fj.joueur = joueur;
 
 	pos.x = 500;
-	pos.y = LYIMAGE-286;
+	pos.y = LYIMAGE()-286;
 	for ( joueur=0 ; joueur<MAXJOUEUR ; joueur++ )
 	{
 		if ( fj.nom[joueur][0] != 0 )
@@ -2466,7 +2473,7 @@ void DrawIdent (void)
 
 void PhaseEditOpen (void)
 {
-	MondeRead(monde, banque);		/* lit le monde  diter sur disque */
+	MondeRead(g_monde, banque);		/* lit le monde  diter sur disque */
 	savemonde = descmonde;			/* sauve le monde (palette, etc.) */
 	MondeEdit();					/* modifie le monde pour pouvoir l'diter */
 }
@@ -2489,9 +2496,9 @@ void PhaseEditClose (void)
 		descmonde.palette[i] = savemonde.palette[i];	/* remet la palette initiale */
 	}
 
-	MondeWrite(monde, banque);
+	MondeWrite(g_monde, banque);
 
-	typeedit = 0;		/* fin de l'dition */
+	   g_typeedit = 0;		/* fin de l'dition */
 }
 
 
@@ -2532,16 +2539,16 @@ short ChangePhase (Phase newphase)
 			PaletteEditClose(descmonde.palette);
 			EditClose();
 			BlackScreen();
-			MondeWrite(monde, banque);
-			typetext = 0;
+			MondeWrite(g_monde, banque);
+			     g_typetext = 0;
 			break;
 
 		case PHASE_DEPLACE:
-			monde = mondeinit;
+			     g_monde = mondeinit;
 			break;
 
 		case PHASE_PLAY:
-			if ( typeedit )
+			if ( g_typeedit )
 			{
 				BlackScreen();
 				PhaseEditClose();
@@ -2584,7 +2591,7 @@ short ChangePhase (Phase newphase)
 			break;
 
 		case PHASE_FINI8:
-			monde = maxmonde-1;			/*  construire */
+			     g_monde = maxmonde-1;			/*  construire */
 			break;
 
 		default:
@@ -2644,32 +2651,32 @@ short ChangePhase (Phase newphase)
 			break;
 
 		case PHASE_PARAM:
-			MondeRead(monde, banque);	/* lit le monde  modifier sur disque */
+			MondeRead(g_monde, banque);	/* lit le monde  modifier sur disque */
 			PaletteEditOpen(descmonde.palette);
 			rect.p1.x = 218;
-			rect.p1.y = LYIMAGE-47;
+			rect.p1.y = LYIMAGE()-47;
 			rect.p2.x = 218+180;
-			rect.p2.y = LYIMAGE-47+23;
+			rect.p2.y = LYIMAGE()-47+23;
 			EditOpen(descmonde.text, MAXTEXT, rect);
-			typetext = 1;
+			     g_typetext = 1;
 			DrawCouleur();				/* affiche le mode de couleur */
 			break;
 
 		case PHASE_PRIVE:
-			MondeRead(monde, banque);	/* lit le nouveau monde sur disque */
+			MondeRead(g_monde, banque);	/* lit le nouveau monde sur disque */
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			retry = 0;
 			break;
 
 		case PHASE_DEPLACE:
-			mondeinit = monde;
+			mondeinit = g_monde;
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			break;
 
 		case PHASE_OBJECTIF:
-			MondeRead(monde, banque);	/* lit le nouveau monde sur disque */
+			MondeRead(g_monde, banque);	/* lit le nouveau monde sur disque */
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			retry = 0;
@@ -2677,7 +2684,7 @@ short ChangePhase (Phase newphase)
 
 		case PHASE_RECOMMENCE:
 			PlayEvSound(SOUND_NON);
-			MondeRead(monde, banque);	/* relit le monde sur disque */
+			MondeRead(g_monde, banque);	/* relit le monde sur disque */
 			DrawObjectif();				/* affiche l'objectif */
 			retry ++;
 			break;
@@ -2685,7 +2692,7 @@ short ChangePhase (Phase newphase)
 		case PHASE_PLAY:
 			ChangeCouleur();			/* change les couleurs */
 
-			if ( typeedit )  PhaseEditOpen();
+			if ( g_typeedit )  PhaseEditOpen();
 
 			err = IconOpen();			/* ouverture des icnes */
 			if ( err )  FatalBreak(err);
@@ -2700,16 +2707,16 @@ short ChangePhase (Phase newphase)
 			DecorNewMonde(&descmonde);	/* initialise le monde */
 
 			type = 0;
-			if ( typejeu == 0 || typeedit )  type = 1;
+			if ( g_typejeu == 0 || g_typeedit )  type = 1;
 			PaletteNew(descmonde.palette, type);
 
 			DecorMake(1);				/* fabrique le dcor */
 			IconDrawAll();				/* redessine toute la fentre */
 
-			pause = 0;
+			     g_pause = 0;
 			DrawArrows(0);				/* dessine les flches */
 			DrawPause();				/* dessine le bouton pause */
-			if ( typeedit == 0 )  MusicStart(4+monde);
+			if ( g_typeedit == 0 )  MusicStart(4+g_monde);
 			break;
 
 		default:
@@ -3065,8 +3072,8 @@ PhAction ClicToAction (Pt pos)
 	{
 		if ( pos.x >= pt[0] &&
 			 pos.x <= pt[0]+pt[2] &&
-			 pos.y >= LYIMAGE-pt[1] &&
-			 pos.y <= LYIMAGE-pt[1]+pt[3] )
+			 pos.y >= LYIMAGE()-pt[1] &&
+			 pos.y <= LYIMAGE()-pt[1]+pt[3] )
 		{
 			return pt[5];			/* retourne l'action clique */
 		}
@@ -3306,7 +3313,7 @@ void AnimIconAddBack (Pt pos, char bFront)
 		if ( bFront == 0 || pt > animpt )
 		{
 			ipos.x = pt[1];
-			ipos.y = LYIMAGE-pt[2]-1;
+			ipos.y = LYIMAGE()-pt[2]-1;
 			if ( ipos.x < pos.x+LXICO && ipos.x+LXICO > pos.x &&
 				 ipos.y < pos.y+LYICO && ipos.y+LYICO > pos.y )
 			{
@@ -3344,38 +3351,42 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			p;
 
+        Pt orig = {0, 0};
+        Pt dim = {LYICO, LXICO};
 	CopyPixel								/* copie l'image originale */
 	(
 		&pmimage, pos,
-		&pmtemp, (p.y=0, p.x=0, p),
-		(p.y=LYICO, p.x=LXICO, p), MODELOAD
+		&pmtemp, orig,
+		dim, MODELOAD
 	);
 
 	if ( bOther )  AnimIconAddBack(pos, 0);	/* ajoute les autres icnes derrire */
 
+#if 0
 	GetIcon(&pmicon, icon+ICOMOFF, 1);		/* cherche le pixmap du fond */
 	CopyPixel								/* masque le fond */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
-		&pmtemp, (p.y=0, p.x=0, p),
-		(p.y=LYICO, p.x=LXICO, p), MODEAND
+		&pmicon, orig,
+		&pmtemp, orig,
+		dim, MODEAND
 	);
+#endif
 
 	GetIcon(&pmicon, icon, 1);				/* cherche le pixmap de la chair */
 	CopyPixel								/* dessine la chair */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
-		&pmtemp, (p.y=0, p.x=0, p),
-		(p.y=LYICO, p.x=LXICO, p), MODEOR
+		&pmicon, orig,
+		&pmtemp, orig,
+		dim, MODEOR
 	);
 
 	if ( bOther )  AnimIconAddBack(pos, 1);	/* ajoute les autres icnes devant */
 
 	CopyPixel								/* met dans l'cran */
 	(
-		&pmtemp, (p.y=0, p.x=0, p),
+		&pmtemp, orig,
 		ppm, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODELOAD
+		dim, MODELOAD
 	);
 }
 
@@ -3397,7 +3408,7 @@ short AnimDraw (void)
 	icon = animpt[5+animnext%animpt[4]];
 
 	pos.x = animpt[1];
-	pos.y = LYIMAGE-animpt[2]-1;
+	pos.y = LYIMAGE()-animpt[2]-1;
 
 	AnimDrawIcon(0, icon, pos, 1);			/* dessine l'icne */
 
@@ -3896,7 +3907,7 @@ void GenericNext (void)
 	else                             ppm = &pmimage;
 
 	pos.x = tgeneric[generic*4+1];
-	pos.y = LYIMAGE-tgeneric[generic*4+2];
+	pos.y = LYIMAGE()-tgeneric[generic*4+2];
 
 	OpenTime();
 	AnimDrawIcon(ppm, tgeneric[generic*4+3], pos, 0);
@@ -3966,7 +3977,7 @@ short ExecuteAction (char event, Pt pos)
 		lastmusique = musique;
 		if ( fj.niveau[fj.joueur] == 8 )		/* priv ? */
 		{
-			monde = maxmonde-1;
+			         g_monde = maxmonde-1;
 			ChangePhase(PHASE_PRIVE);
 			musique = lastmusique;
 			return 0;
@@ -3992,7 +4003,7 @@ short ExecuteAction (char event, Pt pos)
 
 	if ( action == ACTION_OBJECTIF )
 	{
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
@@ -4005,15 +4016,15 @@ short ExecuteAction (char event, Pt pos)
 
 	if ( action == ACTION_SUIVANT )
 	{
-		monde ++;
-		if ( fj.progres[fj.joueur][fj.niveau[fj.joueur]] < monde )
+		      g_monde ++;
+		if ( fj.progres[fj.joueur][fj.niveau[fj.joueur]] < g_monde )
 		{
-			fj.progres[fj.joueur][fj.niveau[fj.joueur]] = monde;
+			fj.progres[fj.joueur][fj.niveau[fj.joueur]] = g_monde;
 		}
 		JoueurWrite();							/* crit le fichier des joueurs */
-		if ( monde >= maxmonde )  monde = 0;
+		if ( g_monde >= maxmonde )  g_monde = 0;
 		lastmusique = musique;
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		musique = lastmusique;
 		return 0;
@@ -4021,26 +4032,26 @@ short ExecuteAction (char event, Pt pos)
 
 	if ( action == ACTION_ANNULE )
 	{
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_INIT);
 		return 0;
 	}
 
 	if ( action == ACTION_STOPPEOK )
 	{
-		if ( fj.progres[fj.joueur][fj.niveau[fj.joueur]] < monde+1 )
+		if ( fj.progres[fj.joueur][fj.niveau[fj.joueur]] < g_monde+1 )
 		{
-			fj.progres[fj.joueur][fj.niveau[fj.joueur]] = monde+1;
+			fj.progres[fj.joueur][fj.niveau[fj.joueur]] = g_monde+1;
 		}
 		JoueurWrite();							/* crit le fichier des joueurs */
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
 
 	if ( action == ACTION_STOPPEKO )
 	{
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
@@ -4052,13 +4063,13 @@ short ExecuteAction (char event, Pt pos)
 	}
 
 	if ( action == ACTION_MONDEPREC &&
-		 (GetDemo() == 0 || !construit) )
+		 (GetDemo() == 0 || !g_construit) )
 	{
-		if ( monde > 0 )
+		if ( g_monde > 0 )
 		{
-			monde --;
+			         g_monde --;
 			DrawNumMonde();					/* affiche le numro du monde */
-			MondeRead(monde, banque);		/* lit le nouveau monde sur disque */
+			MondeRead(g_monde, banque);		/* lit le nouveau monde sur disque */
 			DrawObjectif();					/* affiche l'objectif */
 			return 0;
 		}
@@ -4066,14 +4077,14 @@ short ExecuteAction (char event, Pt pos)
 	}
 
 	if ( action == ACTION_MONDESUIV &&
-		 (GetDemo() == 0 || !construit) )
+		 (GetDemo() == 0 || !g_construit) )
 	{
-		if ( monde < maxmonde-1 &&
-			 (construit || monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
+		if ( g_monde < maxmonde-1 &&
+			 (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
 		{
-			monde ++;
+			         g_monde ++;
 			DrawNumMonde();					/* affiche le numro du monde */
-			MondeRead(monde, banque);		/* lit le nouveau monde sur disque */
+			MondeRead(g_monde, banque);		/* lit le nouveau monde sur disque */
 			DrawObjectif();					/* affiche l'objectif */
 			return 0;
 		}
@@ -4081,7 +4092,7 @@ short ExecuteAction (char event, Pt pos)
 	}
 
 	if ( action == ACTION_MONDEBAR &&
-		 (GetDemo() == 0 || !construit) )
+		 (GetDemo() == 0 || !g_construit) )
 	{
 		TrackingStatusBar(pos);
 		return 0;
@@ -4089,7 +4100,7 @@ short ExecuteAction (char event, Pt pos)
 
 	if ( action == ACTION_EDIT )
 	{
-		typeedit = 1;
+		      g_typeedit = 1;
 		ChangePhase(PHASE_PLAY);
 		return 0;
 	}
@@ -4109,7 +4120,7 @@ short ExecuteAction (char event, Pt pos)
 
 	if ( action == ACTION_ORDRE )
 	{
-		dstmonde = monde;
+		dstmonde = g_monde;
 		ChangePhase(PHASE_ATTENTE);			/* affiche "attendez-un instant ..." */
 		MondeDeplace(mondeinit, dstmonde);
 		ChangePhase(PHASE_PRIVE);
@@ -4119,7 +4130,7 @@ short ExecuteAction (char event, Pt pos)
 	if ( action == ACTION_DUPLIQUE )
 	{
 		ChangePhase(PHASE_ATTENTE);			/* affiche "attendez-un instant ..." */
-		MondeDuplique(monde);
+		MondeDuplique(g_monde);
 		ChangePhase(PHASE_PRIVE);
 		return 0;
 	}
@@ -4127,7 +4138,7 @@ short ExecuteAction (char event, Pt pos)
 	if ( action == ACTION_DETRUIT )
 	{
 		ChangePhase(PHASE_ATTENTE);			/* affiche "attendez-un instant ..." */
-		MondeDetruit(monde);
+		MondeDetruit(g_monde);
 		ChangePhase(PHASE_PRIVE);
 		return 0;
 	}
@@ -4158,19 +4169,19 @@ short ExecuteAction (char event, Pt pos)
 		if ( fj.niveau[fj.joueur] < 8 )		/* fastoche/costaud/durdur/mga ? */
 		{
 			banque = fj.niveau[fj.joueur]+'A';
-			if ( passdaniel )  construit = 1;
-			else               construit = 0;
+			if ( g_passdaniel )  g_construit = 1;
+			else               g_construit = 0;
 			MondeMax(banque);
-			monde = fj.progres[fj.joueur][fj.niveau[fj.joueur]];
+			         g_monde = fj.progres[fj.joueur][fj.niveau[fj.joueur]];
 		}
 		else								/* priv ? */
 		{
 			banque = fj.joueur+'I';
-			construit = 1;
+			         g_construit = 1;
 			MondeMax(banque);
-			monde = 0;
+			         g_monde = 0;
 		}
-		if ( construit )  ChangePhase(PHASE_PRIVE);
+		if ( g_construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
@@ -4291,7 +4302,7 @@ short ExecuteAction (char event, Pt pos)
 		 action <= ACTION_TELECOM1 )
 	{
 		fj.modetelecom = action - ACTION_TELECOM0;
-		modetelecom = fj.modetelecom;
+		      g_modetelecom = fj.modetelecom;
 		DrawTelecom();
 		return 0;
 	}
@@ -4334,7 +4345,7 @@ static short tmusic[] =
 /* --------------- */
 
 /*
-	Gre les musiques de fond, selon la phase.
+	Gère les musiques de fond, selon la phase.
  */
 
 void MusicBackground (void)
@@ -4392,38 +4403,45 @@ static short PlayInit (void)
 	short		err;
 	Pt			p;
 
-	OpenMachine();						/* ouverture gnrale */
+	OpenMachine();						/* ouverture générale */
 
-	IconInit();							/* calcule bbox des icnes */
+	//IconInit();							/* calcule bbox des icônes */
 
-	err = GetPixmap(&pmtemp, (p.y=LYICO, p.x=LXICO, p), 0, 1);
-	if ( err )  FatalBreak(err);
+        pmtemp.texture = SDL_CreateTexture (
+          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
+        pmtemp.dx = LXICO;
+        pmtemp.dy = LYICO;
+        //SDL_SetTextureBlendMode (pmtemp.texture, SDL_BLENDMODE_BLEND);
+        /*pmimage.texture = SDL_CreateTexture (
+          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());*/
+	//err = GetPixmap(&pmtemp, (p.y=LYICO, p.x=LXICO, p), 0, 1);
+	//if ( err )  FatalBreak(err);
 
-	monde       = 0;					/* premier monde */
+	   g_monde       = 0;					/* premier monde */
 	banque      = 'A';					/* banque de base */
 	phase       = -1;					/* pas de phase connue */
-	pause       = 0;
-	construit   = 0;
-	typejeu     = 0;					/* jeu sans tlcommande */
-	typeedit    = 0;					/* pas d'dition en cours */
-	typetext    = 0;					/* pas d'dition de ligne */
-	modetelecom = 0;
+	   g_pause       = 0;
+	   g_construit   = 0;
+	   g_typejeu     = 0;					/* jeu sans télécommande */
+	   g_typeedit    = 0;					/* pas d'édition en cours */
+	   g_typetext    = 0;					/* pas d'édition de ligne */
+	   g_modetelecom = 0;
 	lastkey     = 0;
-	passdaniel  = 0;					/* mode normal (sans passe-droit) */
-	passpower   = 0;					/* mode normal (sans passe-droit) */
-	passnice    = 0;					/* mode normal (sans passe-droit) */
-	passhole    = 0;					/* mode normal (sans passe-droit) */
+	   g_passdaniel  = 0;					/* mode normal (sans passe-droit) */
+	   g_passpower   = 0;					/* mode normal (sans passe-droit) */
+	   g_passnice    = 0;					/* mode normal (sans passe-droit) */
+	   g_passhole    = 0;					/* mode normal (sans passe-droit) */
 	animpb      = 0;					/* pas d'animation en cours */
 	animpt      = 0;					/* pas d'animation en cours */
-	generic     = 0;					/* pas du gnrique */
+	generic     = 0;					/* pas du générique */
 
 	InitRandomEx(1, 1, 4+1, musiquehex);/* init hazard musique exclusive */
 
 	MondeVide();
 
-	BlackScreen();						/* efface l'cran */
+	BlackScreen();						/* efface l'écran */
 
-	return ChangePhase(PHASE_GENERIC);	/* premire phase du jeu */
+	return ChangePhase(PHASE_GENERIC);	/* première phase du jeu */
 }
 
 
@@ -4432,13 +4450,118 @@ static short PlayInit (void)
 /* PlayEvent */
 /* ========= */
 
+static int
+SDLEventToSmakyKey (const SDL_Event * event)
+{
+    int key = 0;
+
+    switch (event->type)
+    {
+      case SDL_KEYDOWN:
+        if (event->key.keysym.sym >= SDLK_a && event->key.keysym.sym <= SDLK_z)
+        {
+          key = (char) event->key.keysym.sym;
+          break;
+        }
+        switch (event->key.keysym.sym)
+        {
+          case SDLK_ESCAPE:
+            key = KEYQUIT;
+            break;
+          case SDLK_HOME:
+            key = KEYHOME;
+            break;
+          case SDLK_BACKSPACE:
+            key = KEYUNDO;
+            break;
+          case SDLK_RETURN:
+            key = KEYRETURN;
+            break;
+          case SDLK_PAUSE:
+            key = KEYPAUSE;
+            break;
+          case SDLK_F1:
+            key = KEYF1;
+            break;
+          case SDLK_F2:
+            key = KEYF2;
+            break;
+          case SDLK_F3:
+            key = KEYF3;
+            break;
+          case SDLK_F4:
+            key = KEYF4;
+            break;
+          case SDLK_F10:
+            key = KEYSAVE;
+            break;
+          case SDLK_F11:
+            key = KEYLOAD;
+            break;
+          case SDLK_F12:
+            key = KEYIO;
+            break;
+          case SDLK_LEFT:
+          case SDLK_KP_4:
+            key = KEYLEFT;
+            break;
+          case SDLK_RIGHT:
+          case SDLK_KP_6:
+            key = KEYRIGHT;
+            break;
+          case SDLK_UP:
+          case SDLK_KP_8:
+            key = KEYUP;
+            break;
+          case SDLK_DOWN:
+          case SDLK_KP_2:
+            key = KEYDOWN;
+            break;
+          case SDLK_SPACE:
+            key = KEYCENTER;
+            break;
+          case SDLK_F5:
+            key = KEYF5;
+            break;
+          case SDLK_F6:
+            key = KEYF6;
+            break;
+          case SDLK_F7:
+            key = KEYF7;
+            break;
+          case SDLK_F8:
+            key = KEYF8;
+            break;
+          case SDLK_F9:
+            key = KEYF9;
+            break;
+          default:
+            key = 0;
+        }
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        if (event->button.button == SDL_BUTTON_LEFT)
+          key = KEYCLIC;
+        else if (event->button.button == SDL_BUTTON_RIGHT)
+          key = KEYCLICR;
+        break;
+      case SDL_MOUSEBUTTONUP:
+        key = KEYCLICREL;
+        break;
+      default:
+        key = 0;
+    }
+
+    return key;
+}
+
 /*
-	Donne un vnement.
-	Retourne 1 si l'action est termine.
-	Retourne 2 si le jeu est termin.
+	Donne un événement.
+	Retourne 1 si l'action est terminée.
+	Retourne 2 si le jeu est terminé.
  */
 
-static short PlayEvent (short key, Pt pos)
+static short PlayEvent (const SDL_Event * event, Pt pos)
 {
 	char		ev;
 	Pt			ovisu;
@@ -4449,12 +4572,14 @@ static short PlayEvent (short key, Pt pos)
 	static char *pass[] = {"petitblupi", "enigmeblupi", "totalblupi",
 						   "gentilblupi", "sauteblupi", "megablupi"};
 
+        int key = SDLEventToSmakyKey(event);
+
 	if ( phase == PHASE_GENERIC )
 	{
 #if __SMAKY__
-		MusicBackground();						/* gre la musique de fond */
+		MusicBackground();						/* gère la musique de fond */
 #endif
-		GenericNext();							/* anime le gnrique */
+		GenericNext();							/* anime le générique */
 		if ( key != 0 )
 		{
 			ChangePhase(PHASE_IDENT);
@@ -4483,36 +4608,36 @@ static short PlayEvent (short key, Pt pos)
 					switch ( passrang )
 					{
 						case 1:
-							passdaniel = 1;				/* passe-droit spcial */
+							                 g_passdaniel = 1;				/* passe-droit spécial */
 							break;
 						case 2:
-							passpower  = 1;				/* passe-droit spcial */
+							                 g_passpower  = 1;				/* passe-droit spécial */
 							break;
 						case 3:
-							passnice   = 1;				/* passe-droit spcial */
+							                 g_passnice   = 1;				/* passe-droit spécial */
 							break;
 						case 4:
-							passhole   = 1;				/* passe-droit spcial */
+							                 g_passhole   = 1;				/* passe-droit spécial */
 							break;
 						case 5:
-							passdaniel = 1;				/* passe-droit spcial */
-							passpower  = 1;				/* passe-droit spcial */
-							passnice   = 1;				/* passe-droit spcial */
-							passhole   = 1;				/* passe-droit spcial */
+							                 g_passdaniel = 1;				/* passe-droit spécial */
+							                 g_passpower  = 1;				/* passe-droit spécial */
+							                 g_passnice   = 1;				/* passe-droit spécial */
+							                 g_passhole   = 1;				/* passe-droit spécial */
 							break;
 						default:
-							passdaniel = 0;				/* plus de passe-droit */
-							passpower  = 0;
-							passnice   = 0;
-							passhole   = 0;
+							                 g_passdaniel = 0;				/* plus de passe-droit */
+							                 g_passpower  = 0;
+							                 g_passnice   = 0;
+							                 g_passhole   = 0;
 					}
 					PlaySound(SOUND_MAGIE);
 					for ( max=0 ; max<10 ; max++ )
 					{
 						rect.p1.x = 0;
 						rect.p1.y = 0;
-						rect.p2.x = LXIMAGE;
-						rect.p2.y = LYIMAGE;
+						rect.p2.x = LXIMAGE();
+						rect.p2.y = LYIMAGE();
 						DrawFillRect(0, rect, MODEXOR, COLORNOIR);	/* flash */
 						for ( delai=0 ; delai<20000 ; delai++ );
 					}
@@ -4569,7 +4694,7 @@ static short PlayEvent (short key, Pt pos)
 		if ( key == KEYCLIC || (key >= KEYF4 && key <= KEYF1) )
 		{
 			ev = PaletteEvent(key, pos);
-			if ( typejeu == 0 || typeedit )
+			if ( g_typejeu == 0 || g_typeedit )
 			{
 				if ( ev < 0 )  key = ev;
 				if ( ev == 1 )
@@ -4587,7 +4712,7 @@ static short PlayEvent (short key, Pt pos)
 			}
 		}
 
-		if ( typeedit == 0 &&
+		if ( g_typeedit == 0 &&
 			 (key == KEYSAVE || key == KEYLOAD || key == KEYIO) )
 		{
 			PlayEvSound(SOUND_CLIC);
@@ -4641,9 +4766,9 @@ static short PlayEvent (short key, Pt pos)
 			return 1;
 		}
 
-		if ( typejeu == 1 &&
+		if ( g_typejeu == 1 &&
 			 fj.modetelecom == 1 &&
-			 pause == 0 )
+			             g_pause == 0 )
 		{
 			if ( key == KEYLEFT   )  key = KEYGOLEFT;
 			if ( key == KEYRIGHT  )  key = KEYGORIGHT;
@@ -4673,16 +4798,16 @@ static short PlayEvent (short key, Pt pos)
 
 		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
-			if ( typeedit == 1 ||
+			if ( g_typeedit == 1 ||
 				 StopPartie() == KEYHOME )
 			{
-				if ( typeedit )  ChangePhase(PHASE_PRIVE);
+				if ( g_typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
 				return 1;
 			}
 		}
 
-		if ( typejeu == 0 || typeedit || pause )
+		if ( g_typejeu == 0 || g_typeedit || g_pause )
 		{
 			ovisu = DecorGetOrigine();
 			if ( key == KEYRIGHT && ovisu.x > -8 )
@@ -4720,18 +4845,18 @@ static short PlayEvent (short key, Pt pos)
 		}
 		else
 		{
-			last = typejeu;
+			last = g_typejeu;
 			MoveScroll(fj.scroll);			/* dcale v. selon le toto du joueur */
-			if ( last != typejeu )			/* type de jeu chang ? */
+			if ( last != g_typejeu )			/* type de jeu chang ? */
 			{
 				DrawArrows(0);				/* oui -> remet les flches/tlcommande */
 			}
 		}
 
-		if ( key == KEYPAUSE && typeedit == 0 )
+		if ( key == KEYPAUSE && g_typeedit == 0 )
 		{
 			PlayEvSound(SOUND_CLIC);
-			pause ^= 1;						/* met/enlve la pause */
+			         g_pause ^= 1;						/* met/enlve la pause */
 			DrawPause();					/* dessine le bouton pause */
 			DrawArrows(0);					/* dessine les flches */
 		}
@@ -4743,7 +4868,7 @@ static short PlayEvent (short key, Pt pos)
 			default: {delai = DELNORM;  break;}
 		}
 
-		if ( pause == 0 )
+		if ( g_pause == 0 )
 		{
 			OpenTime();
 			IconDrawOpen();
@@ -4754,9 +4879,9 @@ static short PlayEvent (short key, Pt pos)
 
 			if ( term == 1 )				/* termin gagn ? */
 			{
-				if ( construit )  max = maxmonde-1;
+				if ( g_construit )  max = maxmonde-1;
 				else              max = maxmonde;
-				if ( monde >= max-1 )
+				if ( g_monde >= max-1 )
 				{
 					ChangePhase(PHASE_FINI0 + fj.niveau[fj.joueur]);
 					return 1;
@@ -4780,7 +4905,7 @@ static short PlayEvent (short key, Pt pos)
 				}
 				while ( max < 100 );		/* attend une seconde ... */
 
-				if ( typeedit )  ChangePhase(PHASE_PRIVE);
+				if ( g_typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
 				return 1;
 			}
@@ -4789,7 +4914,7 @@ static short PlayEvent (short key, Pt pos)
 		{
 			OpenTime();
 			IconDrawOpen();
-			DecorSuperCel(pos);				/* indique la cellule vise par la souris */
+			DecorSuperCel(pos);				/* indique la cellule visée par la souris */
 			MoveRedraw();					/* redessine sans changement */
 			IconDrawClose(1);
 			CloseTime(delai);
@@ -4805,12 +4930,12 @@ static short PlayEvent (short key, Pt pos)
 /* ---------- */
 
 /*
-	Quitte le jeu aprs une erreur fatale !
+	Quitte le jeu après une erreur fatale !
  */
 
 void FatalBreak (short err)
 {
-	PlayRelease();						/* libre tout */
+	PlayRelease();						/* libère tout */
 	FatalError(err);					/* quitte */
 }
 
@@ -4820,7 +4945,7 @@ void FatalBreak (short err)
 /* =========== */
 
 /*
-	Fermeture gnrale.
+	Fermeture générale.
  */
 
 static void PlayRelease (void)
@@ -4831,18 +4956,35 @@ static void PlayRelease (void)
 	OpenTime();
 	CloseTime(130);
 
-	BlackScreen();			/* efface tout l'cran */
+	BlackScreen();			/* efface tout l'écran */
 
 	GivePixmap(&pmimage);
 	GivePixmap(&pmtemp);
 
-	DecorClose();			/* fermeture des dcors */
-	IconClose();			/* fermeture des icnes */
+	DecorClose();			/* fermeture des décors */
+	IconClose();			/* fermeture des icônes */
 	MoveClose();			/* fermeture des objets en mouvement */
-	CloseMachine();			/* fermeture gnrale */
+	CloseMachine();			/* fermeture générale */
 }
 
+static void
+PushUserEvent (Sint32 code, void * data)
+{
+  SDL_Event event;
 
+  event.type       = SDL_USEREVENT;
+  event.user.code  = code;
+  event.user.data1 = data;
+  event.user.data2 = NULL;
+
+  SDL_PushEvent (&event);
+}
+
+static Uint32 MainLoop (Uint32 interval, void * param)
+{
+            PushUserEvent (1548 /*EV_UPDATE*/, NULL);
+            return interval;
+}
 
 
 
@@ -4853,7 +4995,7 @@ static void PlayRelease (void)
 int main (int argc, char *argv[])
 {
 	int			err;						/* condition de sortie */
-	short		key;						/* touche presse  */
+	short		key;						/* touche pressée  */
 	Pt			pos;						/* position de la souris */
 
 	PlayInit();								/* initialise le jeu */
@@ -4863,14 +5005,37 @@ int main (int argc, char *argv[])
 		SetDemo(1);
 	}
 
+        SDL_TimerID updateTimer = SDL_AddTimer (
+          g_timerInterval,
+          &MainLoop,
+          NULL);
+
+        SDL_Event event;
+        while (SDL_WaitEvent (&event))
+        {
+          if (event.type == SDL_MOUSEMOTION)
+            continue;
+
+          if (event.user.code == 1548)
+              SDL_RenderPresent(g_renderer);
+          //handleEvent (event);
+          key = GetEvent(&pos);				/* gère le clavier */
+          err = PlayEvent(&event, pos);			/* fait évoluer le jeu */
+          if ( err == 2 )  break;				/* quitte si terminé */
+          if (event.type == SDL_QUIT)
+            break;
+        }
+
+        SDL_RemoveTimer (updateTimer);
+#if 0
 	while (1)
 	{
-		key = GetEvent(&pos);				/* gre le clavier */
-		err = PlayEvent(key, pos);			/* fait voluer le jeu */
-		if ( err == 2 )  break;				/* quitte si termin */
+		key = GetEvent(&pos);				/* gère le clavier */
+		err = PlayEvent(key, pos);			/* fait évoluer le jeu */
+		if ( err == 2 )  break;				/* quitte si terminé */
 	}
-
-	PlayRelease();							/* fermeture gnrale */
+#endif
+	PlayRelease();							/* fermeture générale */
 	return 0;
 }
 

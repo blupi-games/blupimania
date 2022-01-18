@@ -168,8 +168,8 @@ Partie;
 
 
 
-extern	void	NewAction			(short i, Action action, short posz);
-extern	short	ObjetPut			(Pt cel, Objet obj);
+	void	NewAction			(short i, Action action, short posz);
+	short	ObjetPut			(Pt cel, Objet obj);
 
 
 
@@ -1441,7 +1441,7 @@ short SauteAction(short i, Pt celsaut)
 		 icon == ICO_MEUBLE+8 ||			/* tabouret ? */
 		 icon == ICO_TROU )					/* trou ? */
 	{
-		if ( !passpower )  toto[i].force -= 3;
+		if ( !g_passpower )  toto[i].force -= 3;
 
 		switch( GetOrientation(toto[i].action) )
 		{
@@ -1591,7 +1591,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 
 	orientation = GetOrientation(toto[i].action);
 
-	if ( obstacle == ICO_TROU && !passhole )		/* tombe dans un trou ? */
+	if ( obstacle == ICO_TROU && !g_passhole )		/* tombe dans un trou ? */
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
 		if ( toto[i].tank == 0 )
@@ -1798,7 +1798,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		if ( toto[i].joueur )  celcap1.x = -1;
 
 		nextaction = orientation+AC_BOIT_E-AC_MARCHE_E;
-		if ( !passpower )
+		if ( !g_passpower )
 		{
 			if ( obstacle == ICO_TABLEPOISON )
 			{
@@ -1947,7 +1947,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 
 	if ( obstacle == ICO_GLISSE )					/* glisse sur une peau de banane ? */
 	{
-		if ( toto[i].mechant || passnice )
+		if ( toto[i].mechant || g_passnice )
 		{
 			NewAction(i, orientation, 0);			/* passe par-dessus la peau de banane */
 			DecorModif(testcel, DecorGetInitCel(testcel));
@@ -2079,7 +2079,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
 		if ( toto[i].joueur == 0 )  toto[i].lastobjet = testcel;
-		if ( !passpower )
+		if ( !g_passpower )
 		{
 			toto[i].force  = 0;
 			toto[i].vision = 0;
@@ -2538,7 +2538,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 	obstacle = GetObstacle(testcel, 1);
 	keystatus = GetKeyStatus();
 
-	if ( typejeu == 1 && modetelecom == 1 && pause == 0 )
+	if ( g_typejeu == 1 && g_modetelecom == 1 && g_pause == 0 )
 	{
 		keystatus &= ~STLEFT;
 		keystatus &= ~STRIGHT;
@@ -3103,7 +3103,7 @@ void NextAction(char event, short i)
 		 (toto[i].action < AC_HAUSSE_E ||
 		  toto[i].action > AC_HAUSSE_S) )
 	{
-		if ( (toto[i].joueur == 0 || (toto[i].sequence++)%2 == 0) && !passpower )
+		if ( (toto[i].joueur == 0 || (toto[i].sequence++)%2 == 0) && !g_passpower )
 		{
 			toto[i].force --;			/* la force diminue un peu */
 		}
@@ -3518,8 +3518,8 @@ void TrieToto (char *ptable)
 			i  = ptable[j];
 			ii = ptable[j+1];
 
-			v  = toto[i].posgra.x  + ((long)toto[i].posgra.y*(long)(PLXICO+PRXICO))/(PRYICO-PLYICO);
-			vv = toto[ii].posgra.x + ((long)toto[ii].posgra.y*(long)(PLXICO+PRXICO))/(PRYICO-PLYICO);
+			v  = toto[i].posgra.x  + ((int)toto[i].posgra.y*(int)(PLXICO+PRXICO))/(PRYICO-PLYICO);
+			vv = toto[ii].posgra.x + ((int)toto[ii].posgra.y*(int)(PLXICO+PRXICO))/(PRYICO-PLYICO);
 
 			if ( v > vv )
 			{
@@ -3714,7 +3714,7 @@ void StartTank (void)
 	short		icon, i, decor;
 	Action		nextaction;
 
-	if ( typeedit != 0 )  return;			/* pas de dpart si on est en train d'diter */
+	if ( g_typeedit != 0 )  return;			/* pas de dpart si on est en train d'diter */
 
 	if ( genstarttank == gendecor )  return;	/* rien  faire si toujours le mme dcor */
 
@@ -3783,7 +3783,7 @@ short MoveNext (char event, Pt pmouse)
 		lasttelecom = 0;					/* stoppe si bouton souris relch */
 	}
 
-	if ( (event == KEYCLIC || event == KEYCLICR) && typejeu == 1 )
+	if ( (event == KEYCLIC || event == KEYCLICR) && g_typejeu == 1 )
 	{
 		JoueurCap(event, pmouse);			/* assigne v. un nouveau cap  atteindre */
 	}
@@ -3988,10 +3988,10 @@ short MoveBuild (short outil)
 			break;
 	}
 
-	temp = typejeu;
-	typejeu = 0;							/* comme si jeu sans toto tlcommand */
+	temp = g_typejeu;
+	   g_typejeu = 0;							/* comme si jeu sans toto tlcommand */
 	err = DecorEvent(pos, 1, outil);		/* modifie le dcor */
-	typejeu = temp;
+	   g_typejeu = temp;
 
 	if ( err )
 	{
@@ -4018,11 +4018,11 @@ void MoveScroll (short quick)
 
 	i = GetJoueur();
 
-	if ( typeedit == 0 && i < 0 && typejeu == 1 )
+	if ( g_typeedit == 0 && i < 0 && g_typejeu == 1 )
 	{
 		palette = 0;
 		PaletteNew(&palette, 0);						/* supprime tous les outils ! */
-		typejeu = 0;									/* jeu sans toto tlcommand */
+		      g_typejeu = 0;									/* jeu sans toto tlcommand */
 	}
 
 	if ( i < 0 ||
@@ -4089,7 +4089,7 @@ void MoveNewMonde (short freq)
 	StartRandom(0,0);					/* alatoire rptitif pour les toto */
 	StartRandom(1,1);					/* alatoire total pour les dcors */
 
-	typejeu     = 0;
+	   g_typejeu     = 0;
 	nbout       = 0;
 	nbjoueurs   = 0;
 	nbdepart    = 0;
@@ -4135,9 +4135,9 @@ void MoveNewMonde (short freq)
 				nbout ++;
 			}
 			if ( icon == ICO_JOUEUR &&		/* est-ce le toto du joueur ? */
-				 typeedit == 0 )			/* n'est-on pas en train d'diter un monde ? */
+				                g_typeedit == 0 )			/* n'est-on pas en train d'diter un monde ? */
 			{
-				typejeu = 1;
+				            g_typejeu = 1;
 				DecorPutCel(cel, DecorGetInitCel(cel));		/* remet un sol normal */
 				if ( nbjoueurs == 0 )
 				{
@@ -4153,7 +4153,7 @@ void MoveNewMonde (short freq)
 			}
 			if ( icon >= ICO_TANK_E &&		/* est-ce un tank ? */
 				 icon <= ICO_TANK_S &&
-				 typeedit == 0 )			/* n'est-on pas en train d'diter un monde ? */
+				                g_typeedit == 0 )			/* n'est-on pas en train d'diter un monde ? */
 			{
 				i = MoveInit(cel, icon-ICO_TANK_E+AC_STOP_E, 0);	/* prpare le tank */
 				if ( i >= 0 )
@@ -4168,9 +4168,9 @@ void MoveNewMonde (short freq)
 	if ( nbout < 0  )  nbout = 0;
 
 	nbin = nbout;
-	if ( typejeu == 1 )  nbin ++;			/* rentre aussi le toto du joueur */
+	if ( g_typejeu == 1 )  nbin ++;			/* rentre aussi le toto du joueur */
 
-	if ( typeedit || nbout == 0 )			/* dition d'un monde en cours ? */
+	if ( g_typeedit || nbout == 0 )			/* dition d'un monde en cours ? */
 	{
 		nbout    = 0;						/* oui -> aucun toto */
 		nbin     = 1;
@@ -4220,7 +4220,7 @@ void MoveClose (void)
 	Retourne la longueur ncessaire pour sauver les variables de la partie en cours.
  */
 
-long MovePartieLg (void)
+int MovePartieLg (void)
 {
 	return
 		sizeof(TotoMove)*MAXTOTO +
@@ -4239,7 +4239,7 @@ long MovePartieLg (void)
 	Sauve les variables de la partie en cours.
  */
 
-short MovePartieWrite (long pos, char file)
+short MovePartieWrite (int pos, char file)
 {
 	short		err;
 	Partie		partie;
@@ -4286,7 +4286,7 @@ short MovePartieWrite (long pos, char file)
 	rgnrs en fonction de l'action (idata) !
  */
 
-short MovePartieRead (long pos, char file)
+short MovePartieRead (int pos, char file)
 {
 	short		err, i;
 	Partie		partie;

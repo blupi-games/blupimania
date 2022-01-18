@@ -330,9 +330,9 @@ void PaletteDraw (void)
 	short		rang, state;
 
 	rect.p1.x = 6;
-	rect.p1.y = LYIMAGE-1-332;
+	rect.p1.y = LYIMAGE()-1-332;
 	rect.p2.x = 6+55;
-	rect.p2.y = LYIMAGE-1-332+173;
+	rect.p2.y = LYIMAGE()-1-332+173;
 	DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'emplacement */
 
 	for ( rang=0 ; rang<MAXICONY ; rang++ )
@@ -738,15 +738,15 @@ short SpecButton (Pt pos)
 		0
 	};
 
-	if ( typejeu == 0 || pause )  pt = table0;
+	if ( g_typejeu == 0 || g_pause )  pt = table0;
 	else                          pt = table1;
 
 	while ( *pt != 0 )
 	{
 		if ( pos.x >= pt[0] &&
 			 pos.x <= pt[0]+pt[2] &&
-			 pos.y >= LYIMAGE-pt[1] &&
-			 pos.y <= LYIMAGE-pt[1]+pt[3] )  return pt[4];
+			 pos.y >= LYIMAGE()-pt[1] &&
+			 pos.y <= LYIMAGE()-pt[1]+pt[3] )  return pt[4];
 		pt += 5;
 	}
 
@@ -1260,7 +1260,7 @@ void PaletteEditClose (short palette[])
 
 
 #define INFOPOSX		0
-#define INFOPOSY		(LYIMAGE-155)
+#define INFOPOSY		(LYIMAGE()-155)
 #define INFODIMX		67
 #define INFODIMY		58
 
@@ -1416,7 +1416,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	Retourne la longueur ncessaire pour sauver les variables de la partie en cours.
  */
 
-long PalPartieLg (void)
+int PalPartieLg (void)
 {
 	return
 		sizeof(short)*MAXICONY*MAXICONX +
@@ -1434,7 +1434,7 @@ long PalPartieLg (void)
 	Sauve les variables de la partie en cours.
  */
 
-short PalPartieWrite (long pos, char file)
+short PalPartieWrite (int pos, char file)
 {
 	short		err;
 	Partie		partie;
@@ -1467,7 +1467,7 @@ short PalPartieWrite (long pos, char file)
 	Lit les variables de la partie en cours.
  */
 
-short PalPartieRead (long pos, char file)
+short PalPartieRead (int pos, char file)
 {
 	short		err;
 	Partie		partie;

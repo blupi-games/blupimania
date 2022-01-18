@@ -577,7 +577,7 @@ void IconDrawClose (short bdraw)
 		}
 	}
 
-	updatescreen = 0;				/* l'cran est  jour */
+	   g_updatescreen = 0;				/* l'cran est  jour */
 }
 
 
