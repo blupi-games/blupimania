@@ -125,7 +125,7 @@ short IfSectRegion (Reg r1, Reg r2)
 Reg OrRegion (Reg r1, Reg r2)
 {
 	Reg	rg;
-	
+
 	rg.r.p1.x = ( r1.r.p1.x < r2.r.p1.x ) ? r1.r.p1.x : r2.r.p1.x ;  /* min */
 	rg.r.p2.x = ( r1.r.p2.x > r2.r.p2.x ) ? r1.r.p2.x : r2.r.p2.x ;  /* max */
 	rg.r.p1.y = ( r1.r.p1.y < r2.r.p1.y ) ? r1.r.p1.y : r2.r.p1.y ;  /* min */
@@ -146,12 +146,12 @@ Reg OrRegion (Reg r1, Reg r2)
 Reg AndRegion (Reg r1, Reg r2)
 {
 	Reg	rg;
-	
+
 	rg.r.p1.x = ( r1.r.p1.x > r2.r.p1.x ) ? r1.r.p1.x : r2.r.p1.x ;  /* max */
 	rg.r.p2.x = ( r1.r.p2.x < r2.r.p2.x ) ? r1.r.p2.x : r2.r.p2.x ;  /* min */
 	rg.r.p1.y = ( r1.r.p1.y > r2.r.p1.y ) ? r1.r.p1.y : r2.r.p1.y ;  /* max */
 	rg.r.p2.y = ( r1.r.p2.y < r2.r.p2.y ) ? r1.r.p2.y : r2.r.p2.y ;  /* min */
-	
+
 	if ( rg.r.p1.x >= rg.r.p2.x || rg.r.p1.y >= rg.r.p2.y )
 		return (rg.r.p1.y=0,rg.r.p1.x=0,
 				rg.r.p2.y=0,rg.r.p2.x=0,rg);	/* pas d'intersection */
@@ -179,9 +179,9 @@ static short PutRegion (listreg *listregion, Reg region, short update)
 	Reg			*pr;
 	Reg			clip;
 	Reg			r;
-	
+
 	clip = AndRegion( region, (r.r.p1.y=0, r.r.p1.x=0, r.r.p2.y=DIMYDRAW ,r.r.p2.x=DIMXDRAW, r) );
-	
+
 	for ( i=0 ; i<MAXREGION ; i++ )
 	{
 		pr = &listregion[i].reg;
@@ -218,9 +218,9 @@ static Reg IconRegion (short i, Pt pos)
 {
 	Pixmap		pm;
 	Reg			rg;
-	
+
 	GetIcon(&pm, i, 0);				/* donne juste les dimensions */
-	
+
 	rg.r.p1.x = pos.x;
 	rg.r.p1.y = pos.y;				/* coin sup/gauche */
 	rg.r.p2.x = pos.x + pm.dx;
@@ -234,7 +234,7 @@ static Reg IconRegion (short i, Pt pos)
 		rg.r.p1.y += IconBBox[i].up;
 		rg.r.p2.y -= IconBBox[i].down;
 	}
-	
+
 	return rg;						/* retourne la rgion */
 }
 
@@ -254,12 +254,12 @@ static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, 
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Reg			use;						/* rgion  utiliser */
 	Pt			p;
-	
+
 	use = AndRegion(clip, IconRegion(i, pos) );
 	if ( IfNilRegion(use) ) return;			/* retour si rien  dessiner */
-	
+
 	DecorIconMask(&pmmask, pos, posz, cel);	/* fabrique le masque */
-	
+
 	if ( m == 0 )
 	{
 		GetIcon(&pmicon, i+ICOMOFF, 1);			/* cherche le pixmap du fond */
@@ -282,7 +282,7 @@ static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, 
 			MODEAND								/* mode */
 		);
 	}
-	
+
 	GetIcon(&pmicon, i, 1);					/* cherche le pixmap de la chair */
 	DuplPixel(&pmicon, &pmcopy);			/* copie l'icne */
 	CopyPixel							/* rogne l'icne de la chair */
@@ -318,14 +318,14 @@ void IconDrawAll (void)
 {
 	short		i;
 	Reg			r;
-	
+
 	for ( i=0 ; i<MAXREGION ; i++ )
 	{
 		ListRegNew[i].reg = (r.r.p1.y=0,r.r.p1.x=0,
 							 r.r.p2.y=0,r.r.p2.x=0,r);	/* libre toute la table */
 		ListRegNew[i].update = 0;
 	}
-	
+
 	ListRegNew[0].reg = (r.r.p1.y=0, r.r.p1.x=0, r.r.p2.y=DIMYDRAW ,r.r.p2.x=DIMXDRAW, r);
 	ListRegNew[0].update = 1;
 }
@@ -343,7 +343,7 @@ void IconDrawAll (void)
 void IconDrawFlush (void)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{
 		ListIconDrawNew[i].icon = 0;		/* libre toute la table */
@@ -366,13 +366,13 @@ void IconDrawOpen (void)
 {
 	short		i;
 	Reg			r;
-	
+
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{
 		ListIconDrawOld[i] = ListIconDrawNew[i];	/* table old <-- new */
 		ListIconDrawNew[i].icon = 0;				/* libre toute la table */
 	}
-	
+
 	for ( i=0 ; i<MAXREGION ; i++ )
 	{
 		ListRegOld[i] = ListRegNew[i];				/* table old <-- new */
@@ -400,7 +400,7 @@ short IconDrawPut (short ico, short btransp, Pt pos, short posz, Pt cel, Reg cli
 {
 	short		i;
 	Reg			rg;
-	
+
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{
 		if ( ListIconDrawNew[i].icon == 0 )
@@ -411,12 +411,12 @@ short IconDrawPut (short ico, short btransp, Pt pos, short posz, Pt cel, Reg cli
 			ListIconDrawNew[i].posz    = posz;
 			ListIconDrawNew[i].cel     = cel;
 			ListIconDrawNew[i].clip    = clip;
-			
+
 			rg = IconRegion (ico, pos);
 			ListIconDrawNew[i].bbox  = rg;
 			PutRegion(ListRegNew, rg, 0);
 			PutRegion(ListRegOld, rg, 0);
-			
+
 			return 0;			/* retour ok */
 		}
 	}
@@ -437,13 +437,13 @@ short IconDrawPut (short ico, short btransp, Pt pos, short posz, Pt cel, Reg cli
 static short IconDrawIfMove (listreg lrg)
 {
 	short		i,j,n;
-	
+
 	/* Regarde s'il s'agit d'une rgion  redessiner de toute faon */
-	
+
 	if ( lrg.update != 0 )  return 1;
-	
+
 	/* Cherche l'icne dans la rgion, seulement s'il a en a une seule. */
-	
+
 	n = 0;
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{
@@ -456,11 +456,11 @@ static short IconDrawIfMove (listreg lrg)
 			}
 		}
 	}
-	
+
 	if (n==0)  return 1;				/* dessin si rien trouv */
-	
+
 	/* Cherche si l'icne tait dj l lors du dessin prcdent. */
-	
+
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{
 		if ( ListIconDrawOld[i].icon  != 0                        &&
@@ -472,9 +472,9 @@ static short IconDrawIfMove (listreg lrg)
 		}
 	}
 	return 1;					/* dessin car icne n'tait pas l avant */
-	
+
 	/* Cherche s'il y avait plus d'une icne avant. */
-	
+
 	next:
 	n = 0;
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
@@ -487,7 +487,7 @@ static short IconDrawIfMove (listreg lrg)
 			}
 		}
 	}
-	
+
 	return 0;					/* dessin superflu */
 }
 
@@ -525,14 +525,14 @@ void IconDrawClose (short bdraw)
 	Pt			p;
 	Reg			r,ro;
 	Pixmap		*ppmdecor;
-	
+
 	ppmdecor = DecorGetPixmap();
-	
+
 	for ( i=0 ; i<MAXREGION ; i++ )
 	{
 		if ( IfNilRegion(ListRegOld[i].reg) )  continue;
 		if ( !IconDrawIfMove(ListRegOld[i]) )  continue;
-		
+
 		CopyPixel					/* met le dcor de fond */
 		(
 			ppmdecor, ListRegOld[i].reg.r.p1,
@@ -541,7 +541,7 @@ void IconDrawClose (short bdraw)
 			 p.x = ListRegOld[i].reg.r.p2.x - ListRegOld[i].reg.r.p1.x , p),
 			MODELOAD
 		);
-		
+
 		for ( j=0 ; j<MAXICONDRAW ; j++ )
 		{
 			if ( ListIconDrawNew[j].icon != 0 )
@@ -561,7 +561,7 @@ void IconDrawClose (short bdraw)
 				}
 			}
 		}
-		
+
 		ro = AndRegion(ListRegOld[i].reg, (r.r.p1.y=0, r.r.p1.x=0,
 										   r.r.p2.y=DIMYDRAW, r.r.p2.x=DIMXDRAW, r) );
 		if ( bdraw && !(IfNilRegion(ro)) )
@@ -576,7 +576,7 @@ void IconDrawClose (short bdraw)
 			);
 		}
 	}
-	
+
 	updatescreen = 0;				/* l'cran est  jour */
 }
 
@@ -595,17 +595,17 @@ short IconOpen (void)
 {
 	short		err;
 	Pt			p;
-	
+
 	/* Ouvre le pixmap de travail. */
-	
+
 	err = GetPixmap(&pmwork, (p.y=DIMYDRAW, p.x=DIMXDRAW ,p), 0, 1);
 	if (err)  return err;
-	
+
 	/* Ouvre le pixmap pour copier une icne. */
-	
+
 	err = GetPixmap(&pmcopy, (p.y=LYICO, p.x=LXICO, p), 0, 1);
 	if (err)  return err;
-	
+
 	return 0;
 }
 
@@ -656,7 +656,7 @@ Pixmap* IconGetPixmap (void)
 short TestHLine (Pixmap *ppm, short y)
 {
 	Pt		pos;
-	
+
 	pos.y = y;
 	for ( pos.x=0 ; pos.x<LXICO ; pos.x++ )
 	{
@@ -677,7 +677,7 @@ short TestHLine (Pixmap *ppm, short y)
 short TestVLine (Pixmap *ppm, short x)
 {
 	Pt		pos;
-	
+
 	pos.x = x;
 	for ( pos.y=0 ; pos.y<LYICO ; pos.y++ )
 	{
@@ -700,29 +700,29 @@ void IconInit (void)
 	Pixmap		pm;
 	short		i;
 	short		x, y;
-	
+
 	for ( i=0 ; i<128+64 ; i++ )
 	{
 		GetIcon(&pm, i+ICOMOFF, 1);
-		
+
 		for ( x=0 ; x<LXICO/2 ; x++ )
 		{
 			if ( !TestVLine(&pm, x) )  break;
 		}
 		IconBBox[i].left = x;
-		
+
 		for ( x=LXICO-1 ; x>LXICO/2 ; x-- )
 		{
 			if ( !TestVLine(&pm, x) )  break;
 		}
 		IconBBox[i].right = LXICO-1-x;
-		
+
 		for ( y=0 ; y<LYICO/2 ; y++ )
 		{
 			if ( !TestHLine(&pm, y) )  break;
 		}
 		IconBBox[i].up = y;
-		
+
 		for ( y=LYICO-1 ; y>LYICO/2 ; y-- )
 		{
 			if ( !TestHLine(&pm, y) )  break;

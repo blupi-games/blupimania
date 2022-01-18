@@ -66,21 +66,21 @@ extern void DecorShift (Pt oldpos, Pt newpos, short bDraw);
 Pt GraToCel (Pt gra)
 {
 	Pt		cel;
-	
+
 	if ( gra.x < POSXDRAW || gra.x > POSXDRAW+DIMXDRAW ||
 		 gra.y < POSYDRAW || gra.y > POSYDRAW+DIMYDRAW )  goto error;
-	
+
 	gra.x -= POSXDRAW + PLXICO*ovisu.x + LXICO/2 - 5;
 	gra.y -= POSYDRAW + PRYICO*ovisu.y + LYICO/2 + 11;
-	
+
 	cel.x = (PRXICO*gra.y + PRYICO*gra.x) / (PRYICO*PLXICO + PRXICO*PLYICO);
 	cel.y = (PLXICO*gra.y - PLYICO*gra.x) / (PRYICO*PLXICO + PRXICO*PLYICO);
-	
+
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  goto error;
-	
+
 	return cel;
-	
+
 	error:
 	cel.x = -1;
 	cel.y = -1;
@@ -102,10 +102,10 @@ Pt GraToCel (Pt gra)
 Pt CelToGra (Pt cel)
 {
 	Pt		gra;
-	
+
 	gra.x = PLXICO*cel.x - PRXICO*cel.y;
 	gra.y = PRYICO*cel.y + PLYICO*cel.x;
-	
+
 	return gra;
 }
 
@@ -124,7 +124,7 @@ short DecorGetCel (Pt cel)
 {
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return -1;	/* sort du monde */
-	
+
 	return pmonde->tmonde[cel.y][cel.x];
 }
 
@@ -141,7 +141,7 @@ void DecorPutCel (Pt cel, short icon)
 {
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return;	/* sort du monde */
-	
+
 	pmonde->tmonde[cel.y][cel.x] = icon;
 }
 
@@ -162,7 +162,7 @@ short GetSol (Pt cel, short spec)
 	short		i = 0;
 	Pt			pos;
 	short		max, icon;
-	
+
 	static char table[] =
 	{
 		+1, +1,
@@ -173,7 +173,7 @@ short GetSol (Pt cel, short spec)
 		 0, -1,
 		+1, -1,
 		+1,  0,
-		
+
 		+2, +2,
 		+1, +2,
 		 0, +2,
@@ -190,7 +190,7 @@ short GetSol (Pt cel, short spec)
 		+2, -1,
 		+2,  0,
 		+2, +1,
-		
+
 		+3, +3,
 		+2, +3,
 		+1, +3,
@@ -215,13 +215,13 @@ short GetSol (Pt cel, short spec)
 		+3,  0,
 		+3, +1,
 		+3, +2,
-		
+
 		-100
 	};
-	
+
 	if ( spec )  max = ICO_SOLMAX;
 	else         max = ICO_SOLOBJET;
-	
+
 	while ( table[i] != -100 )
 	{
 		pos.x = cel.x + table[i+0];
@@ -233,7 +233,7 @@ short GetSol (Pt cel, short spec)
 		}
 		i += 2;
 	}
-	
+
 	return ICO_SOLCARRE;
 }
 
@@ -251,18 +251,18 @@ short GetSol (Pt cel, short spec)
 short DecorGetInitCel (Pt cel)
 {
 	short		icon;
-	
+
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return -1;	/* sort du monde */
-	
+
 	icon = imonde[cel.y][cel.x];
-	
+
 	if ( icon < ICO_SOLMAX ||
 		 icon == ICO_BAISSEBAS ||
 		 icon == ICO_UNSEUL ||
 		 (icon >= ICO_SENSUNI_S && icon <= ICO_SENSUNI_O) ||
 		 (icon >= ICO_ACCEL_S && icon <= ICO_ACCEL_O) )  return icon;
-	
+
 	return GetSol(cel, 0);
 }
 
@@ -280,7 +280,7 @@ void DecorPutInitCel (Pt cel, short icon)
 {
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return;	/* sort du monde */
-	
+
 	imonde[cel.y][cel.x] = icon;
 }
 
@@ -324,25 +324,25 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 		 3,  2,
 		-100
 	};
-	
+
 	short		i = 0;
 	short		icon;
 	Pixmap		pm;
 	Pt			p, c, off, dst;
-	
+
 	GetPixmap(ppm, (p.y=LYICO,p.x=LXICO,p), 0, 1);		/* efface le pixmap du masque */
-	
+
 	off = CelToGra(cel);
 	off.x += PLXICO*ovisu.x;
 	off.y += PRYICO*ovisu.y;
 	off.x = pos.x - off.x;
 	off.y = pos.y - off.y;
-	
+
 	while ( table[i] != -100 )
 	{
 		c.x = cel.x + table[i+0];
 		c.y = cel.y + table[i+1];
-		
+
 		if ( c.x < MAXCELX && c.y < MAXCELY )
 		{
 			icon = pmonde->tmonde[c.y][c.x];
@@ -351,10 +351,10 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 		{
 			icon = ICO_SOL;
 		}
-		
+
 		if ( table[i+0] == 0 && table[i+1] == 0 &&
 			 icon >= ICO_PORTEO_EO && icon < ICO_PORTEO_EO+6 )  goto next;
-		
+
 		if ( c.x < MAXCELX && c.y < MAXCELY &&
 			 (icon >= ICO_BLOQUE || icon == ICO_DEPART) )	/* icne en hauteur ? */
 		{
@@ -368,7 +368,7 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 				(p.y=LYICO,p.x=LXICO,p), MODEOR
 			);
 		}
-		
+
 		if ( posz > 0 &&						/* icne en dessous du sol ? */
 			 (table[i+0] > 0 || table[i+1] > 0 ||
 			  (icon != ICO_DEPART &&
@@ -385,7 +385,7 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 				(p.y=LYICO,p.x=LXICO,p), MODEOR
 			);
 		}
-		
+
 		next:
 		i += 2;
 	}
@@ -406,7 +406,7 @@ short MurGetConnex (Pt cel)
 {
 	short	icon;
 	short	connex = 0;
-	
+
 	cel.x ++;
 	if ( cel.x < MAXCELX )
 	{
@@ -417,7 +417,7 @@ short MurGetConnex (Pt cel)
 			 (icon >= ICO_VITRE && icon <= ICO_VITRE_D) ||
 			 (icon >= ICO_PORTEF_EO && icon < ICO_PORTEF_EO+6) )  connex |= 1<<0;	/* est */
 	}
-	
+
 	cel.x --;
 	cel.y ++;
 	if ( cel.y < MAXCELY )
@@ -429,7 +429,7 @@ short MurGetConnex (Pt cel)
 			 (icon >= ICO_VITRE && icon <= ICO_VITRE_D) ||
 			 (icon >= ICO_PORTEF_EO && icon < ICO_PORTEF_EO+6) )  connex |= 1<<1;	/* sud */
 	}
-	
+
 	cel.x --;
 	cel.y --;
 	if ( cel.x >= 0 )
@@ -441,7 +441,7 @@ short MurGetConnex (Pt cel)
 			 (icon >= ICO_VITRE && icon <= ICO_VITRE_D) ||
 			 (icon >= ICO_PORTEF_EO && icon < ICO_PORTEF_EO+6) )  connex |= 1<<2;	/* ouest */
 	}
-	
+
 	cel.x ++;
 	cel.y --;
 	if ( cel.y >= 0 )
@@ -453,7 +453,7 @@ short MurGetConnex (Pt cel)
 			 (icon >= ICO_VITRE && icon <= ICO_VITRE_D) ||
 			 (icon >= ICO_PORTEF_EO && icon < ICO_PORTEF_EO+6) )  connex |= 1<<3;	/* nord */
 	}
-	
+
 	return connex;
 }
 
@@ -470,7 +470,7 @@ void MurBuild (Pt cel, short type)
 	short		icon, oldicon, newicon;
 	Pt			celinit = cel;
 	short		i;
-	
+
 	static short tmurs[] =
 	{
 		ICO_MURBAS+MUR_NSEO,	/* ---- */
@@ -490,7 +490,7 @@ void MurBuild (Pt cel, short type)
 		ICO_MURBAS+MUR_ONS,		/* NOS- */
 		ICO_MURBAS+MUR_NSEO		/* NOSE */
 	};
-	
+
 	static short tpos[4*2] =
 	{
 		+1,  0,
@@ -498,7 +498,7 @@ void MurBuild (Pt cel, short type)
 		-1,  0,
 		 0, -1
 	};
-	
+
 	icon = tmurs[MurGetConnex(cel)];
 	if ( type == 0 )
 	{
@@ -516,13 +516,13 @@ void MurBuild (Pt cel, short type)
 		icon += ICO_VITRE-ICO_MURBAS;
 	}
 	DecorModif(cel, icon);
-	
+
 	for ( i=0 ; i<4 ; i++ )
 	{
 		cel = celinit;
 		cel.x += tpos[i*2+0];
 		cel.y += tpos[i*2+1];
-		
+
 		icon = DecorGetCel(cel);
 		if ( type == 0 )
 		{
@@ -564,9 +564,9 @@ void BoisBuild (Pt cel)
 {
 	short		icon, newb, flag;
 	Pt			voisin;
-	
+
 	/*	Cherche l'orientation du nouveau tas de bois  poser. */
-	
+
 	icon = DecorGetCel(cel);
 	if ( icon >= ICO_BOIS1_NS && icon <= ICO_BOIS3_EO )
 	{
@@ -576,23 +576,23 @@ void BoisBuild (Pt cel)
 	else
 	{
 		newb = ICO_BOIS2_NS;
-		
+
 		voisin.x = cel.x + 1;
 		voisin.y = cel.y;
 		icon = DecorGetCel(voisin);
 		if ( icon >= ICO_BOIS1_EO && icon <= ICO_BOIS3_EO )  newb = ICO_BOIS2_EO;
-		
+
 		voisin.x -= 2;
 		icon = DecorGetCel(voisin);
 		if ( icon >= ICO_BOIS1_EO && icon <= ICO_BOIS3_EO )  newb = ICO_BOIS2_EO;
 	}
-	
+
 	/*	Modifie les extrmits des tas de bois. */
-	
+
 	if ( newb == ICO_BOIS2_EO )
 	{
 		flag = 0;
-		
+
 		voisin.x = cel.x + 1;
 		voisin.y = cel.y;
 		icon = DecorGetCel(voisin);
@@ -611,7 +611,7 @@ void BoisBuild (Pt cel)
 				DecorModif(voisin, ICO_BOIS3_EO);
 			}
 		}
-		
+
 		voisin.x = cel.x - 1;
 		voisin.y = cel.y;
 		icon = DecorGetCel(voisin);
@@ -630,7 +630,7 @@ void BoisBuild (Pt cel)
 				DecorModif(voisin, ICO_BOIS1_EO);
 			}
 		}
-		
+
 		if ( flag == (1<<0) )  newb = ICO_BOIS1_EO;
 		if ( flag == (1<<1) )  newb = ICO_BOIS3_EO;
 		DecorModif(cel, newb);
@@ -638,7 +638,7 @@ void BoisBuild (Pt cel)
 	else
 	{
 		flag = 0;
-		
+
 		voisin.x = cel.x;
 		voisin.y = cel.y + 1;
 		icon = DecorGetCel(voisin);
@@ -657,7 +657,7 @@ void BoisBuild (Pt cel)
 				DecorModif(voisin, ICO_BOIS1_NS);
 			}
 		}
-		
+
 		voisin.x = cel.x;
 		voisin.y = cel.y - 1;
 		icon = DecorGetCel(voisin);
@@ -676,7 +676,7 @@ void BoisBuild (Pt cel)
 				DecorModif(voisin, ICO_BOIS3_NS);
 			}
 		}
-		
+
 		if ( flag == (1<<0) )  newb = ICO_BOIS3_NS;
 		if ( flag == (1<<1) )  newb = ICO_BOIS1_NS;
 		DecorModif(cel, newb);
@@ -697,24 +697,24 @@ void BoisBuild (Pt cel)
 short IfCelValide (Pt cel, short outil)
 {
 	short	obstacle, obnext, solmax;
-	
+
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return 0;
-	
+
 	if ( typejeu == 1 )						/* jeu avec toto tlcommand par le joueur ? */
 	{
 		if ( DecorGetCel(cel) == -1 )  return 0;
 		return 1;
 	}
-	
+
 	obstacle = MoveGetCel(cel);
 	if ( obstacle != 0 && obstacle != 2 )  return 0;	/* retourne si y'a un toto ici */
-	
+
 	obstacle = DecorGetCel(cel);
-	
+
 	if ( typeedit )  solmax = ICO_SOLMAX;
 	else             solmax = ICO_SOLOBJET;
-	
+
 	if ( outil == ICO_OUTIL_TRACKS )		/* tracks ? */
 	{
 		if ( typeedit )  return 1;			/* en dition, le tracks peut tout dtruire */
@@ -722,14 +722,14 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle == ICO_ARRIVEE )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TRACKSBAR )		/* tracks barrire ? */
 	{
 		if ( obstacle >= ICO_BARRIERE &&
 			 obstacle <= ICO_BARRIERE_D )  return 1;
 		return 0;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLCARRE   ||	/* sol pendant l'dition ? */
 		 outil == ICO_OUTIL_SOLPAVE    ||
 		 outil == ICO_OUTIL_SOLDALLE1  ||
@@ -743,10 +743,10 @@ short IfCelValide (Pt cel, short outil)
 	{
 		return 1;
 	}
-	
+
 	/*	Refuse de faire autre chose si on est juste sur la case
 		d'arrive  ct de l'ascenseur. */
-	
+
 	if ( outil != ICO_OUTIL_UNSEUL )
 	{
 		cel.x --;
@@ -757,7 +757,7 @@ short IfCelValide (Pt cel, short outil)
 			 obnext == ICO_DEPARTOUV+1 ||
 			 obnext == ICO_DEPARTOUV+2 )  return 0;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ARRIVEE  ||		/* ballon ? */
 		 outil == ICO_OUTIL_JOUEUR   ||		/* toto pour joueur ? */
 		 outil == ICO_OUTIL_AIMANT   ||		/* aimant ? */
@@ -779,7 +779,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_DEPART )
 	{
 		if ( obstacle >= solmax )  return 0;
@@ -789,7 +789,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obnext < 0 || obnext >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BOIT )			/* table avec boisson ? */
 	{
 		if ( typeedit &&
@@ -803,7 +803,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_MUR )			/* mur ? */
 	{
 		if ( typeedit &&
@@ -820,7 +820,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BOIS )			/* tas de bois ? */
 	{
 		if ( obstacle >= ICO_BOIS1_NS &&
@@ -833,7 +833,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_PLANTE ||		/* fleur ? */
 		 outil == ICO_OUTIL_PLANTEBAS )		/* fleur basse ? */
 	{
@@ -843,7 +843,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obstacle >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TANK )			/* tank ? */
 	{
 		if ( (obstacle >= ICO_TANK_E &&
@@ -854,7 +854,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obstacle >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ELECTRO ||		/* lectronique ? */
 		 outil == ICO_OUTIL_ELECTROBAS )	/* lectronique basse ? */
 	{
@@ -869,7 +869,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TECHNO )		/* techno ? */
 	{
 		if ( typeedit &&
@@ -886,7 +886,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_OBSTACLE )		/* obstacle ? */
 	{
 		if ( typeedit &&
@@ -900,7 +900,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_MEUBLE )		/* meuble ? */
 	{
 		if ( typeedit &&
@@ -914,7 +914,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SENSUNI )		/* sens-unique ? */
 	{
 		if ( obstacle >= ICO_SENSUNI_S &&
@@ -922,7 +922,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obstacle >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_CAISSE )		/* caisse ? */
 	{
 		if ( obstacle == ICO_CAISSE  ||
@@ -932,7 +932,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obstacle >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ACCEL )			/* acclrateur ? */
 	{
 		if ( obstacle >= ICO_ACCEL_S &&
@@ -940,7 +940,7 @@ short IfCelValide (Pt cel, short outil)
 		if ( obstacle >= solmax )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_PORTE )			/* porte ? */
 	{
 		if ( obstacle >= ICO_PORTEF_EO  &&
@@ -953,7 +953,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_CLE )			/* cl ? */
 	{
 		if ( obstacle >= ICO_CLE_A  &&
@@ -966,7 +966,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_DETONATEUR )	/* dtonateur ? */
 	{
 		if ( obstacle >= ICO_DETONATEUR_A  &&
@@ -979,7 +979,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BOMBE )			/* bombe ? */
 	{
 		if ( obstacle >= ICO_BOMBE_A  &&
@@ -992,7 +992,7 @@ short IfCelValide (Pt cel, short outil)
 			 obstacle != ICO_CAISSEGBAS )  return 0;
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -1012,19 +1012,19 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 	Pt		dst;
 	Pt		p;
 	short	icon;
-	
+
 	if ( typejeu == 1 )
 	{
 		GetIcon(&pm, ICO_CELARROWS, 1);		/* quadruple flche */
 		DuplPixel(&pm, ppm);
 		return;
 	}
-	
+
 	GetPixmap(ppm, (p.y=LYICO, p.x=LXICO, p), 0, 0);
-	
+
 	GetIcon(&pm, ICO_SOL+ICOMOFF, 1);		/* masque pour le sol */
 	DuplPixel(&pm, ppm);
-	
+
 	icon = DecorGetCel(cel);
 	if ( icon >= ICO_BLOQUE || icon == ICO_DEPART )	/* obstacle en hauteur ? */
 	{
@@ -1036,23 +1036,23 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 			(p.y=LYICO, p.x=LXICO, p), MODEOR
 		);
 	}
-	
+
 	dst = CelToGra(cel);
 	dst.x += PLXICO*ovisu.x;
 	dst.y += PRYICO*ovisu.y;
-	
+
 	icon = pmonde->tmonde[cel.y][cel.x];
 	pmonde->tmonde[cel.y][cel.x] = ICO_SOL;
 	DecorIconMask(&pmfront, dst, 0, cel);	/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = icon;
-	
+
 	CopyPixel								/* masque selon les dcors placs devant */
 	(
 		&pmfront, (p.y=0, p.x=0, p),
 		ppm, (p.y=0, p.x=0, p),
 		(p.y=LYICO, p.x=LXICO, p), MODEAND
 	);
-	
+
 	GivePixmap(&pmfront);
 }
 
@@ -1081,7 +1081,7 @@ Pt DecorDetCel (Pt pos)
 	short		i = 0;
 	short		icon;
 	char		color;
-	
+
 	static char table[] =
 	{
 		 2,  3,
@@ -1096,12 +1096,12 @@ Pt DecorDetCel (Pt pos)
 		 1,  0,
 		-100
 	};
-	
+
 	if ( typejeu == 1 )
 	{
 		return GraToCel(pos);			/* dtection "transparente" */
 	}
-	
+
 	cel = GraToCel(pos);				/* calcule la cellule montre par la souris */
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )
@@ -1115,17 +1115,17 @@ Pt DecorDetCel (Pt pos)
 	posbase.y += PRYICO*ovisu.y;
 	pos.x -= POSXDRAW + posbase.x;
 	pos.y -= POSYDRAW + posbase.y;		/* position relative dans l'icne de base */
-	
+
 	while ( table[i] != -100 )
 	{
 		c.x = cel.x + table[i+0];
 		c.y = cel.y + table[i+1];
-		
+
 		icon = DecorGetCel(c);
 		if ( icon >= ICO_BLOQUE || icon == ICO_DEPART )	/* cellule contenant un dcor en hauteur ? */
 		{
 			GetCelMask(&pmmask, c);
-			
+
 			posfront = CelToGra(c);
 			posfront.x += PLXICO*ovisu.x;
 			posfront.y += PRYICO*ovisu.y;
@@ -1139,7 +1139,7 @@ Pt DecorDetCel (Pt pos)
 				break;
 			}
 		}
-		
+
 		i += 2;
 	}
 	GivePixmap(&pmmask);
@@ -1160,7 +1160,7 @@ void InvCel (Pt cel, short outil)
 	Pixmap		pmmask  = {0,0,0,0,0,0,0};
 	Pt			src, dst, dim;
 	short		give;
-	
+
 	if ( IfCelValide(cel, outil) )
 	{
 		GetCelMask(&pmmask, cel);
@@ -1171,7 +1171,7 @@ void InvCel (Pt cel, short outil)
 		GetIcon(&pmmask, ICO_CROIX, 1);		/* croix */
 		give = 0;
 	}
-	
+
 	src.x  = 0;
 	src.y  = 0;
 	dst    = CelToGra(cel);
@@ -1204,9 +1204,9 @@ void InvCel (Pt cel, short outil)
 		dim.y -= dst.y+dim.y - (POSYDRAW+DIMYDRAW);
 		if ( dim.y <= 0 )  return;
 	}
-	
+
 	CopyPixel(&pmmask, src, 0, dst, dim, MODEXOR);
-	
+
 	if ( give )  GivePixmap(&pmmask);
 }
 
@@ -1223,10 +1223,10 @@ void InvCel (Pt cel, short outil)
 short PutNewDecor (Pt cel, short min, short max, short first, short limit, short add)
 {
 	short		objet;
-	
+
 	objet = DecorGetCel(cel);
 	if ( objet >= limit+add )  objet -= add;
-	
+
 	if ( objet >= min && objet < max )		/* y a-t-il dj un objet de ce type ici ? */
 	{
 		objet ++;							/* oui -> met le suivant */
@@ -1243,11 +1243,11 @@ short PutNewDecor (Pt cel, short min, short max, short first, short limit, short
 			objet = first;
 		}
 	}
-	
+
 	if ( objet >= limit )  objet += add;
-	
+
 	DecorModif(cel, objet);					/* met un autre objet */
-	
+
 	return objet;
 }
 
@@ -1267,7 +1267,7 @@ short PutUniqueDecor (Pt cel, short icon, short max, short offset, short first)
 {
 	short	i, trouve, objet;
 	Pt		pos;
-	
+
 	if ( offset > 0 )
 	{
 		objet = DecorGetCel(cel);
@@ -1280,7 +1280,7 @@ short PutUniqueDecor (Pt cel, short icon, short max, short offset, short first)
 			return 0;
 		}
 	}
-	
+
 	for ( i=0 ; i<max ; i++ )
 	{
 		trouve = 0;
@@ -1318,7 +1318,7 @@ void SuperCelFlush (void)
 	supercel.y = -1;
 	superpos.x = -1;						/* pas de super cellule */
 	superpos.y = -1;
-	
+
 	lastpmouse.x = -1;
 }
 
@@ -1343,7 +1343,7 @@ short SuperCelClip (Pt *ppos, Pt *pdim)
 		pdim->x -= ppos->x+pdim->x - pmdecor.dx;
 	}
 	if ( pdim->x <= 0 )  return 0;
-	
+
 	if ( ppos->y < 0 )
 	{
 		pdim->y += ppos->y;
@@ -1354,7 +1354,7 @@ short SuperCelClip (Pt *ppos, Pt *pdim)
 		pdim->y -= ppos->y+pdim->y - pmdecor.dy;
 	}
 	if ( pdim->y <= 0 )  return 0;
-	
+
 	return 1;
 }
 
@@ -1370,11 +1370,11 @@ void SuperCelSet (void)
 {
 	Pt		p, src, dst, dim;
 	Reg		rg;
-	
+
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
 	if ( superinv == 1 )  return;
 	superinv = 1;
-	
+
 	src = superpos;
 	dst.x = 0;
 	dst.y = 0;
@@ -1389,14 +1389,14 @@ void SuperCelSet (void)
 			dim, MODELOAD
 		);
 	}
-	
+
 	CopyPixel								/* allume dans pmdecor */
 	(
 		&pmsuper, (p.y=0, p.x=0, p),
 		&pmdecor, superpos,
 		(p.y=LYICO, p.x=LXICO, p), MODEOR
 	);
-	
+
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
 	rg.r.p2.x = superpos.x + LXICO;
@@ -1416,11 +1416,11 @@ void SuperCelClear (void)
 {
 	Pt		src, dst, dim;
 	Reg		rg;
-	
+
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
 	if ( superinv == 0 )  return;
 	superinv = 0;
-	
+
 	src.x = 0;
 	src.y = 0;
 	dst = superpos;
@@ -1435,7 +1435,7 @@ void SuperCelClear (void)
 			dim, MODELOAD
 		);
 	}
-	
+
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
 	rg.r.p2.x = superpos.x + LXICO;
@@ -1455,23 +1455,23 @@ void SuperCelClear (void)
 void DecorSuperCel (Pt pmouse)
 {
 	Pt			cel;
-	
+
 	if ( pmouse.x == lastpmouse.x &&
 		 pmouse.y == lastpmouse.y )  return;
-	
+
 	lastpmouse = pmouse;
-	
+
 	cel = DecorDetCel(pmouse);					/* calcule la cellule montre par la souris */
-	
+
 	if ( !IfCelValide(cel, PaletteGetPress()) )
 	{
 		cel.x = -1;
 		cel.y = -1;
 	}
-	
+
 	if ( cel.x == supercel.x &&
 		 cel.y == supercel.y )    return;
-	
+
 	SuperCelClear();							/* efface l'ancienne super cellule */
 
 	supercel = cel;
@@ -1483,12 +1483,12 @@ void DecorSuperCel (Pt pmouse)
 	else
 	{
 		GetCelMask(&pmsuper, cel);				/* calcule la masque pour inverser */
-		
+
 		superpos = CelToGra(cel);
 		superpos.x += PLXICO*ovisu.x;
 		superpos.y += PRYICO*ovisu.y;
 	}
-	
+
 	SuperCelSet();								/* allume la nouvelle super cellule */
 }
 
@@ -1509,12 +1509,12 @@ short DecorEvent (Pt pos, short poscel, short outil)
 	Pt		cel, new;
 	short	key;
 	short	init, con, first;
-	
+
 	if ( outil < 0 )  return 1;
-	
+
 	if ( poscel )  cel = pos;
 	else           cel = DecorDetCel(pos);	/* calcule la cellule montre par la souris */
-	
+
 	if ( poscel == 0 &&
 		 GetEvent(&pos) != KEYCLICREL )		/* si l'on a pas relch tout de suite */
 	{
@@ -1522,7 +1522,7 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		SuperCelClear();					/* teint la super cellule */
 		MoveRedraw();						/* redessine tous les toto */
 		IconDrawClose(1);
-	
+
 		InvCel(cel, outil);					/* allume premire la cellule montre */
 		while ( 1 )
 		{
@@ -1539,10 +1539,10 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		InvCel(cel, outil);					/* teint la dernire cellule montre */
 	}
 	if ( !IfCelValide(cel, outil) )  return 1;
-	
+
 	PaletteUseObj(outil);					/* dcrmente le reste  disposition */
 	MoveBack(cel);							/* fait v. un pas en arrire */
-	
+
 	if ( outil == ICO_OUTIL_TRACKS ||		/* tracks ? */
 		 outil == ICO_OUTIL_TRACKSBAR )
 	{
@@ -1550,67 +1550,67 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		if ( !typeedit )  PlaySound(SOUND_ACTION);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLCARRE )		/* sol carr ? */
 	{
 		DecorModif(cel, ICO_SOLCARRE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLPAVE )		/* sol pav ? */
 	{
 		DecorModif(cel, ICO_SOLPAVE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLDALLE1 )		/* sol dall ? */
 	{
 		DecorModif(cel, ICO_SOLDALLE1);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLDALLE2 )		/* sol dall ? */
 	{
 		DecorModif(cel, ICO_SOLDALLE2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLDALLE3 )		/* sol dall ? */
 	{
 		DecorModif(cel, ICO_SOLDALLE3);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLDALLE4 )		/* sol dall ? */
 	{
 		DecorModif(cel, ICO_SOLDALLE4);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLDALLE5 )		/* sol dall ? */
 	{
 		DecorModif(cel, ICO_SOLDALLE5);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLELECTRO )	 /* sol lectronique ? */
 	{
 		PutNewDecor(cel, ICO_SOLELECTRO, ICO_SOLELECTRO_D+1, 0, 0, 0);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SOLOBJET )		/* sol objet ? */
 	{
 		PutNewDecor(cel, ICO_SOLOBJET, ICO_SOLOBJET_D+1, 0, 0, 0);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_INVINCIBLE )	/* sol invincible ? */
 	{
 		DecorModif(cel, ICO_INVINCIBLE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_DEPART )		/* ascenseur ? */
 	{
 		DecorModif(cel, ICO_DEPART);
@@ -1618,93 +1618,93 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		DecorModif(cel, ICO_SOLOBJET+1);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_JOUEUR )		/* toto pour joueur ? */
 	{
 		DecorModif(cel, ICO_JOUEUR);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ARRIVEE )		/* ballon ? */
 	{
 		DecorModif(cel, ICO_ARRIVEE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BAISSE )		/* porte lectronique ? */
 	{
 		DecorModif(cel, ICO_BAISSE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_UNSEUL )		/* un seul toto ? */
 	{
 		DecorModif(cel, ICO_UNSEUL);
 		if ( !typeedit )  PlaySound(SOUND_UNSEUL);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_AIMANT )		/* aimant ? */
 	{
 		DecorModif(cel, ICO_AIMANT);
 		if ( !typeedit )  PlaySound(SOUND_AIMANT);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TROU )			/* trou ? */
 	{
 		DecorModif(cel, ICO_TROU);
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_GLISSE )		/* peau de banane ? */
 	{
 		DecorModif(cel, ICO_GLISSE);
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_MUR )			/* brique ? */
 	{
 		MurBuild(cel, 0);					/* met un mur */
 		if ( !typeedit )  PlaySound(SOUND_CAISSE);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BARRIERE )		/* barrire ? */
 	{
 		MurBuild(cel, 1);					/* met une barrire */
 		if ( !typeedit )  PlaySound(SOUND_SAUT2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_VITRE )			/* vitre ? */
 	{
 		MurBuild(cel, 2);					/* met une vitre */
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BOIS )			/* tas de bois ? */
 	{
 		BoisBuild(cel);						/* met un tas de bois */
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_PLANTEBAS )		/* fleur basse ? */
 	{
 		PutNewDecor(cel, ICO_PLANTEBAS, ICO_PLANTEBAS_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_PLANTE )		/* fleur haute ? */
 	{
 		PutNewDecor(cel, ICO_PLANTEHAUT, ICO_PLANTEHAUT_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TANK )			/* tank ? */
 	{
 		init = DecorGetCel(cel);
@@ -1723,61 +1723,61 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		lasttank = init;
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ELECTROBAS )	/* lectronique basse ? */
 	{
 		PutNewDecor(cel, ICO_ELECTROBAS, ICO_ELECTROBAS_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_CAISSEO);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ELECTRO )		/* lectronique haute ? */
 	{
 		PutNewDecor(cel, ICO_ELECTROHAUT, ICO_ELECTROHAUT_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_CAISSEO);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_TECHNO )		/* techno ? */
 	{
 		PutNewDecor(cel, ICO_TECHNO1, ICO_TECHNO1+10, 0, ICO_TECHNO1+5, 16-5);
 		if ( !typeedit )  PlaySound(SOUND_CAISSEV);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_OBSTACLE )		/* obstacle ? */
 	{
 		PutNewDecor(cel, ICO_OBSTACLE, ICO_OBSTACLE_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_SAUT2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_MEUBLE )		/* meuble ? */
 	{
 		PutNewDecor(cel, ICO_MEUBLE, ICO_MEUBLE_D+1, 0, 0, 0);
 		if ( !typeedit )  PlaySound(SOUND_SAUT2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_SENSUNI )		/* sens-unique ? */
 	{
 		lastsensuni = PutNewDecor(cel, ICO_SENSUNI_S, ICO_SENSUNI_O+1, lastsensuni, 0, 0);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_ACCEL )			/* acclrateur ? */
 	{
 		lastaccel = PutNewDecor(cel, ICO_ACCEL_S, ICO_ACCEL_O+1, lastaccel, 0, 0);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_VISION )		/* lunettes ? */
 	{
 		DecorModif(cel, ICO_LUNETTES);		/* met des lunettes */
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_BOIT )			/* bouteille ? */
 	{
 		init = DecorGetCel(cel);
@@ -1788,14 +1788,14 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		if ( !typeedit )  PlaySound(SOUND_SAUT2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_LIVRE )			/* livre ? */
 	{
 		DecorModif(cel, ICO_LIVRE);			/* met un livre */
 		if ( !typeedit )  PlaySound(SOUND_SAUT2);
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_CAISSE )		/* caisse ? */
 	{
 		init = DecorGetCel(cel);
@@ -1811,7 +1811,7 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		lastcaisse = init;
 		goto termine;
 	}
-	
+
 	if ( outil == ICO_OUTIL_PORTE )			/* porte ? */
 	{
 		init = DecorGetCel(cel);
@@ -1848,9 +1848,9 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		if ( !typeedit )  PlaySound(SOUND_CLIC);
 		goto termine;
 	}
-	
+
 	return 1;
-	
+
 	termine:
 	DecorSuperCel(pos);
 	cel = supercel;
@@ -1873,7 +1873,7 @@ short DecorEvent (Pt pos, short poscel, short outil)
 short GetIconCaisseSSol (Pt cel)
 {
 	short		icon;
-	
+
 	icon = imonde[cel.y][cel.x];
 	if ( icon > ICO_SOLMAX &&
 		 (icon < ICO_SENSUNI_S || icon > ICO_SENSUNI_O) &&
@@ -1916,7 +1916,7 @@ void DecorModif (Pt cel, short newicon)
 		 0,  1,			/* cellule devant */
 		-100
 	};
-	
+
 	short		i = 0;
 	short		icon;
 	Pixmap		pmnewdecor = {0,0,0,0,0,0,0};
@@ -1926,34 +1926,34 @@ void DecorModif (Pt cel, short newicon)
 	Pixmap		pm;
 	Pt			p, c, dst;
 	Reg			rg;
-	
+
 	if ( newicon == pmonde->tmonde[cel.y][cel.x] )  return;
 	pmonde->tmonde[cel.y][cel.x] = newicon;			/* modifie une cellule du monde */
-	
+
 	SuperCelClear();								/* teint la super cellule */
 	SuperCelFlush();								/* super cellule plus valable */
 	MoveModifCel(cel);								/* indique cellule modifie  move */
-	
+
 	/*	Gnre dans pmnewdecor l'image de la nouvelle partie du dcor,
 		en redessinant toutes les cellules places derrire. */
-	
+
 	GetPixmap(&pmnewdecor, (p.y=LYICO,p.x=LXICO,p), 1, 1);	/* noirci le pixmap du dcor */
 	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
-	
+
 	while ( table[i] != -100 )
 	{
 		c.x = cel.x + table[i+0];
 		c.y = cel.y + table[i+1];
-		
+
 		if ( c.x >= 0 && c.y >= 0 )
 		{
 			if ( c.x == MAXCELX )  icon = ICO_BORDD;	/* bord droite du plateau */
 			if ( c.y == MAXCELY )  icon = ICO_BORDG;	/* bord gauche du plateau */
 			if ( c.x <  MAXCELX && c.y <  MAXCELY )  icon = pmonde->tmonde[c.y][c.x];
-			
+
 			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1];
 			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0];
-			
+
 			if ( icon != ICO_BORDG && icon != ICO_BORDD )
 			{
 #ifdef __MSDOS__
@@ -1966,7 +1966,7 @@ void DecorModif (Pt cel, short newicon)
 					(p.y=LYICO,p.x=LXICO,p), MODEAND
 				);
 			}
-			
+
 			if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
 				 icon == ICO_LIVRE || icon == ICO_OBSTACLE+8 || icon == ICO_GLISSE ||
 				 icon == ICO_CAISSE || icon == ICO_CAISSEV || icon == ICO_CAISSEO ||
@@ -1974,7 +1974,7 @@ void DecorModif (Pt cel, short newicon)
 				 icon == ICO_TABLEVIDE || icon == ICO_TABLEBOIT || icon == ICO_TABLEPOISON ||
 				 (icon >= ICO_MEUBLE && icon < ICO_MEUBLE+16) ||
 				 (icon >= ICO_TANK_E && icon <= ICO_TANK_S) ||
-				 icon == ICO_TANK_X || icon == ICO_TANK_EO || icon == ICO_TANK_NS || 
+				 icon == ICO_TANK_X || icon == ICO_TANK_EO || icon == ICO_TANK_NS ||
 				 icon == ICO_JOUEUR ||
 				 (icon >= ICO_DETONATEUR_A && icon <= ICO_BOMBE_EX) )
 			{
@@ -1986,7 +1986,7 @@ void DecorModif (Pt cel, short newicon)
 					(p.y=LYICO,p.x=LXICO,p), MODEOR
 				);
 			}
-			
+
 			GetIcon(&pm, icon+ICOMOFF, 1);
 			CopyPixel							/* efface le volume en hauteur */
 			(
@@ -1994,7 +1994,7 @@ void DecorModif (Pt cel, short newicon)
 				&pmnewdecor, dst,
 				(p.y=LYICO,p.x=LXICO,p), MODEAND
 			);
-			
+
 			GetIcon(&pm, icon, 1);
 			CopyPixel							/* dessine la cellule */
 			(
@@ -2003,21 +2003,21 @@ void DecorModif (Pt cel, short newicon)
 				(p.y=LYICO,p.x=LXICO,p), MODEOR
 			);
 		}
-		
+
 		i += 2;
 	}
-	
+
 	/*	Copie la nouvelle partie du dcor dans pmdecor, mais en la masquant
 		au pralable par les objets pouvant tre placs devant. */
-	
+
 	dst = CelToGra(cel);
 	dst.x += PLXICO*ovisu.x;
 	dst.y += PRYICO*ovisu.y;
-	
+
 	pmonde->tmonde[cel.y][cel.x] = ICO_SOL;
 	DecorIconMask(&pmmask, dst, 0, cel);			/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = newicon;
-	
+
 	GetPixmap(&pmnewmask, (p.y=LYICO,p.x=LXICO,p), 1, 1);	/* noirci le masque pour newdecor */
 	CopyPixel
 	(
@@ -2031,7 +2031,7 @@ void DecorModif (Pt cel, short newicon)
 		&pmdecor, dst,
 		(p.y=LYICO,p.x=LXICO,p), MODEAND
 	);
-	
+
 	CopyPixel
 	(
 		&pmmask, (p.y=0, p.x=0, p),
@@ -2044,17 +2044,17 @@ void DecorModif (Pt cel, short newicon)
 		&pmdecor, dst,
 		(p.y=LYICO,p.x=LXICO,p), MODEOR
 	);
-	
+
 	rg.r.p1.x = dst.x;
 	rg.r.p1.y = dst.y;
 	rg.r.p2.x = dst.x + LXICO;
 	rg.r.p2.y = dst.y + LYICO;
 	IconDrawUpdate(rg);								/* faudra redessiner cette partie */
-	
+
 	GivePixmap(&pmnewdecor);
 	GivePixmap(&pmnewmask);
 	GivePixmap(&pmmask);
-	
+
 	DecorSuperCel(lastpmouse);						/* remet la super cellule */
 }
 
@@ -2110,9 +2110,9 @@ Pt DecorGetOrigine (void)
 void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p;
-	
+
 	OpenTime();
-	
+
 	CopyPixel
 	(
 		ppmold, (p.y=0, p.x=part, p),
@@ -2120,7 +2120,7 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.y=DIMYDRAW, p.x=DIMXDRAW-part, p),
 		MODELOAD
 	);
-	
+
 	CopyPixel
 	(
 		ppmnew, (p.y=0, p.x=DIMXDRAW-total, p),
@@ -2128,7 +2128,7 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.y=DIMYDRAW, p.x=part, p),
 		MODELOAD
 	);
-	
+
 	CloseTime(STEPDEL);
 }
 
@@ -2144,9 +2144,9 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p;
-	
+
 	OpenTime();
-	
+
 	CopyPixel
 	(
 		ppmold, (p.y=0, p.x=0, p),
@@ -2154,7 +2154,7 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.y=DIMYDRAW, p.x=DIMXDRAW-part, p),
 		MODELOAD
 	);
-	
+
 	CopyPixel
 	(
 		ppmnew, (p.y=0, p.x=total-part, p),
@@ -2162,7 +2162,7 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.y=DIMYDRAW, p.x=part, p),
 		MODELOAD
 	);
-	
+
 	CloseTime(STEPDEL);
 }
 
@@ -2178,9 +2178,9 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p;
-	
+
 	OpenTime();
-	
+
 	CopyPixel
 	(
 		ppmold, (p.x=0, p.y=part, p),
@@ -2188,7 +2188,7 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.x=DIMXDRAW, p.y=DIMYDRAW-part, p),
 		MODELOAD
 	);
-	
+
 	CopyPixel
 	(
 		ppmnew, (p.x=0, p.y=DIMYDRAW-total, p),
@@ -2196,7 +2196,7 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.x=DIMXDRAW, p.y=part, p),
 		MODELOAD
 	);
-	
+
 	CloseTime(STEPDEL);
 }
 
@@ -2212,9 +2212,9 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p;
-	
+
 	OpenTime();
-	
+
 	CopyPixel
 	(
 		ppmold, (p.x=0, p.y=0, p),
@@ -2222,7 +2222,7 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.x=DIMXDRAW, p.y=DIMYDRAW-part, p),
 		MODELOAD
 	);
-	
+
 	CopyPixel
 	(
 		ppmnew, (p.x=0, p.y=total-part, p),
@@ -2230,7 +2230,7 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		(p.x=DIMXDRAW, p.y=part, p),
 		MODELOAD
 	);
-	
+
 	CloseTime(STEPDEL);
 }
 
@@ -2250,11 +2250,11 @@ void DecorSetOrigine (Pt origine, short quick)
 	Reg		rg;
 	Pixmap	*ppmicon;
 	short	err;
-	
+
 	if ( quick || lastovisu.x >= 10000 || updatescreen )
 	{
 		ovisu = origine;
-		
+
 		DecorMake(1);							/* adapte le dcor */
 		IconDrawAll();							/* redessine toute la fentre */
 	}
@@ -2265,17 +2265,17 @@ void DecorSetOrigine (Pt origine, short quick)
 		SuperCelFlush();						/* super cellule plus valable */
 		MoveRedraw();							/* redessine sans changement */
 		IconDrawClose(1);						/* enlve la super cellule de l'cran */
-		
+
 		oldpos.x = PLXICO*lastovisu.x;
 		oldpos.y = PRYICO*lastovisu.y;
 		newpos = oldpos;
-		
+
 		ovisu = origine;
 		DecorMake(0);							/* pmdecor <-- adapte le dcor */
-		
+
 		termpos.x = PLXICO*lastovisu.x;
 		termpos.y = PRYICO*lastovisu.y;
-		
+
 		IconDrawOpen();
 		rg.r.p1.x = 0;
 		rg.r.p1.y = 0;
@@ -2289,7 +2289,7 @@ void DecorSetOrigine (Pt origine, short quick)
 		MoveRedraw();							/* redessine sans changement */
 		IconDrawClose(0);						/* pmwork <-- icnes (nouveau) */
 		ppmicon = IconGetPixmap();				/* ppmicon <-- pmwork */
-	
+
 		err = SavePixmap(&pmdecor);				/* sauve le nouveau dcor */
 		if ( err != 0 )  return;
 		CopyPixel								/* pmdecor <-- cran (actuel) */
@@ -2299,7 +2299,7 @@ void DecorSetOrigine (Pt origine, short quick)
 			(p.y=DIMYDRAW, p.x=DIMXDRAW, p),
 			MODELOAD
 		);
-		
+
 		while ( newpos.x < termpos.x )
 		{
 			newpos.x += STEPX;
@@ -2308,7 +2308,7 @@ void DecorSetOrigine (Pt origine, short quick)
 					   termpos.x-oldpos.x,
 					   newpos.x-oldpos.x);		/* adapte le dcor "<" */
 		}
-		
+
 		while ( newpos.x > termpos.x )
 		{
 			newpos.x -= STEPX;
@@ -2317,7 +2317,7 @@ void DecorSetOrigine (Pt origine, short quick)
 					   oldpos.x-termpos.x,
 					   oldpos.x-newpos.x);		/* adapte le dcor ">" */
 		}
-		
+
 		while ( newpos.y < termpos.y )
 		{
 			newpos.y += STEPY;
@@ -2326,7 +2326,7 @@ void DecorSetOrigine (Pt origine, short quick)
 					   termpos.y-oldpos.y,
 					   newpos.y-oldpos.y);		/* adapte le dcor "^" */
 		}
-		
+
 		while ( newpos.y > termpos.y )
 		{
 			newpos.y -= STEPY;
@@ -2335,7 +2335,7 @@ void DecorSetOrigine (Pt origine, short quick)
 					   oldpos.y-termpos.y,
 					   oldpos.y-newpos.y);		/* adapte le dcor "v" */
 		}
-		
+
 		RestorePixmap(&pmdecor);				/* restitue le nouveau dcor */
 		DecorSuperCel(lastpmouse);				/* remet la super cellule */
 	}
@@ -2352,7 +2352,7 @@ void DecorSetOrigine (Pt origine, short quick)
 	Si oui (cache), retourne TRUE.
 	Si non (visible), retourne FALSE;
  */
- 
+
 static short IfHideIcon(Pt pos, Rectangle zone)
 {
 	return ( pos.x+LXICO < zone.p1.x ||
@@ -2373,13 +2373,13 @@ static short IfHideIcon(Pt pos, Rectangle zone)
 void CopyIconDecor (Pixmap *ppmicon, Pt pos, ShowMode mode, Rectangle zone)
 {
 	Pt		src, dst, dim;
-	
+
 	src.x = 0;
 	src.y = 0;
 	dst   = pos;
 	dim.x = LXICO;
 	dim.y = LYICO;
-	
+
 	if ( dst.x < zone.p1.x )				/* dpasse  gauche ? */
 	{
 		dim.x -= zone.p1.x - dst.x;
@@ -2404,7 +2404,7 @@ void CopyIconDecor (Pixmap *ppmicon, Pt pos, ShowMode mode, Rectangle zone)
 		dim.y -= dst.y+dim.y - zone.p2.y;
 		if ( dim.y <= 0 )  return;
 	}
-	
+
 	CopyPixel(ppmicon, src, &pmdecor, dst, dim, mode);
 }
 
@@ -2426,27 +2426,27 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 	Pt			pv, ph;
 	Pt			cel;
 	short		i, j, icon;
-	
+
 	/*	Si c'est possible, dcale une partie du contenu actuel de pmdecor
 		pour n'avoir  redessiner plus que la partie effectivement
 		change, c'est--dire dcouverte. */
-	
+
 	zone.p1.x = 0;
 	zone.p1.y = 0;
 	zone.p2.x = DIMXDRAW;
 	zone.p2.y = DIMYDRAW;
-	
+
 	if ( oldpos.x < 10000 )
 	{
 		shift.x = oldpos.x - newpos.x;
 		shift.y = oldpos.y - newpos.y;
 		ScrollPixel(&pmdecor, shift, COLORNOIR, &zone);
 	}
-	
+
 	/*	Met  jour le dcor dans pmdecor correspondant  la zone dcouverte. */
-	
+
 	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
-	
+
 	pv = newpos;
 	for ( i=0 ; i<=MAXCELY ; i++ )
 	{
@@ -2457,7 +2457,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 			if ( j == MAXCELX )  icon = ICO_BORDD;	/* bord droite du plateau */
 			if ( i == MAXCELY )  icon = ICO_BORDG;	/* bord gauche du plateau */
 			if ( j <  MAXCELX && i <  MAXCELY )  icon = pmonde->tmonde[i][j];
-			
+
 			if ( !IfHideIcon(ph, zone) )
 			{
 				if ( icon != ICO_BORDG && icon != ICO_BORDD )
@@ -2487,7 +2487,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					 icon == ICO_TABLEVIDE || icon == ICO_TABLEBOIT || icon == ICO_TABLEPOISON ||
 					 (icon >= ICO_MEUBLE && icon < ICO_MEUBLE+16) ||
 					 (icon >= ICO_TANK_E && icon <= ICO_TANK_S) ||
-					 icon == ICO_TANK_X || icon == ICO_TANK_EO || icon == ICO_TANK_NS || 
+					 icon == ICO_TANK_X || icon == ICO_TANK_EO || icon == ICO_TANK_NS ||
 					 icon == ICO_JOUEUR ||
 					 (icon >= ICO_DETONATEUR_A && icon <= ICO_BOMBE_EX) )
 				{
@@ -2512,19 +2512,19 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 		pv.y += PRYICO;
 		if ( pv.y > zone.p2.y )  break;
 	}
-	
+
 	term:
 	if ( bDraw )
 	{
 		Pt			src, dst, dim;
 		Rectangle	szone;
-		
+
 		dst.x = POSXDRAW;
 		dst.y = POSYDRAW;
 		dim.x = DIMXDRAW;
 		dim.y = DIMYDRAW;
 		ScrollPixelRect(0, dst, dim, shift, -1, &szone);
-		
+
 		src.x = zone.p1.x;
 		src.y = zone.p1.y;
 		dst.x = szone.p1.x;
@@ -2546,10 +2546,10 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 void DecorMake (short bSuperCel)
 {
 	Pt		oldpos, newpos;
-	
+
 	SuperCelClear();				/* teint la super cellule */
 	SuperCelFlush();				/* super cellule plus valable */
-	
+
 	if ( lastovisu.x < 10000 )
 	{
 		oldpos.x = PLXICO*lastovisu.x;
@@ -2559,14 +2559,14 @@ void DecorMake (short bSuperCel)
 	{
 		oldpos.x = 10000;
 	}
-	
+
 	newpos.x = PLXICO*ovisu.x;
 	newpos.y = PRYICO*ovisu.y;
-	
+
 	DecorShift(oldpos, newpos, 0);	/* fabrique le dcor */
-	
+
 	lastovisu = ovisu;				/* mmorise l'origine actuelle */
-	
+
 	if ( bSuperCel )
 	{
 		DecorSuperCel(lastpmouse);	/* remet la super cellule */
@@ -2588,9 +2588,9 @@ void DecorMake (short bSuperCel)
 short DecorNewMonde (Monde *pm)
 {
 	short		x, y;
-	
+
 	pmonde = pm;
-	
+
 	for ( y=0 ; y<MAXCELY ; y++ )
 	{
 		for ( x=0 ; x<MAXCELX ; x++ )
@@ -2598,17 +2598,17 @@ short DecorNewMonde (Monde *pm)
 			imonde[y][x] = pmonde->tmonde[y][x];
 		}
 	}
-	
+
 	ovisu.x = 4;
 	ovisu.y = -10;
 	lastovisu.x = 10000;					/* le contenu de pmdecor est vide */
 	lastpmouse.x = -1;
 	updatescreen = 1;						/* il faut mettre l'cran  jour */
-	
+
 	SuperCelFlush();
-	
+
 	MoveNewMonde(pmonde->freq);				/* qq initialisations dans move */
-	
+
 	return 0;
 }
 
@@ -2627,21 +2627,21 @@ short DecorOpen (void)
 {
 	Pt			p;
 	short		err;
-	
+
 	err = GetPixmap(&pmdecor, (p.y=DIMYDRAW,p.x=DIMXDRAW,p), 1, 1);
 	if ( err )  return err;
-	
+
 	err = GetPixmap(&pmsuper, (p.y=LYICO,p.x=LXICO,p), 0, 1);
 	if ( err )  return err;
-	
+
 	err = GetPixmap(&pmsback, (p.y=LYICO,p.x=LXICO,p), 0, 1);
 	if ( err )  return err;
-	
+
 	lastsensuni = 0;
 	lastaccel   = 0;
 	lastcaisse  = ICO_CAISSE;
 	lasttank    = ICO_TANK_E;
-	
+
 	return 0;
 }
 
@@ -2673,7 +2673,7 @@ void DecorClose (void)
 
 long DecorPartieLg (void)
 {
-	return 
+	return
 		sizeof(short)*MAXCELY*MAXCELX +
 		sizeof(Partie);
 }
@@ -2691,13 +2691,13 @@ short DecorPartieWrite (long pos, char file)
 {
 	short		err;
 	Partie		partie;
-	
+
 	err = FileWrite(&imonde, pos, sizeof(short)*MAXCELY*MAXCELX, file);
 	if ( err )  return err;
 	pos += sizeof(short)*MAXCELY*MAXCELX;
-	
+
 	partie.ovisu = ovisu;
-	
+
 	err = FileWrite(&partie, pos, sizeof(Partie), file);
 	return err;
 }
@@ -2716,19 +2716,19 @@ short DecorPartieRead (long pos, char file)
 	short		err;
 	Partie		partie;
 	Pt			p;
-	
+
 	err = FileRead(&imonde, pos, sizeof(short)*MAXCELY*MAXCELX, file);
 	if ( err )  return err;
 	pos += sizeof(short)*MAXCELY*MAXCELX;
-	
+
 	err = FileRead(&partie, pos, sizeof(Partie), file);
 	if ( err )  return err;
-	
+
 	ovisu = partie.ovisu;
-	
+
 	err = GetPixmap(&pmdecor, (p.y=DIMYDRAW,p.x=DIMXDRAW,p), 1, 1);
 	if ( err )  return err;
-	
+
 	lastovisu.x = 10000;					/* le contenu de pmdecor est vide */
 	SuperCelFlush();						/* plus de super cellule valide */
 	DecorMake(1);							/* refabrique le dcor */

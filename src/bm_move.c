@@ -76,13 +76,13 @@ typedef struct
 	short		nextrepos;			/* prochain repos possible */
 	short		sequence;			/* numro de la squence d'animation */
 	short		energie;			/* nergie d'une boule qui roule */
-	
+
 	Auto		autoicon;			/* automate pour les icnes */
 	Auto		automove;			/* automate pour les mouvements */
 	short		moverang;			/* mouvement linaire: rang */
 	short		movemax;			/* mouvement linaire: maximum */
 	Pt			movelg;				/* mouvement linaire: longueur */
-	
+
 	short		offz;				/* lvation verticale en z */
 	Pt			posgra;				/* position graphique de l'icne */
 	short		icon;				/* icne du moment */
@@ -205,23 +205,23 @@ short AutoNext (Auto *p, short result[])
 {
 	short		c;
 	short		i;
-	
+
 	if ( p->loop == 0 )				/* opration suivante ? */
 	{
 		c = p->pdata[p->offset];
-		
+
 		if ( c == OPSOUND )
 		{
 			p->offset ++;
 			PlaySound(p->pdata[p->offset++]);
 			c = p->pdata[p->offset];
 		}
-		
+
 		if ( c == OPTERM )
 		{
 			return 1;
 		}
-		
+
 		if ( c == OPLIST )
 		{
 			p->offset ++;
@@ -229,7 +229,7 @@ short AutoNext (Auto *p, short result[])
 			p->index    = 0;
 			p->indexmax = p->pdata[p->offset++];
 		}
-		
+
 		if ( c == OPREPEAT )
 		{
 			p->offset ++;
@@ -238,7 +238,7 @@ short AutoNext (Auto *p, short result[])
 			p->indexmax = p->pdata[p->offset++];
 		}
 	}
-	
+
 	for ( i=0 ; i<p->size ; i++ )
 	{
 		result[i] = p->pdata[p->index*p->size + p->offset+i];
@@ -253,7 +253,7 @@ short AutoNext (Auto *p, short result[])
 			p->offset += p->indexmax*p->size;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -270,7 +270,7 @@ short AutoNext (Auto *p, short result[])
 void DebugShowPixmap (Pixmap *pm)
 {
 	Pt		p;
-	
+
 	CopyPixel
 	(
 		pm, (p.y=0, p.x=0, p),
@@ -293,11 +293,11 @@ void DebugShowPixmap (Pixmap *pm)
 void MoveModifCel (Pt cel)
 {
 	short		i;
-	
+
 	i = DecorGetCel(cel);
 	if ( i == ICO_TELE || i == ICO_TELE+3 || i == ICO_TELE+4 ||
 		 i == ICO_TABLEBOIT || ICO_TABLEVIDE )  return;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].lastobjet.x == cel.x &&
@@ -307,7 +307,7 @@ void MoveModifCel (Pt cel)
 			toto[i].lastobjet.y = -1;
 		}
 	}
-	
+
 	gendecor ++;
 }
 
@@ -325,10 +325,10 @@ void MoveModifCel (Pt cel)
 short MoveGetCel (Pt cel)
 {
 	short		i;
-	
+
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return -1;	/* sort du monde */
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].status == STVIDE )  continue;
@@ -336,7 +336,7 @@ short MoveGetCel (Pt cel)
 		if ( toto[i].poscela.x == cel.x && toto[i].poscela.y == cel.y )  return 2;
 		if ( toto[i].poscelb.x == cel.x && toto[i].poscelb.y == cel.y )  return 2;
 	}
-	
+
 	return 0;		/* pas de toto ici */
 }
 
@@ -355,14 +355,14 @@ short MoveGetCel (Pt cel)
 short GetObstacle (Pt cel, short toto)
 {
 	short		i;
-	
+
 	i = DecorGetCel(cel);
-	
+
 	if ( i >= ICO_PORTEO_EO  &&
 		 i <  ICO_PORTEO_EO+6 )  goto move;
-	
+
 	if ( i == ICO_UNSEUL )  goto move;
-	
+
 	if ( i == -1             ||				/* sort du monde */
 		 i >= ICO_BLOQUE     ||				/* obstacle du dcor */
 		 i == ICO_ARRIVEE    ||				/* arrive */
@@ -371,7 +371,7 @@ short GetObstacle (Pt cel, short toto)
 		 i == ICO_TROUBOUCHE ||				/* trou bouch */
 		 i == ICO_GLISSE     )				/* peau de banane */
 		return i;
-	
+
 	move:
 	if ( toto == 0 )  return 0;
 	return MoveGetCel(cel);					/* tient compte des toto */
@@ -431,7 +431,7 @@ Action GetOrientation (Action action)
 		case AC_EXPLOSE_E:
 		case AC_START_E:
 			return AC_MARCHE_E;
-			
+
 		case AC_STOP_O:
 		case AC_MARCHE_O:
 		case AC_RECULE_O:
@@ -474,7 +474,7 @@ Action GetOrientation (Action action)
 		case AC_EXPLOSE_O:
 		case AC_START_O:
 			return AC_MARCHE_O;
-			
+
 		case AC_STOP_S:
 		case AC_MARCHE_S:
 		case AC_RECULE_S:
@@ -514,7 +514,7 @@ Action GetOrientation (Action action)
 		case AC_EXPLOSE_S:
 		case AC_START_S:
 			return AC_MARCHE_S;
-			
+
 		case AC_STOP_N:
 		case AC_MARCHE_N:
 		case AC_RECULE_N:
@@ -555,7 +555,7 @@ Action GetOrientation (Action action)
 		case AC_EXPLOSE_N:
 		case AC_START_N:
 			return AC_MARCHE_N;
-			
+
 		default:
 			break;
 	}
@@ -609,15 +609,15 @@ short GetRotation (Action action)
 short MoveInit (Pt poscel, short action, short posz)
 {
 	short		i;
-	
+
 	for ( i=0 ; 1 ; i++ )
 	{
 		if ( i == MAXTOTO )  return -1;
 		if ( toto[i].status == STVIDE )  break;
 	}
-	
+
 	nbtoto ++;						/* un objet anim de plus */
-	
+
 	toto[i].poscel       = poscel;
 	toto[i].poscela.x    = -1;
 	toto[i].poscela.y    = -1;
@@ -642,9 +642,9 @@ short MoveInit (Pt poscel, short action, short posz)
 	toto[i].nextrepos    = 0;
 	toto[i].sequence     = 0;
 	toto[i].energie      = 0;
-	
+
 	NewAction(i, action, posz);		/* dmarre une action */
-	
+
 	return i;
 }
 
@@ -661,17 +661,17 @@ void DepartNext (void)
 {
 	short		d;
 	Pt			cel;
-	
+
 	if ( nbout == 0 || nbtoto > MAXTOTO-2 )  return;
-	
+
 	for ( d=0 ; d<MAXDEPART ; d++ )
 	{
 		if ( depart[d].cel.x < 0 )  continue;			/* continue si ascenseur inutilis */
-		
+
 		cel = depart[d].cel;
 		cel.x ++;
 		if ( GetObstacle(cel, 1) != 0 )  continue;		/* continue si cellule occupe */
-		
+
 		depart[d].count --;
 		if ( depart[d].count == 0 )
 		{
@@ -698,9 +698,9 @@ void ObjetNextOne (short i)
 {
 	short		result[1];
 	short		icon;
-	
+
 	if ( objet[i].status == STVIDE )  return;
-	
+
 	if ( AutoNext(&objet[i].autoicon, result) )
 	{
 		objet[i].status = STVIDE;
@@ -730,7 +730,7 @@ void ObjetNextOne (short i)
 void ObjetNext (void)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXOBJET ; i++ )
 	{
 		ObjetNextOne(i);
@@ -749,7 +749,7 @@ void ObjetNext (void)
 short ObjetPut (Pt cel, Objet obj)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXOBJET ; i++ )
 	{
 		if ( objet[i].status == STVIDE )
@@ -757,13 +757,13 @@ short ObjetPut (Pt cel, Objet obj)
 			objet[i].status = STNORM;
 			objet[i].cel    = cel;
 			AutoInit(&objet[i].autoicon, obj, ConvObjetToTabIcon(obj), 1);
-			
+
 			if ( obj >= OB_SENSUNIO &&
 				 obj <= OB_SENSUNIS )
 			{
 				ObjetNextOne(i);	/* modifie le dcor immdiatement */
 			}
-			
+
 			return 1;
 		}
 	}
@@ -802,13 +802,13 @@ void InitMovie(short i, short nbmove, Pt lg)
 {
 	if ( nbmove <   1 )  nbmove =   1;		/* vitesse maximale */
 	if ( nbmove > 100 )  nbmove = 100;		/* vitesse minimale */
-	
+
 	toto[i].moverang = 0;
 	toto[i].movemax  = nbmove;
 	toto[i].movelg   = lg;
 }
-	
-	
+
+
 /* --------- */
 /* CalcMovie */
 /* --------- */
@@ -821,14 +821,14 @@ void InitMovie(short i, short nbmove, Pt lg)
 short CalcMovie(short i, short result[])
 {
 	Pt		last, new;
-	
+
 	if ( toto[i].movemax == 0 )							/* mouvement selon table ? */
 	{
 		return AutoNext(&toto[i].automove, result);		/* oui -> mouvement selon automate */
 	}
-	
+
 	if ( toto[i].moverang >= toto[i].movemax )  return 1;
-	
+
 	if ( toto[i].moverang == 0 )
 	{
 		last.x = 0;
@@ -839,10 +839,10 @@ short CalcMovie(short i, short result[])
 		last.x = ((toto[i].movelg.x * (toto[i].moverang-1))+toto[i].movemax/2) / toto[i].movemax;
 		last.y = ((toto[i].movelg.y * (toto[i].moverang-1))+toto[i].movemax/2) / toto[i].movemax;
 	}
-	
+
 	new.x = ((toto[i].movelg.x * toto[i].moverang)+toto[i].movemax/2) / toto[i].movemax;
 	new.y = ((toto[i].movelg.y * toto[i].moverang)+toto[i].movemax/2) / toto[i].movemax;
-	
+
 	toto[i].moverang ++;
 
 	result[0] = new.x - last.x;		/* dplacement selon x */
@@ -869,7 +869,7 @@ short GetTypeMarche (short i)
 		 toto[i].vision  == 1 &&
 		 toto[i].mechant == 0 &&
 		 toto[i].tank    == 0  )  return 1;
-	
+
 	return 0;
 }
 
@@ -887,9 +887,9 @@ void NewAction(short i, Action action, short posz)
 	short		*ptable;
 	Pt			p;
 	Action		lastaction;
-	
+
 	lastaction = toto[i].action;
-	
+
 	if ( action >= AC_MARCHE_E &&				/* toto doit marcher ? */
 		 action <= AC_MARCHE_S &&
 		 ((toto[i].action >= AC_STOP_E &&		/* toto est stopp ? */
@@ -909,9 +909,9 @@ void NewAction(short i, Action action, short posz)
 	{
 		action += AC_START_E-AC_MARCHE_E;	/* oui -> effectue l'action "start" avant de marcher */
 	}
-	
+
 	toto[i].lastrot = GetRotation(action);
-	
+
 	toto[i].status = STNORM;
 	toto[i].action = action;
 
@@ -919,7 +919,7 @@ void NewAction(short i, Action action, short posz)
 	p.y -= OFFZTOTO;
 	toto[i].posgra = p;
 	toto[i].offz   = posz;
-	
+
 	if ( toto[i].poscela.x != toto[i].poscel.x ||
 		 toto[i].poscela.y != toto[i].poscel.y ||
 		 toto[i].poscelb.x != toto[i].poscel.x ||
@@ -927,24 +927,24 @@ void NewAction(short i, Action action, short posz)
 	{
 		gendecor ++;
 	}
-	
+
 	toto[i].poscela = toto[i].poscel;
 	toto[i].poscelb = toto[i].poscel;
-	
+
 	if ( toto[i].vision == 0 ||
 		 toto[i].force < 5 )     nbmove = 14;
 	else                         nbmove = 8;
 	if ( toto[i].mechant == 1 )  nbmove = 6;
-	
+
 	if ( toto[i].joueur )        nbmove -= 2;
-	
+
 	if ( toto[i].tank == 1 )     nbmove = 12;
 	if ( toto[i].tank == 2 )     nbmove = 5;
 	if ( toto[i].tank == 3 )     nbmove = 15;
-	
+
 	if ( toto[i].vitesse > 0 )   nbmove /= 3;
 	if ( toto[i].vitesse < 0 )   nbmove *= 3;
-	
+
 	if ( action < AC_MARCHE_E || action > AC_MARCHE_S ||
 		 action != lastaction ||
 		 nbmove != toto[i].movemax )
@@ -952,13 +952,13 @@ void NewAction(short i, Action action, short posz)
 		ptable = ConvActionToTabIcon(action, GetTypeMarche(i));
 		AutoInit(&toto[i].autoicon, action, ptable, 1);		/* init les icnes */
 	}
-	
+
 	ptable = ConvActionToTabMove(action);
 	if ( ptable != NULL )
 	{
 		TableMovie(i, action, ptable);					/* init le mouvement selon table */
 	}
-	
+
 	switch( action )
 	{
 		case AC_STOP_E:
@@ -967,7 +967,7 @@ void NewAction(short i, Action action, short posz)
 		case AC_STOP_N:
 			InitMovie(i, 1, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_START_E:
 			InitMovie(i, 2, (p.y=0, p.x=0, p));
 			toto[i].poscelb.x ++;						/* comme si cellule dj occupe ! */
@@ -984,7 +984,7 @@ void NewAction(short i, Action action, short posz)
 			InitMovie(i, 2, (p.y=0, p.x=0, p));
 			toto[i].poscelb.y --;						/* comme si cellule dj occupe ! */
 			break;
-			
+
 		case AC_MARCHE_E:
 		case AC_RECULE_O:
 			InitMovie(i, nbmove, (p.y=PLYICO, p.x=PLXICO, p));
@@ -1005,7 +1005,7 @@ void NewAction(short i, Action action, short posz)
 			InitMovie(i, nbmove, (p.y=-PRYICO, p.x=PRXICO, p));
 			toto[i].poscela.y --;
 			break;
-			
+
 		case AC_SAUTE1_E:
 			toto[i].poscela.x ++;
 			toto[i].poscelb.x += 2;
@@ -1022,53 +1022,53 @@ void NewAction(short i, Action action, short posz)
 			toto[i].poscela.y --;
 			toto[i].poscelb.y -= 2;
 			break;
-			
+
 		case AC_PIANO_O:
 			InitMovie(i, 30, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_REPOS_E:
 		case AC_REPOS_O:
 		case AC_REPOS_S:
 		case AC_REPOS_N:
 			InitMovie(i, 30, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_DORT_E:
 		case AC_DORT_O:
 		case AC_DORT_S:
 		case AC_DORT_N:
 			InitMovie(i, 50, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_REFLEXION_E:
 		case AC_REFLEXION_O:
 		case AC_REFLEXION_S:
 		case AC_REFLEXION_N:
 			InitMovie(i, 4, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_HAUSSE_E:
 		case AC_HAUSSE_O:
 		case AC_HAUSSE_S:
 		case AC_HAUSSE_N:
 			InitMovie(i, 2, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_YOYO_E:
 		case AC_YOYO_O:
 		case AC_YOYO_S:
 		case AC_YOYO_N:
 			InitMovie(i, 60, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_NON_E:
 		case AC_NON_O:
 		case AC_NON_S:
 		case AC_NON_N:
 			InitMovie(i, 8, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_POUSSE_E:
 			InitMovie(i, vitessepousse, (p.y=PLYICO, p.x=PLXICO, p));
 			toto[i].poscela.x ++;
@@ -1085,14 +1085,14 @@ void NewAction(short i, Action action, short posz)
 			InitMovie(i, vitessepousse, (p.y=-PRYICO, p.x=PRXICO, p));
 			toto[i].poscela.y --;
 			break;
-			
+
 		case AC_NPOUSSE_E:
 		case AC_NPOUSSE_O:
 		case AC_NPOUSSE_S:
 		case AC_NPOUSSE_N:
 			InitMovie(i, 8, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_CAISSE_E:
 		case AC_CAISSEV_E:
 		case AC_CAISSEO_E:
@@ -1121,22 +1121,22 @@ void NewAction(short i, Action action, short posz)
 			InitMovie(i, vitessepousse, (p.y=-PRYICO, p.x=PRXICO, p));
 			toto[i].poscela.y --;
 			break;
-			
+
 		case AC_ELECTRO_O:
 			InitMovie(i, 16, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_TELE_N:
 			InitMovie(i, 20, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_TOURTE_E:
 		case AC_TOURTE_O:
 		case AC_TOURTE_S:
 		case AC_TOURTE_N:
 			InitMovie(i, 35, (p.y=0, p.x=0, p));
 			break;
-			
+
 		case AC_SAUTE2_E:
 		case AC_TOMBE_E:
 		case AC_TOMBE_TANK_E:
@@ -1175,19 +1175,19 @@ void NewAction(short i, Action action, short posz)
 		case AC_GLISSE_N:
 			toto[i].poscela.y --;
 			break;
-			
+
 		case AC_BAISSE_O:
 			InitMovie(i, 40, (p.y=0, p.x=0, p));
 			break;
-		
+
 		case AC_TANK:
 			InitMovie(i, 80, (p.y=0, p.x=0, p));
 			break;
-		
+
 		default:
 			break;
 	}
-	
+
 	if ( toto[i].poscela.x != toto[i].poscel.x ||
 		 toto[i].poscela.y != toto[i].poscel.y ||
 		 toto[i].poscelb.x != toto[i].poscel.x ||
@@ -1210,9 +1210,9 @@ void NewAction(short i, Action action, short posz)
 short GetMur (Pt cel, short toto)
 {
 	short		icon;
-	
+
 	icon = GetObstacle(cel, toto);
-	
+
 	if ( icon >= ICO_SENSUNI_S && icon <= ICO_SENSUNI_O )  return 0;
 	if ( icon >= ICO_ACCEL_S   && icon <= ICO_ACCEL_O   )  return 0;
 	return icon;
@@ -1235,9 +1235,9 @@ void TourneAction(short i)
 	short		n = 0;
 	Pt			left, right;
 	short		leftob, rightob;
-	
+
 	orientation = GetOrientation(toto[i].action);
-	
+
 	if ( toto[i].vision == 0 )		/* est-ce que toto est aveugle ? */
 	{
 		do
@@ -1270,7 +1270,7 @@ void TourneAction(short i)
 	{
 		left  = toto[i].poscel;
 		right = toto[i].poscel;
-		
+
 		switch( orientation )
 		{
 			case AC_MARCHE_E:
@@ -1284,18 +1284,18 @@ void TourneAction(short i)
 					  right.y != toto[i].lastpos.y ) &&
 					 rightob == 0 )			nextaction = AC_TOURNE_ES;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( leftob == 0 )			nextaction = AC_TOURNE_EN;
 				if ( rightob == 0 )			nextaction = AC_TOURNE_ES;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( toto[i].lastrot == +1 )  nextaction = AC_TOURNE_ES;
 				if ( toto[i].lastrot == -1 )  nextaction = AC_TOURNE_EN;
 				if ( nextaction != -1 )  break;
-				
+
 				nextaction = ( GetRandom(0,0,2) == 0 ) ? AC_TOURNE_ES : AC_TOURNE_EN;
 				break;
-				
+
 			case AC_MARCHE_O:
 				left.y  ++;  leftob  = GetMur(left, 1);
 				right.y --;  rightob = GetMur(right, 1);
@@ -1307,18 +1307,18 @@ void TourneAction(short i)
 					  right.y != toto[i].lastpos.y ) &&
 					 rightob == 0 )			nextaction = AC_TOURNE_ON;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( leftob == 0 )			nextaction = AC_TOURNE_OS;
 				if ( rightob == 0 )			nextaction = AC_TOURNE_ON;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( toto[i].lastrot == +1 )  nextaction = AC_TOURNE_ON;
 				if ( toto[i].lastrot == -1 )  nextaction = AC_TOURNE_OS;
 				if ( nextaction != -1 )  break;
-				
+
 				nextaction = ( GetRandom(0,0,2) == 0 ) ? AC_TOURNE_OS : AC_TOURNE_ON;
 				break;
-				
+
 			case AC_MARCHE_S:
 				left.x  ++;  leftob  = GetMur(left, 1);
 				right.x --;  rightob = GetMur(right, 1);
@@ -1330,18 +1330,18 @@ void TourneAction(short i)
 					  right.y != toto[i].lastpos.y ) &&
 					 rightob == 0 )			nextaction = AC_TOURNE_SO;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( leftob == 0 )			nextaction = AC_TOURNE_SE;
 				if ( rightob == 0 )			nextaction = AC_TOURNE_SO;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( toto[i].lastrot == +1 )  nextaction = AC_TOURNE_SO;
 				if ( toto[i].lastrot == -1 )  nextaction = AC_TOURNE_SE;
 				if ( nextaction != -1 )  break;
-				
+
 				nextaction = ( GetRandom(0,0,2) == 0 ) ? AC_TOURNE_SO : AC_TOURNE_SE;
 				break;
-				
+
 			case AC_MARCHE_N:
 				left.x  --;  leftob  = GetMur(left, 1);
 				right.x ++;  rightob = GetMur(right, 1);
@@ -1353,23 +1353,23 @@ void TourneAction(short i)
 					  right.y != toto[i].lastpos.y ) &&
 					 rightob == 0 )			nextaction = AC_TOURNE_NE;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( leftob == 0 )			nextaction = AC_TOURNE_NO;
 				if ( rightob == 0 )			nextaction = AC_TOURNE_NE;
 				if ( nextaction != -1 )  break;
-				
+
 				if ( toto[i].lastrot == +1 )  nextaction = AC_TOURNE_NE;
 				if ( toto[i].lastrot == -1 )  nextaction = AC_TOURNE_NO;
 				if ( nextaction != -1 )  break;
-				
+
 				nextaction = ( GetRandom(0,0,2) == 0 ) ? AC_TOURNE_NO : AC_TOURNE_NE;
 				break;
-				
+
 			default:
 				break;
 		}
 	}
-	
+
 	NewAction(i, nextaction, 0);
 }
 
@@ -1386,11 +1386,11 @@ void BombeBaoum (short detonateur)
 {
 	short		bombe;
 	Pt			cel;
-	
+
 	if ( detonateur == ICO_DETONATEUR_A )  bombe = ICO_BOMBE_A;
 	if ( detonateur == ICO_DETONATEUR_B )  bombe = ICO_BOMBE_B;
 	if ( detonateur == ICO_DETONATEUR_C )  bombe = ICO_BOMBE_C;
-	
+
 	for ( cel.y=0 ; cel.y<MAXCELY ; cel.y++ )
 	{
 		for ( cel.x=0 ; cel.x<MAXCELX ; cel.x++ )
@@ -1420,17 +1420,17 @@ short SauteAction(short i, Pt celsaut)
 {
 	short		icon, obstacle;
 	Pt			celarr;
-	
+
 	if ( toto[i].force    < 5 ||
 		 toto[i].vision  == 0 ||
 		 toto[i].mechant == 1 ||
 		 toto[i].tank    != 0 )  return 1;	/* impossible */
-	
+
 	celarr.x = 2*celsaut.x - toto[i].poscel.x;
 	celarr.y = 2*celsaut.y - toto[i].poscel.y;
 	obstacle = GetObstacle(celarr, 1);
 	if ( obstacle != 0 && obstacle != ICO_AIMANT )  return 1;
-	
+
 	icon = GetObstacle(celsaut, 1);
 	if ( (icon >= ICO_PLANTEBAS &&
 		  icon <= ICO_PLANTEBAS_D) ||		/* obstacle pas trop haut ? */
@@ -1442,7 +1442,7 @@ short SauteAction(short i, Pt celsaut)
 		 icon == ICO_TROU )					/* trou ? */
 	{
 		if ( !passpower )  toto[i].force -= 3;
-		
+
 		switch( GetOrientation(toto[i].action) )
 		{
 			case AC_MARCHE_E:
@@ -1461,7 +1461,7 @@ short SauteAction(short i, Pt celsaut)
 				return 1;
 		}
 	}
-	
+
 	return 1;		/* impossible */
 }
 
@@ -1479,9 +1479,9 @@ short SauteAction(short i, Pt celsaut)
 short IfPousseCaisse (Pt celarr, short caisse, Action orientation)
 {
 	short		icon;
-	
+
 	icon = GetObstacle(celarr, 1);
-	
+
 	if ( icon == 0 ||
 		 icon == ICO_TROU ||
 		 icon == ICO_BAISSEBAS ||
@@ -1530,7 +1530,7 @@ short IfPousseCaisse (Pt celarr, short caisse, Action orientation)
 		}
 		return 1;									/* toto peut pousser */
 	}
-	
+
 	return 0;										/* impossible */
 }
 
@@ -1547,10 +1547,10 @@ short IfPousseCaisse (Pt celarr, short caisse, Action orientation)
 short SearchTotoForTank (Pt cel)
 {
 	short		i;
-	
+
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )  return -1;	/* sort du monde */
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].status == STVIDE ||
@@ -1564,12 +1564,12 @@ short SearchTotoForTank (Pt cel)
 			 toto[i].action == AC_BALLON_M ||
 			 (toto[i].action >= AC_CAISSE_E &&
 			  toto[i].action <= AC_CAISSEG_T) )  continue;
-		
+
 		if ( toto[i].poscel.x  == cel.x && toto[i].poscel.y  == cel.y )  return i;
 		if ( toto[i].poscela.x == cel.x && toto[i].poscela.y == cel.y )  return i;
 		if ( toto[i].poscelb.x == cel.x && toto[i].poscelb.y == cel.y )  return i;
 	}
-	
+
 	return -1;		/* pas de toto ici */
 }
 
@@ -1588,9 +1588,9 @@ short SpecAction(short i, short obstacle, Pt testcel)
 	Action		orientation, nextaction;
 	Pt			cel, cel2;
 	short		icon, rang;
-	
+
 	orientation = GetOrientation(toto[i].action);
-	
+
 	if ( obstacle == ICO_TROU && !passhole )		/* tombe dans un trou ? */
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
@@ -1609,7 +1609,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( toto[i].tank != 0 )
 	{
 		if ( obstacle == 1 || obstacle == 2 ||		/* tank arrive sur un toto ? */
@@ -1632,7 +1632,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 			}
 		}
 	}
-	
+
 	if ( obstacle == ICO_SENSUNI_S &&				/* sens unique vers le sud ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1648,7 +1648,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_SENSUNI_N &&				/* sens unique vers le nord ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1664,7 +1664,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_SENSUNI_E &&				/* sens unique vers l'est ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1680,7 +1680,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_SENSUNI_O &&				/* sens unique vers l'ouest ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1696,7 +1696,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_ACCEL_S &&					/* acclrateur vers le sud ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1705,7 +1705,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_ACCEL_E &&					/* acclrateur vers l'est ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1714,7 +1714,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_ACCEL_N &&					/* acclrateur vers le nord ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1723,7 +1723,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_ACCEL_O &&					/* acclrateur vers l'ouest ? */
 		 MoveGetCel(testcel) == 0 )
 	{
@@ -1732,7 +1732,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);
 		return 1;
 	}
-	
+
 	if ( toto[i].tank == 3 )
 	{
 		if ( obstacle == ICO_VITRE+4 )
@@ -1748,10 +1748,10 @@ short SpecAction(short i, short obstacle, Pt testcel)
 			return 1;
 		}
 	}
-	
+
 	if ( toto[i].tank != 0 )  return 0;				/* le tank ne fait rien d'autre */
-	
-	
+
+
 	if ( obstacle == ICO_ARRIVEE )					/* est-on sur l'arrive ? */
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
@@ -1769,7 +1769,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		}
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_AIMANT )					/* arrive  un aimant ? */
 	{
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve l'aimant du dcor */
@@ -1777,18 +1777,18 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_LUNETTES &&				/* arrive aux lunettes ? */
 		 toto[i].vision == 0 )
 	{
 		toto[i].vision  = 1;
-		
+
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve les lunettes du dcor */
-		
+
 		NewAction(i, orientation+AC_VISION_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( (obstacle == ICO_TABLEBOIT ||				/* arrive  une table ? */
 		  obstacle == ICO_TABLEPOISON) &&			/* arrive  une table ? */
 		 toto[i].mechant == 0 &&
@@ -1812,19 +1812,19 @@ short SpecAction(short i, short obstacle, Pt testcel)
 				toto[i].force += 30;
 			}
 		}
-		
+
 		DecorModif(testcel, ICO_TABLEVIDE);			/* enlve la bouteille sur la table */
-		
+
 		if ( toto[i].joueur == 0 )  toto[i].lastobjet = testcel;
 		toto[i].cntnotuse = 30;
-		
+
 		NewAction(i, nextaction, 0);
-		
+
 		toto[i].rstdecorcel  = testcel;
 		toto[i].rstdecoricon = obstacle;			/* faudra remettre la bouteille */
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_TOURTE &&					/* arrive  une tourte ? */
 		 toto[i].mechant == 0 )
 	{
@@ -1834,7 +1834,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation+AC_TOURTE_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_PIANO &&					/* arrive au piano ? */
 		 toto[i].mechant == 0 &&
 		 (toto[i].lastobjet.x != testcel.x ||
@@ -1849,18 +1849,18 @@ short SpecAction(short i, short obstacle, Pt testcel)
 			return 1;
 		}
 	}
-	
+
 	if ( obstacle == ICO_MAGIC &&					/* arrive  la magie ? */
 		 toto[i].mechant == 0 )
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
 		NewAction(i, orientation+AC_MAGIC_E-AC_MARCHE_E, 0);
-		
+
 		toto[i].rstdecorcel  = testcel;				/* faudra enlever la magie */
 		toto[i].rstdecoricon = DecorGetInitCel(testcel);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_LIVRE &&					/* arrive  un livre ? */
 		 toto[i].vision  == 1  &&
 		 toto[i].mechant == 0  &&
@@ -1869,17 +1869,17 @@ short SpecAction(short i, short obstacle, Pt testcel)
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve le livre */
-		
+
 		toto[i].lastobjet = testcel;
 		toto[i].cntnotuse = 30;
-		
+
 		NewAction(i, orientation+AC_LIVRE_E-AC_MARCHE_E, 0);
-		
+
 		toto[i].rstdecorcel  = testcel;
 		toto[i].rstdecoricon = ICO_LIVRE;			/* faudra remettre le livre */
 		return 1;
 	}
-	
+
 	if ( ((obstacle >= ICO_MEUBLE+0 &&				/* arrive  une commode ? */
 		   obstacle <= ICO_MEUBLE+3) ||
 		  (obstacle >= ICO_MEUBLE+6 &&
@@ -1892,11 +1892,11 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		if ( toto[i].joueur )  celcap1.x = -1;
 		toto[i].lastobjet = testcel;
 		toto[i].cntnotuse = 30;
-		
+
 		NewAction(i, orientation+AC_MUSIQUE_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle >= ICO_CLE_A &&					/* arrive  une cl ? */
 		 obstacle <= ICO_CLE_C &&
 		 (toto[i].cles & (1<<(obstacle-ICO_CLE_A))) == 0 &&
@@ -1908,7 +1908,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation+AC_CLE_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle >= ICO_PORTEF_EO   &&				/* arrive  une porte est-ouest ferme ? */
 		 obstacle <  ICO_PORTEF_EO+3 &&
 		 (orientation == AC_MARCHE_E || orientation == AC_MARCHE_O) &&
@@ -1921,7 +1921,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation+AC_PORTE_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle >= ICO_PORTEF_NS   &&				/* arrive  une porte nord-sud ferme ? */
 		 obstacle <  ICO_PORTEF_NS+3 &&
 		 (orientation == AC_MARCHE_N || orientation == AC_MARCHE_S) &&
@@ -1934,7 +1934,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation+AC_PORTE_E-AC_MARCHE_E, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_BAISSE &&					/* arrive  une porte lectronique ouest ? */
 		 orientation == AC_MARCHE_O &&
 		 toto[i].mechant == 0 )
@@ -1944,7 +1944,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, AC_BAISSE_O, 0);
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_GLISSE )					/* glisse sur une peau de banane ? */
 	{
 		if ( toto[i].mechant || passnice )
@@ -1960,12 +1960,12 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		toto[i].force   = 30;						/* force constante */
 		nbout ++;									/* un autre pourra ressortir */
 		NewAction(i, orientation+AC_GLISSE_E-AC_MARCHE_E, 0);
-			
+
 		toto[i].rstdecorcel  = testcel;				/* faudra enlever la peau de banane */
 		toto[i].rstdecoricon = DecorGetInitCel(testcel);
 		return 1;
 	}
-	
+
 	if ( (obstacle == ICO_CAISSE  ||				/* arrive derrire une caisse ? */
 		  obstacle == ICO_CAISSEV ||
 		  obstacle == ICO_CAISSEO ||
@@ -1994,7 +1994,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 			if ( IfPousseCaisse(cel, obstacle, orientation) )
 			{
 				NewAction(i, orientation+AC_POUSSE_E-AC_MARCHE_E, 0);
-				
+
 				if ( cel2.x != -1 )								/* 2 caisses  pousser ? */
 				{
 					DecorModif(cel2, DecorGetInitCel(cel2));	/* enlve la caisse fixe */
@@ -2011,13 +2011,13 @@ short SpecAction(short i, short obstacle, Pt testcel)
 					if ( obstacle == ICO_CAISSE &&
 						 GetRandom(1,0,5) == 0 )  PlaySound(SOUND_POUSSE);
 				}
-				
+
 				if ( caisseocel.x == testcel.x && caisseocel.y == testcel.y )
 				{
 					caisseodir = 0;								/* ne roule pas toute seule */
 					caisseoddir = 0;							/* ne roule pas toute seule */
 				}
-				
+
 				DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve la caisse fixe */
 				if ( obstacle == ICO_CAISSE )
 				{
@@ -2070,7 +2070,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 			return 1;
 		}
 	}
-	
+
 	if ( obstacle == ICO_TECHNO1 &&					/* est-on sur un techno HT ? */
 		 orientation == AC_MARCHE_O &&
 		 toto[i].mechant == 0 &&
@@ -2088,7 +2088,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, AC_ELECTRO_O, 0);				/* toto s'lectrocute */
 		return 1;
 	}
-	
+
 	if ( obstacle == ICO_TELE &&					/* est-on devant une tlvision ? */
 		 orientation == AC_MARCHE_N &&
 		 toto[i].vision == 1 &&
@@ -2098,12 +2098,12 @@ short SpecAction(short i, short obstacle, Pt testcel)
 	{
 		if ( toto[i].joueur )  celcap1.x = -1;
 		if ( toto[i].joueur == 0 )  toto[i].lastobjet = testcel;
-		
+
 		NewAction(i, AC_TELE_N, 0);					/* toto regarde la tl */
 		ObjetPut(testcel, OB_TELE);					/* allume la tl */
 		return 1;
 	}
-	
+
 	if ( obstacle >= ICO_DETONATEUR_A &&
 		 obstacle <= ICO_DETONATEUR_C &&
 		 toto[i].mechant == 1 )
@@ -2115,9 +2115,9 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		BombeBaoum(obstacle);
 		return 1;
 	}
-	
+
 	if ( SauteAction(i, testcel) == 0 )  return 1;
-	
+
 	if ( toto[i].magic > 0 &&
 		 ((obstacle >= ICO_MURHAUT && obstacle <= ICO_MURHAUT_D) ||
 		  (obstacle >= ICO_MURBAS  && obstacle <= ICO_MURBAS_D)) )
@@ -2126,7 +2126,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		NewAction(i, orientation, 0);				/* toto traverse les murs */
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -2145,58 +2145,58 @@ short SpecAction(short i, short obstacle, Pt testcel)
 short IfSuperAction (short i, Pt cel, Action direction, short back)
 {
 	short		icon;
-	
+
 	/*	Si l'objet plac dans cette cellule est le dernier utilis
 		par ce toto, ne le considre pas comme chouette. */
-	
+
 	if ( toto[i].lastobjet.x == cel.x &&
 		 toto[i].lastobjet.y == cel.y )  return 0;
-	
+
 	if ( toto[i].tank != 0 )
 	{
 		if ( back == 0 &&
 			 SearchTotoForTank(cel) >= 0 )  return 1;	/* un toto */
 		return 0;								/* ne s'intresse  rien d'autre si tank */
 	}
-	
+
 	icon = GetObstacle(cel, 0);
-	
+
 	if ( icon == ICO_AIMANT )     return 1;		/* aimant */
-	
+
 	if ( toto[i].vision == 0 ||					/* ne s'intresse  rien d'autre si aveugle */
 		 back )                   return 0;		/* ne s'intresse  rien d'autre si dans le dos */
-	
+
 	if ( icon == ICO_ARRIVEE )    return 1;		/* arrive */
-	
+
 	if ( toto[i].mechant == 1 &&
 		 icon >= ICO_DETONATEUR_A &&
 		 icon <= ICO_DETONATEUR_C )  return 1;
-	
+
 	if ( toto[i].mechant == 1 )   return 0;		/* ne s'intresse  rien d'autre si mchant */
-	
+
 	if ( icon == ICO_TABLEBOIT   ||				/* table avec boisson ? */
 		 icon == ICO_TABLEPOISON ||				/* table avec poison ? */
 		 icon == ICO_MAGIC       ||				/* magie ? */
 		 icon == ICO_LIVRE       )  return 1;	/* livre ? */
-	
+
 	if ( icon >= ICO_CLE_A &&					/* cl A  C ? */
 		 icon <= ICO_CLE_C )
 	{
 		if ( (toto[i].cles & (1<<(icon-ICO_CLE_A))) == 0 )  return 1;
 	}
-	
+
 	if ( (icon == ICO_PORTEF_EO+0 || icon == ICO_PORTEF_NS+0) &&
 		 toto[i].cles & (1<<0) )  return 1;
-	
+
 	if ( (icon == ICO_PORTEF_EO+1 || icon == ICO_PORTEF_NS+1) &&
 		 toto[i].cles & (1<<1) )  return 1;
-	
+
 	if ( (icon == ICO_PORTEF_EO+2 || icon == ICO_PORTEF_NS+2) &&
 		 toto[i].cles & (1<<2) )  return 1;
-	
+
 	if ( icon == ICO_BAISSE &&					/* porte lectronique */
 		 direction == AC_MARCHE_O )  return 1;
-	
+
 	return 0;
 }
 
@@ -2214,7 +2214,7 @@ short IfLineAction (short i, Pt cel, Action direction, short back)
 {
 	short		nb, icon, obstacle;
 	Pt			dir, pos;
-	
+
 	dir.x = 0;
 	dir.y = 0;
 	switch	( direction )
@@ -2225,15 +2225,15 @@ short IfLineAction (short i, Pt cel, Action direction, short back)
 		case AC_MARCHE_N:  dir.y --;  break;
 		default:  return 0;
 	}
-	
+
 	for ( nb=0 ; nb<10 ; nb++ )
 	{
 		cel.x += dir.x;
 		cel.y += dir.y;
-		
+
 		/* retourne true si objet intressant */
 		if ( IfSuperAction(i, cel, direction, back) )  return 1;
-		
+
 		if ( toto[i].tank == 0 )
 		{
 			icon = GetObstacle(cel, 0);				/* ne tient pas compte des toto */
@@ -2242,7 +2242,7 @@ short IfLineAction (short i, Pt cel, Action direction, short back)
 		{
 			icon = GetObstacle(cel, 1);				/* tient compte des toto */
 		}
-		
+
 		if ( toto[i].force   >= 5 &&				/* force pour sauter ? */
 			 toto[i].vision  == 1 &&
 			 toto[i].mechant == 0 &&
@@ -2271,7 +2271,7 @@ short IfLineAction (short i, Pt cel, Action direction, short back)
 				}
 			}
 		}
-		
+
 		if ( icon == ICO_GLISSE ||					/* peau de banane ? */
 			 icon == ICO_TROU ||					/* trou ? */
 			 (icon >= ICO_SENSUNI_S &&
@@ -2281,7 +2281,7 @@ short IfLineAction (short i, Pt cel, Action direction, short back)
 		{
 			continue;
 		}
-		
+
 		if ( icon != 0 )  return 0;					/* retourne false si obstacle */
 	}
 	return 0;
@@ -2302,16 +2302,16 @@ short TurnCoin (short i, Action *pnextaction)
 {
 	Pt		left, right, back, bleft, bright;
 	Action	acleft, acright;
-	
+
 	if ( toto[i].vision == 0 )    return 0;		/* si toto aveugle -> ne cherche pas */
 	if ( GetRandom(0,0,2) == 0 )  return 0;		/* seulement une fois sur deux ! */
-	
+
 	left   = toto[i].poscel;
 	right  = toto[i].poscel;
 	back   = toto[i].poscel;
 	bleft  = toto[i].poscel;
 	bright = toto[i].poscel;
-	
+
 	switch ( *pnextaction )
 	{
 		case AC_MARCHE_E:
@@ -2353,9 +2353,9 @@ short TurnCoin (short i, Action *pnextaction)
 		default:
 			return 0;
 	}
-	
+
 	if ( GetMur(back, 0) >= ICO_BLOQUE )  return 0;		/* mur dans le dos ? */
-	
+
 	if ( GetMur(bleft, 0) >= ICO_BLOQUE &&				/* mur  l'arrire gauche ? */
 		 GetMur(left, 1) == 0 &&						/* passage  gauche ? */
 		 (left.x != toto[i].lastpos.x ||
@@ -2364,7 +2364,7 @@ short TurnCoin (short i, Action *pnextaction)
 		*pnextaction = acleft;
 		return 1;
 	}
-	
+
 	if ( GetMur(bright, 0) >= ICO_BLOQUE &&				/* mur  l'arrire droite ? */
 		 GetMur(right, 1) == 0 &&						/* passage  droite ? */
 		 (right.x != toto[i].lastpos.x ||
@@ -2373,7 +2373,7 @@ short TurnCoin (short i, Action *pnextaction)
 		*pnextaction = acright;
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -2391,7 +2391,7 @@ short TurnCoin (short i, Action *pnextaction)
 short VisionAction (short i, Action *pnextaction)
 {
 	/* S'il s'agit d'un tank immobile, on regarde dans les 4 directions. */
-	
+
 	if ( toto[i].tank == 4 )		/* tank immobile ? */
 	{
 		if ( IfLineAction(i, toto[i].poscel, AC_MARCHE_S, 0) )
@@ -2416,11 +2416,11 @@ short VisionAction (short i, Action *pnextaction)
 		}
 		return 0;
 	}
-	
+
 	/*	Si toto s'est dj fix un but, ne change pas d'avis ! */
-	
+
 	if ( IfLineAction(i, toto[i].poscel, *pnextaction, 0) )  return 1;
-	
+
 	if ( *pnextaction == AC_MARCHE_E )
 	{
 		if ( IfLineAction(i, toto[i].poscel, AC_MARCHE_S, 0) )
@@ -2434,7 +2434,7 @@ short VisionAction (short i, Action *pnextaction)
 			*pnextaction = AC_TOURNE_EN;
 			return 1;
 		}
-		
+
 		if ( TurnCoin(i, pnextaction) )  return 1;
 	}
 
@@ -2451,7 +2451,7 @@ short VisionAction (short i, Action *pnextaction)
 			*pnextaction = AC_TOURNE_SO;
 			return 1;
 		}
-		
+
 		if ( TurnCoin(i, pnextaction) )  return 1;
 	}
 
@@ -2468,7 +2468,7 @@ short VisionAction (short i, Action *pnextaction)
 			*pnextaction = AC_TOURNE_ON;
 			return 1;
 		}
-		
+
 		if ( TurnCoin(i, pnextaction) )  return 1;
 	}
 
@@ -2485,10 +2485,10 @@ short VisionAction (short i, Action *pnextaction)
 			*pnextaction = AC_TOURNE_NO;
 			return 1;
 		}
-		
+
 		if ( TurnCoin(i, pnextaction) )  return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -2505,12 +2505,12 @@ short VisionAction (short i, Action *pnextaction)
 void SoundAmbiance (short obstacle)
 {
 	if ( obstacle == ICO_TECHNO1+1 || obstacle == ICO_TECHNO1+2 ||
-		 obstacle == ICO_TECHNO1+3 || 
+		 obstacle == ICO_TECHNO1+3 ||
 		 obstacle == ICO_TECHNO2+1 || obstacle == ICO_TECHNO2+2 )
 	{
 		PlaySound(SOUND_MACHINE);
 	}
-	
+
 	if ( obstacle >= ICO_PLANTEHAUT && obstacle <= ICO_PLANTEHAUT_D )
 	{
 		PlaySound(SOUND_OISEAUX);
@@ -2534,27 +2534,27 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 	Pt			backcel;
 	short		nextrepos;
 	short		eventcont;
-	
+
 	obstacle = GetObstacle(testcel, 1);
 	keystatus = GetKeyStatus();
-	
+
 	if ( typejeu == 1 && modetelecom == 1 && pause == 0 )
 	{
 		keystatus &= ~STLEFT;
 		keystatus &= ~STRIGHT;
 	}
-	
+
 	nextrepos = toto[i].nextrepos;
 	toto[i].nextrepos = 50;					/* pas de repos avant longtemps si toto actif */
-	
+
 	/*	Dplace le toto du joueur selon les actions de la tlcommande. */
-	
+
 	eventcont = event;
 	if ( event == 0 && lasttelecom != 0 )
 	{
 		eventcont = lasttelecom;			/* continue si bouton toujours press */
 	}
-	
+
 	if ( eventcont == KEYGOFRONT )			/* avance */
 	{
 		lasttelecom = eventcont;
@@ -2569,7 +2569,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		NewAction(i, orientation + AC_STOP_E-AC_MARCHE_E, 0);
 		return;
 	}
-	
+
 	if ( eventcont == KEYGOBACK )			/* recule */
 	{
 		lasttelecom = eventcont;
@@ -2584,7 +2584,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		NewAction(i, orientation + AC_STOP_E-AC_MARCHE_E, 0);
 		return;
 	}
-	
+
 	if ( event == KEYGOLEFT )				/* tourne  gauche */
 	{
 		celcap1.x = -1;
@@ -2609,7 +2609,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			return;
 		}
 	}
-	
+
 	if ( event == KEYGORIGHT )				/* tourne  droite */
 	{
 		celcap1.x = -1;
@@ -2634,9 +2634,9 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			return;
 		}
 	}
-	
+
 	/*	Dplace le toto du joueur selon les touches flches. */
-	
+
 	rekey:
 	if ( keystatus == STRIGHT )				/* va  droite */
 	{
@@ -2662,7 +2662,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		}
 		SoundAmbiance(obstacle);
 	}
-	
+
 	if ( keystatus == STDOWN )				/* va en bas */
 	{
 		if ( retry == 0 )  celcap1.x = -1;
@@ -2687,7 +2687,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		}
 		SoundAmbiance(obstacle);
 	}
-	
+
 	if ( keystatus == STLEFT )				/* va  gauche */
 	{
 		if ( retry == 0 )  celcap1.x = -1;
@@ -2712,7 +2712,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		}
 		SoundAmbiance(obstacle);
 	}
-	
+
 	if ( keystatus == STUP )				/* va en haut */
 	{
 		if ( retry == 0 )  celcap1.x = -1;
@@ -2737,16 +2737,16 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		}
 		SoundAmbiance(obstacle);
 	}
-	
+
 	if ( obstacle == 0 && keystatus != 0 )
 	{
 		if ( retry == 0 )  celcap1.x = -1;
 		NewAction(i, orientation, 0);		/* continue d'avancer */
 		return;
 	}
-	
+
 	/*	Dplace le toto du joueur selon le cap choisi. */
-	
+
 	if ( celcap1.x == toto[i].poscel.x &&
 		 celcap1.y == toto[i].poscel.y &&
 		 celcap2.x != -1 )
@@ -2754,7 +2754,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		celcap1 = celcap2;					/* va sur le deuxime cap */
 		celcap2.x = -1;
 	}
-	
+
 	if ( celcap1.x != -1 && retry == 0 )
 	{
 		if ( celcap1.y == toto[i].poscel.y &&
@@ -2786,14 +2786,14 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			goto rekey;
 		}
 	}
-	
+
 	/*	Si y'a vraiment rien d'autre  faire, stoppe. */
-	
+
 	celcap1.x = -1;
-	
+
 	toto[i].nextrepos = nextrepos;
 	if ( toto[i].nextrepos > 0 )  toto[i].nextrepos --;
-	
+
 	if ( toto[i].force < 5 &&
 		 toto[i].nextrepos == 0 &&
 		 GetRandom(0, 0,10) == 0 )
@@ -2802,7 +2802,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		toto[i].nextrepos = 50;
 		return;
 	}
-	
+
 	if ( toto[i].nextrepos == 0 &&
 		 GetRandom(0, 0,20) == 0 )
 	{
@@ -2810,21 +2810,21 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		toto[i].nextrepos = 20;
 		return;
 	}
-	
+
 	if ( toto[i].force >= 5 &&
 		 GetRandom(1, 0,23) == 0 )
 	{
 		NewAction(i, orientation + AC_REFLEXION_E-AC_MARCHE_E, 0);
 		return;
 	}
-	
+
 	if ( toto[i].force >= 5 &&
 		 GetRandom(1, 0,5) == 0 )
 	{
 		NewAction(i, orientation + AC_HAUSSE_E-AC_MARCHE_E, 0);
 		return;
 	}
-	
+
 	if ( toto[i].nextrepos == 0 &&
 		 GetRandom(1, 0,30) == 0 )
 	{
@@ -2832,7 +2832,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		toto[i].nextrepos = 25;
 		return;
 	}
-	
+
 	NewAction(i, orientation + AC_STOP_E-AC_MARCHE_E, 0);
 }
 
@@ -2851,10 +2851,10 @@ short IfFreeLine (Pt depart, Pt arrivee)
 {
 	Pt		dir;
 	short	obstacle;
-	
+
 	dir.x = 0;
 	dir.y = 0;
-	
+
 	if ( depart.x == arrivee.x )
 	{
 		if ( depart.y < arrivee.y )  dir.y = +1;
@@ -2865,24 +2865,24 @@ short IfFreeLine (Pt depart, Pt arrivee)
 		if ( depart.x < arrivee.x )  dir.x = +1;
 		if ( depart.x > arrivee.x )  dir.x = -1;
 	}
-	
+
 	if ( dir.x == 0 && dir.y == 0 )  return 0;
-	
+
 	while ( depart.x != arrivee.x || depart.y != arrivee.y )
 	{
 		obstacle = GetObstacle(depart, 0);
 		depart.x += dir.x;
 		depart.y += dir.y;
-		
+
 		if ( (obstacle >= ICO_SENSUNI_S && obstacle <= ICO_SENSUNI_O  ) ||
 			 (obstacle >= ICO_ACCEL_S   && obstacle <= ICO_ACCEL_O    ) ||
 			 (obstacle >= ICO_PLANTEBAS && obstacle <= ICO_PLANTEBAS_D) ||
 			  obstacle == ICO_ARRIVEE )  continue;
-		
+
 		if ( obstacle >= ICO_BLOQUE ||
 		 	 obstacle == ICO_DEPART )  return 0;
 	}
-	
+
 	return 1;		/* le trajet est libre */
 }
 
@@ -2899,7 +2899,7 @@ short IfFreeLine (Pt depart, Pt arrivee)
 short GetJoueur (void)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].status != STVIDE &&
@@ -2922,13 +2922,13 @@ void JoueurCap (char event, Pt pmouse)
 {
 	Pt			cel, inter;
 	short		i;
-	
+
 	cel = DecorDetCel(pmouse);			/* cherche la cellule clique */
 	if ( cel.x < 0 )  goto error;
-	
+
 	i = GetJoueur();
 	if ( i < 0 )  goto error;
-	
+
 	if ( cel.x == toto[i].poscel.x &&
 		 cel.y == toto[i].poscel.y &&
 		 toto[i].action <= AC_STOP_S &&
@@ -2953,7 +2953,7 @@ void JoueurCap (char event, Pt pmouse)
 		}
 		return;
 	}
-	
+
 	if ( cel.x == toto[i].poscel.x &&
 		 cel.y == toto[i].poscel.y &&
 		 toto[i].action <= AC_STOP_S &&
@@ -2978,7 +2978,7 @@ void JoueurCap (char event, Pt pmouse)
 		}
 		return;
 	}
-	
+
 	if ( cel.x == toto[i].poscel.x ||
 		 cel.y == toto[i].poscel.y )
 	{
@@ -2990,7 +2990,7 @@ void JoueurCap (char event, Pt pmouse)
 		}
 		goto error;
 	}
-	
+
 	inter.x = cel.x;
 	inter.y = toto[i].poscel.y;
 	if ( IfFreeLine(toto[i].poscel, inter) &&	/* accessible en "L" ? */
@@ -3000,7 +3000,7 @@ void JoueurCap (char event, Pt pmouse)
 		celcap2 = cel;
 		return;
 	}
-	
+
 	inter.x = toto[i].poscel.x;
 	inter.y = cel.y;
 	if ( IfFreeLine(toto[i].poscel, inter) &&	/* accessible en "L" invers ? */
@@ -3010,7 +3010,7 @@ void JoueurCap (char event, Pt pmouse)
 		celcap2 = cel;
 		return;
 	}
-	
+
 	error:
 	celcap1.x = -1;						/* aucun cap */
 }
@@ -3033,7 +3033,7 @@ void NextAction(char event, short i)
 	Action		nextaction;
 	short		obstacle;
 	short		orientation;
-	
+
 	if ( toto[i].action >= AC_SAUTE1_E &&	/* saut commenc ? */
 		 toto[i].action <= AC_SAUTE1_S )
 	{
@@ -3041,16 +3041,16 @@ void NextAction(char event, short i)
 		NewAction(i, toto[i].action+AC_SAUTE2_E-AC_SAUTE1_E, toto[i].offz);	/* termine le saut */
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_START_E &&	/* marche commence ? */
 		 toto[i].action <= AC_START_S )
 	{
 		NewAction(i, toto[i].action-AC_START_E+AC_MARCHE_E, toto[i].offz);
 		return;
 	}
-	
+
 	back[i] = toto[i];					/* conserve l'tat pour pouvoir faire un pas en arrire */
-	
+
 	if ( (DecorGetCel(toto[i].poscel)  == ICO_INVINCIBLE ||
 		  DecorGetCel(toto[i].poscela) == ICO_INVINCIBLE) &&
 		 toto[i].mechant == 0 &&
@@ -3066,7 +3066,7 @@ void NextAction(char event, short i)
 	{
 		toto[i].invincible = 100;		/* toto est invincible pour un temps */
 	}
-	
+
 	if ( toto[i].rstdecoricon != 0 )
 	{
 		p = toto[i].lastobjet;
@@ -3074,20 +3074,20 @@ void NextAction(char event, short i)
 		toto[i].rstdecoricon = 0;
 		toto[i].lastobjet = p;
 	}
-	
+
 	if ( toto[i].force > 60 &&
 		 toto[i].action >= AC_BOIT_E &&
 		 toto[i].action <= AC_BOIT_S )
 	{
 		NewAction(i, AC_EXPLOSE_E + toto[i].action-AC_BOIT_E, 0);	/* toto  trop mang ! */
 		toto[i].force = 0;
-		
+
 		ObjetPut(toto[i].poscel, OB_TROPBU);	/* faudra ouvrir le sol */
 		toto[i].rstdecorcel  = toto[i].poscel;
 		toto[i].rstdecoricon = DecorGetCel(toto[i].poscel);	/* faudra remettre le sol initial */
 		return;
 	}
-	
+
 	if ( toto[i].force > 0 &&
 		 toto[i].mechant == 0 &&
 		 toto[i].tank == 0 &&
@@ -3108,9 +3108,9 @@ void NextAction(char event, short i)
 			toto[i].force --;			/* la force diminue un peu */
 		}
 	}
-	
+
 	toto[i].vitesse /= 2;				/* diminue la vitesse */
-	
+
 	if ( toto[i].magic > 0 &&
 		 toto[i].action > AC_STOP_S &&
 		 (toto[i].action < AC_REPOS_E ||
@@ -3126,7 +3126,7 @@ void NextAction(char event, short i)
 	{
 		toto[i].magic --;				/* les pouvoirs magiques diminuent un peu */
 	}
-	
+
 	if ( toto[i].cntnotuse > 0 )
 	{
 		toto[i].cntnotuse --;
@@ -3136,7 +3136,7 @@ void NextAction(char event, short i)
 			toto[i].lastobjet.y = -1;	/* on peut de nouveau utiliser l'objet */
 		}
 	}
-	
+
 	if ( toto[i].joueur )
 	{
 		testcel = toto[i].poscel;
@@ -3145,7 +3145,7 @@ void NextAction(char event, short i)
 		obstacle = GetObstacle(testcel, 0);
 		SoundAmbiance(obstacle);				/* v. son d'ambiance */
 	}
-	
+
 	if ( (toto[i].poscela.x != toto[i].poscel.x ||
 		  toto[i].poscela.y != toto[i].poscel.y ) &&
 		 toto[i].icon != ICO_CAISSE &&
@@ -3156,26 +3156,26 @@ void NextAction(char event, short i)
 	{
 		ObjetPut(toto[i].poscel, OB_UNSEUL);		/* ouvre la trappe */
 	}
-	
+
 	if ( toto[i].poscela.x != toto[i].poscel.x ||
 		 toto[i].poscela.y != toto[i].poscel.y )
 	{
 		toto[i].lastpos = toto[i].poscel;
 		gendecor ++;
 	}
-	
+
 	toto[i].poscel = toto[i].poscela;
-	
+
 	testcel     = toto[i].poscel;
 	nextaction  = toto[i].action;
 	orientation = GetOrientation(toto[i].action);
-	
+
 	if ( toto[i].action >= AC_MAGIC_E &&
 		 toto[i].action <= AC_MAGIC_S )
 	{
 		toto[i].magic += 30;
 	}
-	
+
 	if ( toto[i].action >= AC_ARRIVEE_E &&
 		 toto[i].action <= AC_ARRIVEE_S )
 	{
@@ -3184,7 +3184,7 @@ void NextAction(char event, short i)
 		DecorModif(testcel, ICO_ARRIVEEVIDE);		/* dtache le ballon */
 		return;
 	}
-	
+
 	if ( toto[i].action == AC_ARRIVEE_M )
 	{
 		toto[i].status = STVIDE;					/* ce toto n'existe plus */
@@ -3192,7 +3192,7 @@ void NextAction(char event, short i)
 		nbin --;									/* y'a un toto k rentr */
 		return;
 	}
-	
+
 	if ( (toto[i].action >= AC_TOMBE_E &&
 		  toto[i].action <= AC_TOMBE_TANKB_S) ||
 		 (toto[i].action >= AC_EXPLOSE_E &&
@@ -3215,7 +3215,7 @@ void NextAction(char event, short i)
 		}
 		return;
 	}
-	
+
 	if ( (toto[i].action >= AC_GLISSE_E &&
 		  toto[i].action <= AC_GLISSE_S) ||
 		 toto[i].action == AC_ELECTRO_O )
@@ -3226,7 +3226,7 @@ void NextAction(char event, short i)
 			perdu = 1;
 		}
 	}
-	
+
 	if ( toto[i].action == AC_BALLON_E ||
 		 toto[i].action == AC_BALLON_M  )
 	{
@@ -3234,7 +3234,7 @@ void NextAction(char event, short i)
 		nbtoto --;
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_CAISSE_E &&
 		 toto[i].action <= AC_CAISSE_S )
 	{
@@ -3250,7 +3250,7 @@ void NextAction(char event, short i)
 		}
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_CAISSEV_E &&
 		 toto[i].action <= AC_CAISSEV_S )
 	{
@@ -3266,7 +3266,7 @@ void NextAction(char event, short i)
 		}
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_CAISSEO_E &&
 		 toto[i].action <= AC_CAISSEOD_S )
 	{
@@ -3287,7 +3287,7 @@ void NextAction(char event, short i)
 		}
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_CAISSEG_E &&
 		 toto[i].action <= AC_CAISSEG_S )
 	{
@@ -3316,7 +3316,7 @@ void NextAction(char event, short i)
 		}
 		return;
 	}
-	
+
 	if ( toto[i].action == AC_CAISSE_T )
 	{
 		DecorModif(toto[i].poscel, ICO_CAISSEBAS);		/* met un sol bouch par la caisse */
@@ -3325,7 +3325,7 @@ void NextAction(char event, short i)
 		nbtoto --;
 		return;
 	}
-	
+
 	if ( toto[i].action == AC_CAISSEV_T )
 	{
 		DecorModif(toto[i].poscel, ICO_CAISSEVBAS);		/* met un sol bouch par la caisse */
@@ -3334,7 +3334,7 @@ void NextAction(char event, short i)
 		nbtoto --;
 		return;
 	}
-	
+
 	if ( toto[i].action == AC_CAISSEO_T )
 	{
 		DecorModif(toto[i].poscel, ICO_CAISSEOBAS);		/* met un sol bouch par la caisse */
@@ -3343,7 +3343,7 @@ void NextAction(char event, short i)
 		nbtoto --;
 		return;
 	}
-	
+
 	if ( toto[i].action == AC_CAISSEG_T )
 	{
 		DecorModif(toto[i].poscel, ICO_CAISSEGBAS);		/* met un sol bouch par la caisse */
@@ -3352,7 +3352,7 @@ void NextAction(char event, short i)
 		nbtoto --;
 		return;
 	}
-	
+
 	if ( toto[i].action >= AC_SAUTE2_E &&
 		 toto[i].action <= AC_SAUTE2_S &&
 		 DecorGetCel(toto[i].poscel) == ICO_AIMANT )
@@ -3360,7 +3360,7 @@ void NextAction(char event, short i)
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve l'aimant du dcor */
 		PlaySound(SOUND_AIMANT);
 	}
-	
+
 	switch( GetOrientation(toto[i].action) )
 	{
 		case AC_MARCHE_E:
@@ -3379,21 +3379,21 @@ void NextAction(char event, short i)
 			nextaction = AC_MARCHE_N;
 			testcel.y --;
 			break;
-			
+
 		default:
 			break;
 	}
-	
+
 	if ( toto[i].joueur )				/* est-ce le toto du joueur ? */
 	{
 		JoueurAction(i, event, nextaction, testcel);
 		return;
 	}
-	
+
 	VisionAction(i, &nextaction);		/* regarde si toto peut faire mieux */
-	
+
 	if ( toto[i].nextrepos > 0 )  toto[i].nextrepos --;
-	
+
 	if ( nextaction >= AC_MARCHE_E &&
 		 nextaction <= AC_MARCHE_S &&
 		 toto[i].nextrepos == 0 &&
@@ -3406,7 +3406,7 @@ void NextAction(char event, short i)
 		toto[i].nextrepos = 8;
 		return;
 	}
-	
+
 	if ( nextaction >= AC_MARCHE_E &&
 		 nextaction <= AC_MARCHE_S &&
 		 toto[i].nextrepos == 0 &&
@@ -3419,7 +3419,7 @@ void NextAction(char event, short i)
 		toto[i].nextrepos = 5;
 		return;
 	}
-	
+
 	if ( nextaction >= AC_MARCHE_E &&
 		 nextaction <= AC_MARCHE_S &&
 		 toto[i].force > 40 &&
@@ -3430,14 +3430,14 @@ void NextAction(char event, short i)
 		NewAction(i, nextaction + AC_YOUPIE_E-AC_MARCHE_E, 0);
 		return;
 	}
-	
+
 	if ( nextaction < AC_MARCHE_E ||
 		 nextaction > AC_MARCHE_S )			/* action autre que de marcher ? */
 	{
 		NewAction(i, nextaction, 0);		/* oui -> dmarre la nouvelle action */
 		return;
 	}
-	
+
 	obstacle = GetObstacle(testcel, 1);
 	if ( obstacle == 0 )					/* mouvement projet possible ? */
 	{
@@ -3470,7 +3470,7 @@ void NextAction(char event, short i)
 void MoveBack (Pt cel)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].status == STVIDE )  continue;
@@ -3504,12 +3504,12 @@ void TrieToto (char *ptable)
 	short		i, ii, j;
 	short		v, vv;
 	short		job;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		ptable[i] = i;			/* gnre une table par dfaut */
 	}
-	
+
 	do
 	{
 		job = 0;
@@ -3517,16 +3517,16 @@ void TrieToto (char *ptable)
 		{
 			i  = ptable[j];
 			ii = ptable[j+1];
-			
+
 			v  = toto[i].posgra.x  + ((long)toto[i].posgra.y*(long)(PLXICO+PRXICO))/(PRYICO-PLYICO);
 			vv = toto[ii].posgra.x + ((long)toto[ii].posgra.y*(long)(PLXICO+PRXICO))/(PRYICO-PLYICO);
-			
+
 			if ( v > vv )
 			{
 				i = ptable[j];
 				ptable[j] = ptable[j+1];
 				ptable[j+1] = i;
-				
+
 				job ++;		/* on a fait qq chose */
 			}
 		}
@@ -3548,7 +3548,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 {
 	short		i, j;
 	Pt			pos;
-	
+
 	pmouse.x -= POSXDRAW;
 	pmouse.y -= POSYDRAW;
 	if ( pmouse.x >= 0 && pmouse.x <= DIMXDRAW &&
@@ -3557,7 +3557,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 		for ( j=MAXTOTO-1 ; j>=0 ; j-- )	/* du plus en avant au plus en arrire */
 		{
 			i = ordre[j];
-			
+
 			if ( toto[i].status == STVIDE ||
 				 toto[i].tank != 0 ||
 				 toto[i].action == AC_BALLON_E ||
@@ -3570,10 +3570,10 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 				  toto[i].action <= AC_CAISSEG_S) ||
 				 (toto[i].action >= AC_CAISSEO_E &&
 				  toto[i].action <= AC_CAISSEOD_S) )  continue;
-			
+
 			pos.x = toto[i].posgra.x + PLXICO*ovisu.x;
 			pos.y = toto[i].posgra.y + PRYICO*ovisu.y + toto[i].offz;
-			
+
 			if ( pmouse.x >= pos.x+15       &&
 				 pmouse.x <= pos.x+LXICO-15 &&
 				 pmouse.y >= pos.y+15       &&
@@ -3584,7 +3584,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 			}
 		}
 	}
-	
+
 	if ( lastdetect != -1 )
 	{
 		if ( toto[lastdetect].status == STVIDE ||
@@ -3604,7 +3604,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 		}
 	}
 	if ( lastdetect != -1 )  return lastdetect;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		if ( toto[i].status != STVIDE &&
@@ -3614,7 +3614,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 			return i;						/* retourne le premier toto trouv dans les tables */
 		}
 	}
-	
+
 	return -1;								/* rien trouv */
 }
 
@@ -3631,7 +3631,7 @@ short DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 short IfInterrupt (short i, short event)
 {
 	if ( toto[i].joueur == 0 )  return 0;
-	
+
 	if ( event != KEYGOFRONT &&
 		 event != KEYGOBACK  &&
 		 event != KEYGOLEFT  &&
@@ -3639,7 +3639,7 @@ short IfInterrupt (short i, short event)
 		 event != KEYCLIC    &&
 		 event != KEYCLICR   &&
 		 GetKeyStatus() == 0 )  return 0;
-	
+
 	if ( (toto[i].action >= AC_STOP_E &&
 		  toto[i].action <= AC_STOP_S) ||
 		 (toto[i].action >= AC_REPOS_E &&
@@ -3652,7 +3652,7 @@ short IfInterrupt (short i, short event)
 		  toto[i].action <= AC_YOYO_S) ||
 		 (toto[i].action >= AC_DORT_E &&
 		  toto[i].action <= AC_DORT_S) )  return 1;
-	
+
 	return 0;
 }
 
@@ -3671,7 +3671,7 @@ void DrawOne (short i, Pt ovisu)
 	Reg			r;
 	Pt			pos;
 	Pt			celdd;						/* cellule charnire pour devant/derrire */
-	
+
 	pos = toto[i].posgra;
 	pos.x += PLXICO*ovisu.x;
 	pos.y += PRYICO*ovisu.y + toto[i].offz;
@@ -3684,14 +3684,14 @@ void DrawOne (short i, Pt ovisu)
 		 toto[i].icon == ICO_TANK_X   ||
 		 toto[i].icon == ICO_TANK_EO  ||
 		 toto[i].icon == ICO_TANK_NS  )  pos.y += OFFZTOTO;
-	
+
 	celdd.x = ( toto[i].poscel.x > toto[i].poscela.x ) ? toto[i].poscel.x : toto[i].poscela.x;
 	celdd.y = ( toto[i].poscel.y > toto[i].poscela.y ) ? toto[i].poscel.y : toto[i].poscela.y;
-	
+
 	btransp = 0;
 	if ( toto[i].magic > 0 ||					/* toto transparent */
 		 toto[i].invincible & 1 )  btransp = 1;	/* toto invisible un pas sur deux */
-	
+
 	if ( toto[i].offz < LYICO+OFFZTOTO )		/* si trop bas -> ne dessine pas */
 	{
 		IconDrawPut(toto[i].icon, btransp, pos, toto[i].offz, celdd,
@@ -3713,17 +3713,17 @@ void StartTank (void)
 	Pt			cel;
 	short		icon, i, decor;
 	Action		nextaction;
-	
+
 	if ( typeedit != 0 )  return;			/* pas de dpart si on est en train d'diter */
-	
+
 	if ( genstarttank == gendecor )  return;	/* rien  faire si toujours le mme dcor */
-	
+
 	for ( cel.y=0 ; cel.y<=MAXCELY ; cel.y++ )
 	{
 		for ( cel.x=0 ; cel.x<=MAXCELX ; cel.x++ )
 		{
 			icon = DecorGetCel(cel);
-			
+
 			if ( icon == ICO_TANK_X  ||		/* est-ce un tank immobile (dans le dcor) ? */
 				 icon == ICO_TANK_EO ||
 				 icon == ICO_TANK_NS )
@@ -3750,7 +3750,7 @@ void StartTank (void)
 			}
 		}
 	}
-	
+
 	genstarttank = gendecor;
 }
 
@@ -3774,27 +3774,27 @@ short MoveNext (char event, Pt pmouse)
 	short		result[3];
 	Pt			celarr;
 	short		orientation;
-	
+
 	perdu  = 0;
 	redraw = 0;
-	
+
 	if ( event == KEYCLICREL )
 	{
 		lasttelecom = 0;					/* stoppe si bouton souris relch */
 	}
-	
+
 	if ( (event == KEYCLIC || event == KEYCLICR) && typejeu == 1 )
 	{
 		JoueurCap(event, pmouse);			/* assigne v. un nouveau cap  atteindre */
 	}
-	
+
 	DepartNext();							/* gre les ascenseurs */
 	ObjetNext();							/* gre les objets du dcor */
-	
+
 	TrieToto(ordre);						/* gnre la table ordre[] */
-	
+
 	ovisu = DecorGetOrigine();
-	
+
 	i = DetectToto(pmouse, ovisu, ordre);	/* dtecte le toto vis par la souris */
 	if ( i < 0 )
 	{
@@ -3804,20 +3804,20 @@ short MoveNext (char event, Pt pmouse)
 	{
 		InfoDraw(1, toto[i].force, toto[i].vision, toto[i].mechant, toto[i].magic, toto[i].cles);
 	}
-	
+
 	caisseoddir = caisseodir;
 	caisseodir = 0;							/* pas de boule qui roule */
-	
+
 	StartTank();							/* fait v. partir les tanks stopps */
-	
+
 	for ( j=0 ; j<MAXTOTO ; j++ )
 	{
 		i = ordre[j];
-		
+
 		try = 0;
 		next:
 		if ( toto[i].status == STVIDE )  continue;
-		
+
 		if ( CalcMovie(i, result) ||				/* action termine ? */
 			 (try < 1 && IfInterrupt(i, event)) )
 		{
@@ -3825,43 +3825,43 @@ short MoveNext (char event, Pt pmouse)
 			try ++;
 			goto next;
 		}
-		
+
 		toto[i].posgra.x += result[0];
 		toto[i].posgra.y += result[1];
 		toto[i].offz     += result[2];
-		
+
 		if ( toto[i].invincible > 0 )
 		{
 			toto[i].invincible --;					/* l'invincibilit diminue un peu */
 		}
-	
+
 		AutoNext(&toto[i].autoicon, result);		/* cherche l'icne suivante */
 		if ( toto[i].mechant == 0 ||
 			 result[0] < 16 || result[0] > 19 )
 		{
 			toto[i].icon = result[0];
 		}
-		
+
 		if ( toto[i].vision == 0 && (
 			 (toto[i].icon >= 1  && toto[i].icon <= 12) ||
 			 (toto[i].icon >= 16 && toto[i].icon <= 19) ))
 		{
 			toto[i].icon += 80;				/* icne de toto aveugle */
 		}
-		
+
 		if ( toto[i].force < 5 && (
 			 (toto[i].icon >= 1  && toto[i].icon <= 12) ||
 			 (toto[i].icon >= 16 && toto[i].icon <= 19) ))
 		{
 			toto[i].icon += 32;				/* icne de mauvaise humeur */
 		}
-		
+
 		if ( toto[i].mechant == 1 &&
 			 (toto[i].icon >= 1  && toto[i].icon <= 12) )
 		{
 			toto[i].icon += 112;			/* icne mchant */
 		}
-		
+
 		if ( toto[i].joueur && (
 			 (toto[i].icon >= 1  && toto[i].icon <= 12) ||
 			 (toto[i].icon >= 16 && toto[i].icon <= 19) ||
@@ -3869,7 +3869,7 @@ short MoveNext (char event, Pt pmouse)
 		{
 			toto[i].icon += 128;			/* icne avec antenne */
 		}
-		
+
 		if ( toto[i].tank != 0 )
 		{
 			orientation = GetOrientation(toto[i].action);
@@ -3886,13 +3886,13 @@ short MoveNext (char event, Pt pmouse)
 					 orientation == AC_MARCHE_S )  toto[i].icon = ICO_TANK_NS;
 			}
 		}
-		
+
 		DrawOne(i, ovisu);					/* dessine le toto */
 	}
 
 	/*	Regarde s'il y a une boule qui roule qui doit continuer de rouler
 		sur son lan ... */
-	
+
 	if ( caisseoddir != 0 )
 	{
 		celarr = caisseocel;
@@ -3912,9 +3912,9 @@ short MoveNext (char event, Pt pmouse)
 			}
 		}
 	}
-	
+
 	if ( redraw )  MoveRedraw();			/* redessine tout */
-	
+
 	if ( perdu )      return 2;				/* snif, c'est perdu */
 	if ( nbin <= 0 )  return 1;				/* tous les toto sont rentrs */
 	return 0;
@@ -3934,16 +3934,16 @@ void MoveRedraw (void)
 	short		i, j;
 	Pt			ovisu;
 	char		ordre[MAXTOTO];
-	
+
 	TrieToto(ordre);						/* gnre la table ordre[] */
-	
+
 	ovisu = DecorGetOrigine();
-	
+
 	for ( j=0 ; j<MAXTOTO ; j++ )
 	{
 		i = ordre[j];
 		if ( toto[i].status == STVIDE )  continue;
-		
+
 		DrawOne(i, ovisu);					/* dessine le toto */
 	}
 }
@@ -3963,12 +3963,12 @@ short MoveBuild (short outil)
 	short		i, temp, err;
 	short		orientation;
 	Pt			pos;
-	
+
 	i = GetJoueur();
 	if ( i < 0 )  return 1;
-	
+
 	pos = toto[i].poscel;
-	
+
 	orientation = GetOrientation(toto[i].action);
 	switch( orientation )
 	{
@@ -3987,17 +3987,17 @@ short MoveBuild (short outil)
 		default:
 			break;
 	}
-	
+
 	temp = typejeu;
 	typejeu = 0;							/* comme si jeu sans toto tlcommand */
 	err = DecorEvent(pos, 1, outil);		/* modifie le dcor */
 	typejeu = temp;
-	
+
 	if ( err )
 	{
 		NewAction(i, orientation + AC_NON_E-AC_MARCHE_E, 0);
 	}
-	
+
 	return err;
 }
 
@@ -4015,50 +4015,50 @@ void MoveScroll (short quick)
 	short		i, set;
 	Pt			ovisu, pos;
 	short		palette;
-	
+
 	i = GetJoueur();
-	
+
 	if ( typeedit == 0 && i < 0 && typejeu == 1 )
 	{
 		palette = 0;
 		PaletteNew(&palette, 0);						/* supprime tous les outils ! */
 		typejeu = 0;									/* jeu sans toto tlcommand */
 	}
-	
+
 	if ( i < 0 ||
 		 toto[i].action == AC_ARRIVEE_M ||				/* toto monte en ballon */
 		 (toto[i].action >= AC_TOMBE_E &&				/* toto tombe dans un trou */
 		  toto[i].action <= AC_TOMBE_S) )  return;
-	
+
 	do
 	{
 		set = 0;
 		ovisu = DecorGetOrigine();
-		
+
 		pos.x = toto[i].posgra.x + PLXICO*ovisu.x;
 		pos.y = toto[i].posgra.y + PRYICO*ovisu.y + toto[i].offz;
-		
+
 		if ( pos.x < 20 )
 		{
 			ovisu.x += 4;
 			DecorSetOrigine(ovisu, quick);
 			set = 1;
 		}
-		
+
 		if ( pos.x+LXICO > DIMXDRAW-20 )
 		{
 			ovisu.x -= 4;
 			DecorSetOrigine(ovisu, quick);
 			set = 1;
 		}
-		
+
 		if ( pos.y < 0 )
 		{
 			ovisu.y += 5;
 			DecorSetOrigine(ovisu, quick);
 			set = 1;
 		}
-		
+
 		if ( pos.y+LYICO > DIMYDRAW-10 )
 		{
 			ovisu.y -= 5;
@@ -4085,10 +4085,10 @@ void MoveNewMonde (short freq)
 	short		icon;
 	short		nbjoueurs;
 	short		nbdepart;
-	
+
 	StartRandom(0,0);					/* alatoire rptitif pour les toto */
 	StartRandom(1,1);					/* alatoire total pour les dcors */
-	
+
 	typejeu     = 0;
 	nbout       = 0;
 	nbjoueurs   = 0;
@@ -4103,18 +4103,18 @@ void MoveNewMonde (short freq)
 		back[i].status = STVIDE;
 		back[i].autoicon.pdata = 0;
 	}
-	
+
 	for ( d=0 ; d<MAXDEPART ; d++ )
 	{
 		depart[d].cel.x = -1;
 		depart[d].cel.y = -1;
 	}
-	
+
 	for ( i=0 ; i<MAXOBJET ; i++ )
 	{
 		objet[i].status = STVIDE;
 	}
-	
+
 	d = 0;
 	for ( cel.y=0 ; cel.y<=MAXCELY ; cel.y++ )
 	{
@@ -4164,20 +4164,20 @@ void MoveNewMonde (short freq)
 			}
 		}
 	}
-	
+
 	if ( nbout < 0  )  nbout = 0;
-	
+
 	nbin = nbout;
 	if ( typejeu == 1 )  nbin ++;			/* rentre aussi le toto du joueur */
-	
+
 	if ( typeedit || nbout == 0 )			/* dition d'un monde en cours ? */
 	{
 		nbout    = 0;						/* oui -> aucun toto */
 		nbin     = 1;
 	}
-	
+
 	nbtoto = 0;
-	
+
 	gendecor = 0;
 	genstarttank = gendecor-1;
 }
@@ -4222,7 +4222,7 @@ void MoveClose (void)
 
 long MovePartieLg (void)
 {
-	return 
+	return
 		sizeof(TotoMove)*MAXTOTO +
 		sizeof(TotoMove)*MAXTOTO +
 		sizeof(DepartMove)*MAXDEPART +
@@ -4243,23 +4243,23 @@ short MovePartieWrite (long pos, char file)
 {
 	short		err;
 	Partie		partie;
-	
+
 	err = FileWrite(&toto, pos, sizeof(TotoMove)*MAXTOTO, file);
 	if ( err )  return err;
 	pos += sizeof(TotoMove)*MAXTOTO;
-	
+
 	err = FileWrite(&back, pos, sizeof(TotoMove)*MAXTOTO, file);
 	if ( err )  return err;
 	pos += sizeof(TotoMove)*MAXTOTO;
-	
+
 	err = FileWrite(&depart, pos, sizeof(DepartMove)*MAXDEPART, file);
 	if ( err )  return err;
 	pos += sizeof(DepartMove)*MAXDEPART;
-	
+
 	err = FileWrite(&objet, pos, sizeof(ObjetMove)*MAXOBJET, file);
 	if ( err )  return err;
 	pos += sizeof(ObjetMove)*MAXOBJET;
-	
+
 	memset(&partie, 0, sizeof(Partie));
 	partie.nbtoto = nbtoto;
 	partie.nbout = nbout;
@@ -4270,7 +4270,7 @@ short MovePartieWrite (long pos, char file)
 	partie.caisseodir = caisseodir;
 	partie.caisseoddir = caisseoddir;
 	partie.caisseocel = caisseocel;
-	
+
 	err = FileWrite(&partie, pos, sizeof(Partie), file);
 	return err;
 }
@@ -4290,43 +4290,43 @@ short MovePartieRead (long pos, char file)
 {
 	short		err, i;
 	Partie		partie;
-	
+
 	err = FileRead(&toto, pos, sizeof(TotoMove)*MAXTOTO, file);
 	if ( err )  return err;
 	pos += sizeof(TotoMove)*MAXTOTO;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		toto[i].autoicon.pdata = ConvActionToTabIcon(toto[i].autoicon.idata, GetTypeMarche(i));
 		toto[i].automove.pdata = ConvActionToTabMove(toto[i].automove.idata);
 	}
-	
+
 	err = FileRead(&back, pos, sizeof(TotoMove)*MAXTOTO, file);
 	if ( err )  return err;
 	pos += sizeof(TotoMove)*MAXTOTO;
-	
+
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
 		back[i].autoicon.pdata = ConvActionToTabIcon(back[i].autoicon.idata, GetTypeMarche(i));
 		back[i].automove.pdata = ConvActionToTabMove(back[i].automove.idata);
 	}
-	
+
 	err = FileRead(&depart, pos, sizeof(DepartMove)*MAXDEPART, file);
 	if ( err )  return err;
 	pos += sizeof(DepartMove)*MAXDEPART;
-	
+
 	err = FileRead(&objet, pos, sizeof(ObjetMove)*MAXOBJET, file);
 	if ( err )  return err;
 	pos += sizeof(ObjetMove)*MAXOBJET;
-	
+
 	for ( i=0 ; i<MAXOBJET ; i++ )
 	{
 		objet[i].autoicon.pdata = ConvObjetToTabIcon(objet[i].autoicon.idata);
 	}
-	
+
 	err = FileRead(&partie, pos, sizeof(Partie), file);
 	if ( err )  return err;
-	
+
 	nbtoto = partie.nbtoto;
 	nbout = partie.nbout;
 	nbin = partie.nbin;
@@ -4336,9 +4336,9 @@ short MovePartieRead (long pos, char file)
 	caisseodir = partie.caisseodir;
 	caisseoddir = partie.caisseoddir;
 	caisseocel = partie.caisseocel;
-	
+
 	genstarttank = gendecor-1;
-	
+
 	return 0;
 }
 

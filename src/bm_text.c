@@ -73,7 +73,7 @@ static char tchassemid[128-32] =
 static char tchacc[32] =
 {
 	91, 92, 93, 94,
-	0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0,
 	'a', 'a', 'a', 'a',
 	'e', 'e', 'e', 'e',
 	'i', 'i', 'i', 'i',
@@ -94,7 +94,7 @@ static char tchacc[32] =
 short LgChar (char c)
 {
 	if ( c == 1 )  c = ' ';							/* cadratin ? */
-	
+
 	if ( c >= 0 )
 	{
 		if ( c == '\n' )  c = 127;					/* petit triangle ">" */
@@ -119,30 +119,30 @@ static char taccent[] =
 	KEYAGRAVE,  'a', 92, 2,4,
 	KEYACIRCON, 'a', 93, 1,3,
 	KEYATREMA,  'a', 94, 2,4,
-	
+
 	KEYEAIGU,   'e', 91, 2,6,
 	KEYEGRAVE,  'e', 92, 2,5,
 	KEYECIRCON, 'e', 93, 1,4,
 	KEYETREMA,  'e', 94, 2,5,
-	
+
 	KEYIAIGU,   124, 91, 0,3,
 	KEYIGRAVE,  124, 92, 0,1,
 	KEYICIRCON, 124, 93,-2,0,
 	KEYITREMA,  124, 94, 0,1,
-	
+
 	KEYOAIGU,   'o', 91, 2,6,
 	KEYOGRAVE,  'o', 92, 2,5,
 	KEYOCIRCON, 'o', 93, 1,4,
 	KEYOTREMA,  'o', 94, 2,5,
-	
+
 	KEYUAIGU,   'u', 91, 2,8,
 	KEYUGRAVE,  'u', 92, 2,6,
 	KEYUCIRCON, 'u', 93, 1,5,
 	KEYUTREMA,  'u', 94, 2,6,
-	
+
 	KEYCCEDILLE,'c', 123, 1,5,
 	KEYcCEDILLE,'C', 123, 2,7,
-	
+
 	0
 };
 
@@ -163,21 +163,21 @@ void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	Pixmap		pmchar;
 	Pt			src, dst, dim;
 	short		icon;
-	
+
 	if ( c < 32 )  c = 32;
 	c -= 32;
-	
+
 	dst.x = (*ppos).x;
 	dst.y = (*ppos).y - charsize;
-	
+
 	if ( charsize == TEXTSIZELIT )
 	{
 		if ( c%16 < 8 )  ppmchar = &pmchar1;
 		else             ppmchar = &pmchar2;
-		
+
 		src.x = (c%8)*10;
 		src.y = (c/16)*(TEXTSIZELIT+3);
-		
+
 		dim.x = LgChar(c+32);
 		dim.y = TEXTSIZELIT+3;
 	}
@@ -185,38 +185,38 @@ void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	{
 		dim.x = LgChar(c+32);
 		dim.y = TEXTSIZEMID+5;
-		
+
 		if ( c >= 0 && c < 'A'-33 )
 		{
 			icon = c/3;
-			
+
 			src.x = (c%3)*26;
 			src.y = 26*0;
 		}
-		
+
 		if ( c >= 'A'-33 && c < 'a'-33 )
 		{
 			c -= 'A'-33;
 			icon = c/3;
-			
+
 			src.x = (c%3)*26;
 			src.y = 26*1;
 		}
-		
+
 		if ( c >= 'a'-33 )
 		{
 			c -= 'a'-33;
 			icon = c/3;
-			
+
 			src.x = (c%3)*26;
 			src.y = 26*2;
 		}
-		
+
 		GetIcon(&pmchar, ICO_CHAR_MID+icon, 1);
 		ppmchar = &pmchar;
 	}
 	CopyPixel(ppmchar, src, ppm, dst, dim, mode);
-	
+
 	(*ppos).x += dim.x;
 }
 
@@ -234,7 +234,7 @@ void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	char		*paccent;
 	ShowMode	m;
 	Pt			pnext, pacc;
-	
+
 	if ( c < 0 )				/* lettre accentue ? */
 	{
 		paccent = taccent;
@@ -281,20 +281,20 @@ void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 Pt DrawText (Pixmap *ppm, Pt pos, char *pstring, short size, ShowMode mode)
 {
 	char		c;
-	
+
 	charsize = size;
-	
+
 	if ( size == TEXTSIZELIT )
 	{
 		GetIcon(&pmchar1, ICO_CHAR_LIT+0, 1);
 		GetIcon(&pmchar2, ICO_CHAR_LIT+1, 1);
 	}
-	
+
 	while ( (c = *pstring++, c != 0) )
 	{
 		DrawAccent(ppm, &pos, c, mode);				/* dessine le caractre */
 	}
-	
+
 	return pos;
 }
 
@@ -316,20 +316,20 @@ Rectangle GetRectText (Pt pos, char *pstring, short size)
 	Rectangle	rect;
 	char		c;
 	short		lg = 0;
-	
+
 	charsize = size;
-	
+
 	while ( (c = *pstring++, c != 0) )
 	{
 		lg += LgChar(c);
 	}
-	
+
 	rect.p1.x = pos.x;
 	rect.p1.y = pos.y - charsize;
 	rect.p2.x = pos.x + lg;
 	if ( size == TEXTSIZELIT )  rect.p2.y = pos.y + 3;
 	else                        rect.p2.y = pos.y + 5;
-	
+
 	return rect;
 }
 
@@ -349,7 +349,7 @@ short GetWord (char **ppnext, char *pword)
 	char		*pt;
 	Pt			pos;
 	Rectangle	rect;
-	
+
 	pt = pword;
 	while ( **ppnext != 0 && **ppnext != '\n' && **ppnext != ' ' && **ppnext != '-' )
 	{
@@ -360,7 +360,7 @@ short GetWord (char **ppnext, char *pword)
 		*pt++ = *(*ppnext)++;
 	}
 	*pt = 0;
-	
+
 	pos.x = 0;
 	pos.y = 0;
 	rect = GetRectText(pos, pword, charsize);
@@ -382,12 +382,12 @@ void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size, Show
 	char	word[50];
 	char	*pnext;
 	short	lg, under;
-	
+
 	charsize = size;
-	
+
 	if ( size == TEXTSIZELIT )  under = 3;
 	else                        under = 5;
-	
+
 	pos.y = rect.p1.y + size;
 	do
 	{
@@ -409,7 +409,7 @@ void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size, Show
 		else                        pos.y += size+10;
 	}
 	while ( pos.y < rect.p2.y-under && *pstring != 0 );
-	
+
 	if ( *pstring != 0 )						/* texte pas entirement affich ? */
 	{
 		pos.x = rect.p2.x - LgChar(126);
@@ -435,12 +435,12 @@ void CalcJustif (void)
 	short		dim;			/* largeur pour la ligne */
 	short		i;				/* offset temporaire */
 	short		length;
-	
+
 	dim = chrect.p2.x - chrect.p1.x - 10;
 	cx  = chrect.p1.x;						/* curseur "|" au dbut */
-	
+
 	/*	Cherche dans la chane le premier caractre  afficher. */
-	
+
 	i = curseur;
 	length = 0;
 	while ( i < lgchaine && length < dim/2 )
@@ -449,7 +449,7 @@ void CalcJustif (void)
 		i ++;								/* avance de dim/2 */
 	}
 	if ( length > dim/2 )  i --;
-	
+
 	length = 0;
 	while ( i > 0 && length < dim-1 )
 	{
@@ -458,9 +458,9 @@ void CalcJustif (void)
 	}
 	if ( length > dim-1 )  i ++;
 	begin = i;
-	
+
 	/*	Cherche le nombre de caractres et la longueur  afficher. */
-	
+
 	length = 0;
 	while ( i < lgchaine && length < dim )
 	{
@@ -490,32 +490,32 @@ void EditAff (void)
 	short		i;
 	Pt			pos;
 	Rectangle	rect;
-	
+
 	GetIcon(&pmchar1, ICO_CHAR_LIT+0, 1);
 	GetIcon(&pmchar2, ICO_CHAR_LIT+1, 1);
-	
+
 	pos.x = chrect.p1.x;
 	pos.y = chrect.p1.y + (chrect.p2.y-chrect.p1.y)/2 + charsize/2 - 1;
-	
+
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
 		if ( pos.x >= chrect.p2.x-10 )  break;
 		DrawAccent(0, &pos, pchaine[i], MODELOAD);		/* affiche un caractre */
 	}
-	
+
 	if ( pos.x < chrect.p2.x )
 	{
 		rect = chrect;
 		rect.p1.x = pos.x;
 		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface la fin de la ligne */
 	}
-	
+
 	if ( begin > 0 )
 	{
 		pos.x = chrect.p1.x;
 		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
 	}
-	
+
 	if ( pchaine[i] != 0 )
 	{
 		pos.x = chrect.p2.x - LgChar(127);
@@ -536,20 +536,20 @@ short InsChar (char car)
 {
 	char		*s, *d;
 	short		i;
-	
+
 	if ( lgchaine >= lgmax-1 )  return -1;	/* chane pleine */
-	
+
 	s = pchaine+lgchaine;
 	d = pchaine+lgchaine+1;
 	for( i=curseur ; i<lgchaine+1 ; i++ )
 	{
 		*d-- = *s--;						/* creuse le trou */
 	}
-	
+
 	*(pchaine+curseur) = car;				/* met le caractre dans la chane */
 	lgchaine ++;
 	curseur ++;								/* avance le curseur */
-	
+
 	return 0;
 }
 
@@ -566,20 +566,20 @@ short DelChar (void)
 {
 	char		*s, *d;
 	short		i;
-	
+
 	if ( lgchaine == 0 )  return -1;		/* chane vide */
 	if ( curseur == 0 )  return -1;			/* curseur au dbut */
-	
+
 	s = pchaine+curseur;
 	d = pchaine+curseur-1;
 	for( i=curseur ; i<lgchaine+1 ; i++ )
 	{
 		*d++ = *s++;						/* bouche le trou */
 	}
-	
+
 	lgchaine --;
 	curseur --;								/* recule le curseur */
-	
+
 	return 0;
 }
 
@@ -596,7 +596,7 @@ short DelChar (void)
 short AccentFirst (char key)
 {
 	short		i = 0;
-	
+
 	static char table[] =
 	{
 		KEYAIGU,	91,
@@ -605,13 +605,13 @@ short AccentFirst (char key)
 		KEYTREMA,	94,
 		0
 	};
-	
+
 	while ( table[i] != 0 )
 	{
 		if ( table[i] == key )  return table[i+1];
 		i += 2;
 	}
-	
+
 	return 0;
 }
 
@@ -628,7 +628,7 @@ short AccentFirst (char key)
 char AccentUnder (char key, char accent)
 {
 	short		i = 0;
-	
+
 	static char table[] =
 	{
 		91,	'a',	KEYAAIGU,
@@ -653,13 +653,13 @@ char AccentUnder (char key, char accent)
 		94,	'u',	KEYUTREMA,
 		0
 	};
-	
+
 	while ( table[i] != 0 )
 	{
 		if ( accent == table[i] && key == table[i+1] )  return table[i+2];
 		i += 3;
 	}
-	
+
 	return 0;
 }
 
@@ -676,14 +676,14 @@ char AccentUnder (char key, char accent)
 void InvCurs (void)
 {
 	Pt		p1, p2;
-	
+
 	if ( cx == 0 )  return;
-	
+
 	p1.x = cx - 1;
 	p1.y = chrect.p1.y;
 	p2.x = cx - 1;
 	p2.y = chrect.p2.y;
-	
+
 	DrawLine(0, p1, p2, MODEXOR, COLORNOIR);	/* inverse la droite verticale */
 }
 
@@ -698,7 +698,7 @@ void InvCurs (void)
 void ClrCurs (void)
 {
 	if ( ifcx == 0 )  return;
-	
+
 	InvCurs();					/* efface le curseur */
 	ifcx = 0;
 }
@@ -714,7 +714,7 @@ void ClrCurs (void)
 void SetCurs (void)
 {
 	if ( ifcx != 0 )  return;
-	
+
 	InvCurs();					/* allume le curseur */
 	ifcx = 1;
 }
@@ -732,7 +732,7 @@ void SetCurs (void)
 void EditDraw (void)
 {
 	if ( pchaine == 0 )  return;
-	
+
 	ClrCurs();					/* enlve le curseur "|" */
 	CalcJustif();				/* fait qq calculs */
 	EditAff();					/* affiche la ligne */
@@ -755,11 +755,11 @@ void EditDraw (void)
 short EditEvent (short key, Pt pos)
 {
 	short		err = -1;
-	
+
 	if ( pchaine == 0 )  return 1;
-	
+
 	if ( key == 0 )  return -1;
-	
+
 	if ( key == KEYLEFT )
 	{
 		if ( curseur > 0 )
@@ -768,7 +768,7 @@ short EditEvent (short key, Pt pos)
 			err = 1;
 		}
 	}
-	
+
 	if ( key == KEYRIGHT )
 	{
 		if ( curseur < lgchaine )
@@ -777,24 +777,24 @@ short EditEvent (short key, Pt pos)
 			err = 1;
 		}
 	}
-	
+
 	if ( key == KEYUP )
 	{
 		curseur = 0;
 		err = 1;
 	}
-	
+
 	if ( key == KEYDOWN )
 	{
 		curseur = lgchaine;
 		err = 1;
 	}
-	
+
 	if ( key == KEYDEL )				/* touche DEL normale */
 	{
 		err = DelChar();				/* dtruit un caractre */
 	}
-	
+
 	if ( ifaccent )						/* accent flottant en cours ? */
 	{
 		ifaccent = AccentUnder(key, ifaccent);
@@ -810,22 +810,22 @@ short EditEvent (short key, Pt pos)
 	{
 		key = ifaccent;					/* insre l'accent flottant */
 	}
-	
+
 	ins:
 	if ( key == KEYRETURN )  key = '\n';
-	
+
 	if ( key >= 32 && key <= 127 ||
 		 key <= KEYAAIGU && key >= KEYcCEDILLE ||
 		 key == '\n' )
 	{
 		err = InsChar((char)key);		/* insre le caractre frapp */
 	}
-	
+
 	if ( err >= 0 )
 	{
 		EditDraw();						/* affiche la ligne */
 	}
-	
+
 	return err;
 }
 
@@ -847,9 +847,9 @@ short EditOpen (char *p, short max, Rectangle rect)
 	ifaccent = 0;
 	ifcx     = 0;
 	charsize = TEXTSIZELIT;
-	
+
 	curseur = lgchaine;
-	
+
 	EditDraw();				/* affiche la chane */
 	return 0;
 }
@@ -866,14 +866,14 @@ short EditOpen (char *p, short max, Rectangle rect)
 short EditClose (void)
 {
 	if ( pchaine == 0 )  return 1;
-	
+
 	curseur = 0;					/* met le curseur au dbut */
-	
+
 	EditDraw();						/* affiche la chane */
 	ClrCurs();						/* enlve le curseur "|" */
-	
+
 	pchaine = 0;					/* y'a plus de chane en dition */
-	
+
 	return 0;
 }
 

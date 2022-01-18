@@ -266,7 +266,7 @@ typedef enum
 	SOUND_OISEAUX		= 37,	/* oiseaux */
 	SOUND_BURP			= 38,	/* toto a trop bu */
 	SOUND_CAISSEG		= 39,	/* machine qui tombe */
-	
+
 	SOUND_MUSIC11		= 101,	/* musique 1-1 */
 	SOUND_MUSIC12		= 102,	/* musique 1-2 */
 	SOUND_MUSIC13		= 103,	/* musique 1-3 */

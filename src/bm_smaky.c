@@ -178,9 +178,9 @@ void InitRandomEx (short g, short min, short max, char *pex)
 short GetRandomEx (short g, short min, short max, char *pex)
 {
 	short		i, val;
-	
+
 	val = GetRandom(g, 0, max-min);		/* cherche une valeur quelconque */
-	
+
 	for( i=0 ; i<(max-min) ; i++ )
 	{
 		if ( pex[val] == 0 )			/* valeur dj sortie ? */
@@ -194,7 +194,7 @@ short GetRandomEx (short g, short min, short max, char *pex)
 			if ( val == max-min )  val = 0;
 		}
 	}
-	
+
 	InitRandomEx(g, min, max, pex);		/* recommence */
 	val = GetRandom(g, 0, max-min);		/* cherche une valeur quelconque */
 	pex[val] = 1;						/* indique valeur utilise */
@@ -215,7 +215,7 @@ short GetRandomEx (short g, short min, short max, char *pex)
 void StartRandom (short g, short mode)
 {
 	long		datebcd;
-	
+
 	if ( mode == 0 )
 	{
 		nextrand[g] = 33554393;		/* grand nombre premier */
@@ -396,11 +396,11 @@ void CloseTime (short t)
 {
 	long		hightotal,lowtotal,highunused,lowunused;
 	long		del;
-	
+
 	if ( t == 0 )  return;
-	
+
 	N_getsytime(&hightotal, &lowtotal, &highunused, &lowunused);
-	
+
 	del = t - (lowtotal-atime)/(20000/128);
 	if ( del>0 && del<50 )
 	{
@@ -426,10 +426,10 @@ void CloseTime (short t)
 void PosMouse (Pt pos)
 {
 	Point		p;
-	
+
 	p.x = pos.x + origine.x;
 	p.y = pos.y + origine.y;
-	
+
 	asm("moveml d4/d7,sp@-");			/* PUSH */
 	asm("movel %0,d4" : : "g" (p));		/* D4 <-- p */
 	asm(".word 0x4E46");				/* LIB */
@@ -470,10 +470,10 @@ static Pt getmousepos (void)
 	Point	pos;
 	Pt		ret;
 	u_char	boutons;
-	
+
 	err = L_ifmouse(&pos, &boutons);	/* lecture de la souris */
 	if (err)  return (Pt){0,0};
-	
+
 	ret.x = pos.x - origine.x;
 	ret.y = pos.y - origine.y;
 	return ret;
@@ -528,14 +528,14 @@ void ShowMouse(void)
 static void IfHideMouse (Rectangle r)
 {
 	Pt		mouse;
-	
+
 	mouse = getmousepos();		/* lit la position de la souris */
-	
+
 	if ( mouse.x-10 > r.p2.x )  return;
 	if ( mouse.x+20 < r.p1.x )  return;
 	if ( mouse.y-10 > r.p2.y )  return;
 	if ( mouse.y+20 < r.p1.y )  return;
-	
+
 	HideMouse();				/* cache la souris */
 }
 
@@ -566,27 +566,27 @@ void ClrEvents (void)
 short GetEvent (Pt *ppos)
 {
 	long		key, maj;
-	
+
 	*ppos = lastmouse;					/* rend la dernire position de la souris */
-	
+
 	N_settim(0);						/* met un timeout nul */
 	key = L_getkey();					/* lecture du clavier sans attendre */
 	N_settim(0xFFFF);					/* remet un timeout infini */
-	
+
 	lastmouse = getmousepos();			/* lit la position de la souris */
-	
+
 	if ( errno )			return 0;	/* retourne si timeout */
-	
+
 	if ( key>>16 == 'D' )  keystatus = STLEFT;
 	if ( key>>16 == 'F' )  keystatus = STRIGHT;
 	if ( key>>16 == 'R' )  keystatus = STUP;
 	if ( key>>16 == 'C' )  keystatus = STDOWN;
-	
+
 	if ( key>>16 == 0x74 )  keystatus = STLEFT;
 	if ( key>>16 == 0x76 )  keystatus = STRIGHT;
 	if ( key>>16 == 0x78 )  keystatus = STUP;
 	if ( key>>16 == 0x72 )  keystatus = STDOWN;
-	
+
 	if ( typejeu == 1 && modetelecom == 0 && pause == 0 )	/* tlcommand en gauche/droite ? */
 	{
 		if ( key>>16 == 0x77 )  keystatus = STLEFT;
@@ -601,30 +601,30 @@ short GetEvent (Pt *ppos)
 		if ( key>>16 == ('F'|0x80) )  keystatus &= ~STRIGHT;
 		if ( key>>16 == ('R'|0x80) )  keystatus &= ~STUP;
 		if ( key>>16 == ('C'|0x80) )  keystatus &= ~STDOWN;
-		
+
 		if ( key>>16 == (0x74|0x80) )  keystatus &= ~STLEFT;
 		if ( key>>16 == (0x76|0x80) )  keystatus &= ~STRIGHT;
 		if ( key>>16 == (0x78|0x80) )  keystatus &= ~STUP;
 		if ( key>>16 == (0x72|0x80) )  keystatus &= ~STDOWN;
-		
+
 		if ( key>>16 == (0x77|0x80) )  keystatus &= ~STLEFT;
 		if ( key>>16 == (0x73|0x80) )  keystatus &= ~STRIGHT;
 		if ( key>>16 == (0x79|0x80) )  keystatus &= ~STUP;
 		if ( key>>16 == (0x71|0x80) )  keystatus &= ~STDOWN;
-		
+
 		return 0;						/* retourne si pas touche presse */
 	}
-	
+
 	maj = key&0xFF;
 	if ( maj >= 'a' && maj <= 'z' )  maj -= 'a'-'A';
-	
+
 	if ( typetext == 0 )
 	{
 		if ( key>>16 ==  'D' )		return KEYLEFT;
 		if ( key>>16 ==  'F' )		return KEYRIGHT;
 		if ( key>>16 ==  'R' )		return KEYUP;
 		if ( key>>16 ==  'C' )		return KEYDOWN;
-		
+
 		if ( key>>16 ==  0x74 )		return KEYLEFT;
 		if ( key>>16 ==  0x76 )		return KEYRIGHT;
 		if ( key>>16 ==  0x78 )		return KEYUP;
@@ -641,11 +641,11 @@ short GetEvent (Pt *ppos)
 			return  0;
 		}
 	}
-	
+
 	key &= 0xFFFF;
-	
+
 	if ( key == KEYMPO )	return 0;
-	
+
 	if ( key == F0 )		return KEYQUIT;
 	if ( key == F1 )		return KEYF1;
 	if ( key == F2 )		return KEYF2;
@@ -659,11 +659,11 @@ short GetEvent (Pt *ppos)
 	if ( key == F10 )		return KEYF10;
 	if ( key == F11 )		return KEYF11;
 	if ( key == F12 )		return KEYF12;
-	
+
 	if ( key == F13 )		return KEYSAVE;
 	if ( key == F14 )		return KEYLOAD;
 	if ( key == F15 )		return KEYPAUSE;
-	
+
 	if ( key == END )		return KEYHOME;
 	if ( key == DEFINE )	return KEYDEF;
 	if ( key == UNDO )		return KEYUNDO;
@@ -671,34 +671,34 @@ short GetEvent (Pt *ppos)
 	if ( key == CR )		return KEYRETURN;
 	if ( key == ENTER )		return KEYENTER;
 	if ( key == POINT )		return KEYPAUSE;
-	
+
 	if ( key == KEYMGP )	return KEYCLIC;
 	if ( key == KEYMMP )	return KEYCLIC;
 	if ( key == KEYMDP )	return KEYCLICR;
-	
+
 	if ( key == KEYMGR )	return KEYCLICREL;
 	if ( key == KEYMMR )	return KEYCLICREL;
 	if ( key == KEYMDR )	return KEYCLICREL;
-	
+
 	if ( typetext == 1 )
 	{
 		if ( key == '' )	return KEYCIRCON;
 		if ( key == '' )	return KEYTREMA;
-		
+
 		if ( key == '' )	return KEYAGRAVE;
 		if ( key == '' )	return KEYATREMA;
-		
+
 		if ( key == '' )	return KEYEAIGU;
 		if ( key == '' )	return KEYEGRAVE;
-		
+
 		if ( key == '' )	return KEYOTREMA;
-		
+
 		if ( key == '' )	return KEYUGRAVE;
 		if ( key == '' )	return KEYUTREMA;
-		
+
 		if ( key == '' )	return KEYCCEDILLE;
 	}
-	
+
 	return (short)key;
 }
 
@@ -748,13 +748,13 @@ void ModColor (short color, short red, short green, short blue)
 {
 	unsigned long	nocoul = color;
 	RGBColor		coulmod;
-	
+
 	if ( colormode == 0 )  return;
-	
+
 	coulmod.r = (red<<8)+red;
 	coulmod.g = (green<<8)+green;
 	coulmod.b = (blue<<8)+blue;
-	
+
 	tcol_putclut(tcolcanal, TCFORCE, &nocoul, &coulmod);
 }
 
@@ -773,7 +773,7 @@ void GetColor (short color, short *pred, short *pgreen, short *pblue)
 	unsigned long	nocoul = color;
 	RGBColor		coulcherche;
 	RGBColor		coultrouve;
-	
+
 	if ( colormode == 0 )
 	{
 		*pred   = 0;
@@ -783,7 +783,7 @@ void GetColor (short color, short *pred, short *pgreen, short *pblue)
 	else
 	{
 		tcol_srcclut(tcolcanal, TCFORCE+TCGIVE, &nocoul, &coulcherche, &coultrouve);
-		
+
 		*pred   = coultrouve.r>>8;
 		*pgreen = coultrouve.g>>8;
 		*pblue  = coultrouve.b>>8;
@@ -803,7 +803,7 @@ void GetColor (short color, short *pred, short *pgreen, short *pblue)
 void DuplPixel(Pixmap *ppms, Pixmap *ppmd)
 {
 	Pt		p;
-	
+
 	CopyPixel
 	(
 		ppms, (p.y=0, p.x=0, p),
@@ -832,15 +832,15 @@ void DuplPixel(Pixmap *ppms, Pixmap *ppmd)
 void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectangle *pzone)
 {
 	Pt		p;
-	
+
 	(*pzone).p1.x = pos.x;
 	(*pzone).p1.y = pos.y;
 	(*pzone).p2.x = pos.x+dim.x;
 	(*pzone).p2.y = pos.y+dim.y;
-	
+
 	if ( shift.x == 0 && shift.y == 0 )  goto fill;
 	if ( shift.x != 0 && shift.y != 0 )  goto fill;
-	
+
 	if ( shift.x < 0 && shift.x > -dim.x )
 	{
 		CopyPixel
@@ -881,7 +881,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		);
 		(*pzone).p1.y = pos.y + dim.y - shift.y;
 	}
-	
+
 	fill:
 	if ( color == -1 )  return;
 	DrawFillRect(ppm, *pzone, MODELOAD, color);		/* init la zone  mettre  jour */
@@ -905,12 +905,12 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 void ScrollPixel (Pixmap *ppm, Pt shift, char color, Rectangle *pzone)
 {
 	Pt		pos, dim;
-	
+
 	pos.x = 0;
 	pos.y = 0;
 	dim.x = ppm->dx;
 	dim.y = ppm->dy;
-	
+
 	ScrollPixelRect(ppm, pos, dim, shift, color, pzone);
 }
 
@@ -938,7 +938,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	char		*ps,*pd;			/* ^source,^destination */
 	short		is,id;				/* Iy source, Iy destination */
 	Rectangle	rect;				/* rectangle pour la souris */
-	
+
 	if ( ppmd != 0 )
 	{
 		if ( od.x < 0 )					/* dpasse  gauche ? */
@@ -953,7 +953,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 			dim.x -= od.x+dim.x - ppmd->dx;
 			if ( dim.x <= 0 )  return 1;
 		}
-			
+
 		if ( od.y < 0 )					/* dpasse en haut ? */
 		{
 			dim.y += od.y;
@@ -967,7 +967,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 			if ( dim.y <= 0 )  return 1;
 		}
 	}
-	
+
 	switch (mode)
 	{
 		case MODEOR:	m = SETDOT; break;
@@ -975,7 +975,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 		case MODEXOR:	m = INVDOT; break;
 		default:		m = LOADDOT;
 	}
-	
+
 	if ( ppms == 0 )				/* source dans l'cran ? */
 	{
 		rect.p1.x = os.x;
@@ -993,7 +993,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 		ps = ppms->data;
 		is = ppms->dxb;
 	}
-	
+
 	if ( ppmd == 0 )				/* destination dans l'cran ? */
 	{
 		rect.p1.x = od.x;
@@ -1011,7 +1011,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 		pd = ppmd->data;
 		id = ppmd->dxb;
 	}
-	
+
 	if ( pgradesc->dfcnp <= 1 )
 	{										/* noir-blanc */
 		if ( (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
@@ -1038,16 +1038,16 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	{										/* couleur */
 		if ( ppms == 0 || ppms->nbp > 1 )  m += SRCCOUL;
 		if ( ppmd == 0 || ppmd->nbp > 1 )  m += DSTCOUL;
-		
+
 		csf = pgradesc->dfcsf;
 		ccf = pgradesc->dfccf;				/* sauve les couleurs */
-		
+
 		if ( (m&SRCCOUL) == 0 && (m&DSTCOUL) != 0 )
 		{									/* si source n-b et destination couleur */
 			pgradesc->dfcsf = ppms->scolor;
 			pgradesc->dfccf = ppms->ccolor;
 		}
-		
+
 		gra2_craster
 		(
 			pgradesc,						/* ^descripteur de fentre    */
@@ -1055,11 +1055,11 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 			(Point) {od.y, od.x}, pd, id,	/* dest:   origine, ^data, Iy */
 			(Point) {dim.y, dim.x}, m		/* dimensions, mode           */
 		);
-		
+
 		pgradesc->dfcsf = csf;
 		pgradesc->dfccf = ccf;				/* restitue les couleurs */
 	}
-	
+
 	ShowMouse();							/* remet la souris si ncessaire */
 	return 0;
 }
@@ -1081,7 +1081,7 @@ void OpenGraDesc (Pixmap *ppm)
 		HideMouse();
 		return;
 	}
-	
+
 	savedf    = pgradesc->df;
 	savedfd   = pgradesc->dfd;
 	savedff   = pgradesc->dff;
@@ -1094,7 +1094,7 @@ void OpenGraDesc (Pixmap *ppm)
 	savedfcnb = pgradesc->dfcnb;
 	savedfcmd = pgradesc->dfcmd;
 	savedfabs = pgradesc->dfabs;
-	
+
 	pgradesc->df.x   = 0;
 	pgradesc->df.y   = 0;
 	pgradesc->dfd.x  = ppm->dx;
@@ -1107,15 +1107,15 @@ void OpenGraDesc (Pixmap *ppm)
 	pgradesc->dfwb.y = 0;
 	pgradesc->dfwe.x = ppm->dx;
 	pgradesc->dfwe.y = ppm->dy;
-	
+
 	pgradesc->dfiix = 1;
 	pgradesc->dfiiy = ppm->dxb;
-	
+
 	pgradesc->dfcnp = ppm->nbp;
 	pgradesc->dfcnb = 1<<ppm->nbp;
 	if ( ppm->nbp == 1 )  pgradesc->dfcmd = 0;
 	else                  pgradesc->dfcmd = 2;
-	
+
 	pgradesc->dfabs = ppm->data;
 }
 
@@ -1135,7 +1135,7 @@ void CloseGraDesc (Pixmap *ppm)
 		ShowMouse();
 		return;
 	}
-	
+
 	pgradesc->df    = savedf;
 	pgradesc->dfd   = savedfd;
 	pgradesc->dff   = savedff;
@@ -1170,7 +1170,7 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 	Pt			o;
 	Point		p, d;
 	char		m;
-	
+
 	OpenGraDesc(ppm);
 
 	if ( ppm == 0 )
@@ -1182,7 +1182,7 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 		o.x = 0;
 		o.y = 0;
 	}
-	
+
 	switch (mode)
 	{
 		case MODEOR:	m = SETDOT; break;
@@ -1200,13 +1200,13 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 			case CLRDOT:  m  = SETDOT; break;
 		}
 	}
-	
+
 	csf = pgradesc->dfcsf;
 	ccf = pgradesc->dfccf;				/* sauve les couleurs */
-	
+
 	pgradesc->dfcsf = color;
 	pgradesc->dfccf = ~color;
-	
+
 	gra2_line							/* dessine une ligne */
 	(
 		pgradesc,
@@ -1240,7 +1240,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 	Pt			o;
 	Point		p, d;
 	char		m;
-	
+
 	OpenGraDesc(ppm);
 
 	if ( ppm == 0 )
@@ -1252,7 +1252,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		o.x = 0;
 		o.y = 0;
 	}
-	
+
 	switch (mode)
 	{
 		case MODEOR:	m = SETDOT; break;
@@ -1270,13 +1270,13 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 			case CLRDOT:  m  = SETDOT; break;
 		}
 	}
-	
+
 	csf = pgradesc->dfcsf;
 	ccf = pgradesc->dfccf;				/* sauve les couleurs */
-	
+
 	pgradesc->dfcsf = color;
 	pgradesc->dfccf = ~color;
-	
+
 	gra2_line							/* dessine une ligne */
 	(
 		pgradesc,
@@ -1284,7 +1284,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		(d.y=0, d.x=rect.p2.x-rect.p1.x, d),
 		m
 	);
-	
+
 	gra2_line							/* dessine une ligne */
 	(
 		pgradesc,
@@ -1292,7 +1292,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		(d.y=rect.p2.y-rect.p1.y, d.x=0, d),
 		m
 	);
-	
+
 	gra2_line							/* dessine une ligne */
 	(
 		pgradesc,
@@ -1300,7 +1300,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		(d.y=0, d.x=rect.p1.x-rect.p2.x, d),
 		m
 	);
-	
+
 	gra2_line							/* dessine une ligne */
 	(
 		pgradesc,
@@ -1308,7 +1308,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		(d.y=rect.p1.y-rect.p2.y, d.x=0, d),
 		m
 	);
-	
+
 	pgradesc->dfcsf = csf;
 	pgradesc->dfccf = ccf;				/* restitue les couleurs */
 
@@ -1337,9 +1337,9 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 	Point		p, d;
 	Trame88		trame1 = {-1,-1,-1,-1,-1,-1,-1,-1};
 	Trame88		trame0 = {0,0,0,0,0,0,0,0};
-	
+
 	OpenGraDesc(ppm);
-	
+
 	if ( ppm == 0 )
 	{
 		o = origine;
@@ -1349,7 +1349,7 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		o.x = 0;
 		o.y = 0;
 	}
-	
+
 	if ( mode == MODEXOR )
 	{
 		gra2_trame							/* inverse la surface */
@@ -1362,7 +1362,7 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		);
 		goto close;
 	}
-	
+
 	if ( pgradesc->dfcmd == 0 )
 	{
 		if ( ppm == 0 &&					/* dans l'cran ? */
@@ -1398,10 +1398,10 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 	{
 		csf = pgradesc->dfcsf;
 		ccf = pgradesc->dfccf;				/* sauve les couleurs */
-		
+
 		pgradesc->dfcsf = color;
 		pgradesc->dfccf = color;
-		
+
 		gra2_trame							/* rempli la surface */
 	    (
 			pgradesc,
@@ -1413,7 +1413,7 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		pgradesc->dfcsf = csf;
 		pgradesc->dfccf = ccf;				/* restitue les couleurs */
 	}
-	
+
 	close:
 	CloseGraDesc(ppm);
 }
@@ -1434,10 +1434,10 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 char GetPixel (Pixmap *ppm, Pt pos)
 {
 	char		*pt;
-	
+
 	if ( pos.x < 0 || pos.x >= ppm->dx ||
 		 pos.y < 0 || pos.y >= ppm->dy )  return -1;
-	
+
 	pt = ppm->data;
 	if ( ppm->nbp == 1 )
 	{
@@ -1464,10 +1464,10 @@ char GetPixel (Pixmap *ppm, Pt pos)
 short SavePixmap (Pixmap *ppm)
 {
 	pmsave = *ppm;
-	
+
 	pmsave.data = malloc( ((u_long)pmsave.dxb)*((u_long)pmsave.dy) );
 	if ( pmsave.data == NULL )  return 1;
-	
+
 	memcpy(pmsave.data, ppm->data, ((u_long)pmsave.dxb)*((u_long)pmsave.dy));
 	return 0;
 }
@@ -1483,23 +1483,23 @@ short SavePixmap (Pixmap *ppm)
 short RestorePixmap (Pixmap *ppm)
 {
 	char	*data;
-	
+
 	if ( pmsave.data == 0       ||
 		 ppm->data   == 0       ||
 		 ppm->dxb != pmsave.dxb ||
 		 ppm->dx  != pmsave.dx  ||
 		 ppm->dy  != pmsave.dy  ||
 		 ppm->nbp != pmsave.nbp )  return 1;
-	
+
 	memcpy(ppm->data, pmsave.data, ((u_long)pmsave.dxb)*((u_long)pmsave.dy));
-	
+
 	data = ppm->data;
 	*ppm = pmsave;
 	ppm->data = data;
-	
+
 	free(pmsave.data);
 	pmsave.data = 0;
-	
+
 	return 0;
 }
 
@@ -1519,7 +1519,7 @@ short TestHLine (Pixmap *ppm, short y)
 {
 	char		*pt;
 	short		i;
-	
+
 	pt = ppm->data + ppm->dxb*y;
 	for ( i=0 ; i<LXICO/8 ; i++ )
 	{
@@ -1544,7 +1544,7 @@ short TestVLine (Pixmap *ppm, short x)
 	char		*pt;
 	short		i;
 	short		mask;
-	
+
 	pt = ppm->data + x/8;
 	mask = 1<<(7-x%8);
 	for ( i=0 ; i<LYICO ; i++ )
@@ -1589,21 +1589,21 @@ short PrintScreen (Pt p1, Pt p2)
 {
 	Point		coin, dim;
 	int			nowdo, err;
-  
+
 	coin.x = p1.x;
 	coin.y = p1.y;
 	dim.x  = p2.x - p1.x;
 	dim.y  = p2.y - p1.y;
 	L_crewdo(coin, dim, &nowdo);		/* cre une sous-fentre */
 	L_usewdo(nowdo);					/* utilise la sous-fentre cre */
-  
+
 	HideMouse();						/* cache la souris */
 	err = lib_pdump(0);					/* imprime la sous-fentre */
 	ShowMouse();						/* remet la souris */
-  
+
 	L_usewdo(0);						/* utilise la sous-fentre initiale */
 	L_kilwdo(nowdo);					/* dtruit la sous-fentre cre */
-  
+
 	return err;
 }
 
@@ -1625,13 +1625,13 @@ static int UnloadImage(ImageSmaky *pim)
 		free(pim->data);			/* libre l'image code */
 		pim->data = 0;
 	}
-	
+
 	if ( pim->clut != 0 )
 	{
 		free(pim->clut);			/* libre la clut */
 		pim->clut = 0;
 	}
-	
+
 	if ( pim->head != 0 )
 	{
 		free(pim->head);			/* libre l'en-tte */
@@ -1687,11 +1687,11 @@ static int LoadImage(int numero, ImageSmaky *pim)
 	int			err = 1;
 	FILE		*channel;				/* descripteur du fichier */
 	char		name[24];				/* nom de l'image BLUPIXnn.IMAGE */
-	
+
 	pim->head = NULL;
 	pim->clut = NULL;
 	pim->data = NULL;
-	
+
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
 		if ( numero == 36 )  sprintf(name, "(:,#:)BLUPI_X.COLOR");
@@ -1702,30 +1702,30 @@ static int LoadImage(int numero, ImageSmaky *pim)
 		if ( numero == 36 )  sprintf(name, "(:,#:)BLUPI_X.IMAGE");
 		else                 sprintf(name, "(:,#:)BLUPIX%02d.IMAGE", numero);
 	}
-	
+
 	if ( (channel=fopen(name,"r")) == NULL )  goto error;	/* ouvre le fichier */
-	
+
 	pim->head = malloc(sizeof(Image));
 	if ( pim->head == NULL )  goto error;
 	fread( pim->head, 1, sizeof(Image), channel );			/* lit l'en-tte */
-	
+
 	if ( pim->head->imlgc != 0 )							/* image couleur avec clut ? */
 	{
 		pim->clut = malloc(pim->head->imlgc);
 		if ( pim->clut == NULL )  goto error;
 		fread( pim->clut, 1, pim->head->imlgc, channel );	/* lit la clut */
 	}
-	
+
 	pim->data = malloc(pim->head->imnbb);
 	if (pim->data == NULL)  goto error;
 	fread( pim->data, 1, pim->head->imnbb, channel );		/* lit l'image code */
-	
+
 	if ( pim->head->imbip > 1 )								/* image couleur ? */
 	{
 		LoadCLUT(pim->clut);								/* change la clut */
 	}
 	err = 0;												/* chargement image ok */
-	
+
 	error:
 	if ( err )
 	{
@@ -1733,7 +1733,7 @@ static int LoadImage(int numero, ImageSmaky *pim)
 		if ( pim->clut != NULL )  free(pim->clut);			/* libre la clut */
 		if ( pim->data != NULL )  free(pim->data);			/* libre le data */
 	}
-	
+
 	fclose(channel);										/* ferme le fichier */
 	return err;
 }
@@ -1757,7 +1757,7 @@ static int LoadImage(int numero, ImageSmaky *pim)
 short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 {
 	int		nbp = 1;
-	
+
 	if ( colormode )
 	{
 		if ( color >= 1 )  nbp = pgradesc->dfcnp;
@@ -1766,7 +1766,7 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 	{
 		if ( color == 2 )  nbp = pgradesc->dfcnp;
 	}
-	
+
 	if ( ppm->data != 0 )				/* pixmap existe dj ? */
 	{
 		if ( ppm->dx == dim.x && ppm->dy == dim.y )
@@ -1780,7 +1780,7 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 			ppm->data = 0;
 		}
 	}
-	
+
 	ppm->dx     = dim.x;
 	ppm->dy     = dim.y;
 	ppm->nbp    = nbp;				/* nb de bits/pixel selon noir-blanc/couleur */
@@ -1836,10 +1836,10 @@ short GetImage(Pixmap *ppm, short numero)
 {
 	int			err;
 	ImageSmaky	im;
-	
+
 	err = LoadImage(numero, &im);				/* charge l'image */
 	if ( err )  goto error;
-	
+
 	if ( ppm->data == 0            ||
 		 ppm->dx != im.head->imdlx ||
 		 ppm->dy != im.head->imdly )
@@ -1855,19 +1855,19 @@ short GetImage(Pixmap *ppm, short numero)
 		err = 1;
 		if ( ppm->data == NULL )  goto error;	/* pas assez de mmoire */
 	}
-	
+
 	im.head->imdlx *= im.head->imbip;
 	im.head->imbip  = 1;
 	err = gra2_decoima(im.data, ppm->data, im.head);
-	
+
 	error:
 	if ( err )
 	{
 		GivePixmap(ppm);						/* libre le pixmap */
 	}
-	
+
 	UnloadImage(&im);							/* libre l'image smaky code */
-	
+
 	return err;
 }
 
@@ -1909,7 +1909,7 @@ void CacheIcon(short numero)
 short GetIcon(Pixmap *ppm, short numero, short mode)
 {
 	int			no;
-	
+
 	ppm->dx     = LXICO;
 	ppm->dy     = LYICO;
 	if ( colormode && (numero&ICONMASK) < ICOMOFF )
@@ -1921,10 +1921,10 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 		ppm->nbp = 1;					/* 1 bit/pixel car noir-blanc */
 	}
 	ppm->dxb    = (LXICO*16/8)*ppm->nbp;
-	
+
 	ppm->scolor = COLORNOIR;			/* initialise la couleur chair */
 	ppm->ccolor = COLORBLANC;			/* initialise la couleur fond */
-	
+
 	if ( (numero&ICONMASK) < ICOMOFF )
 	{
 		no = numero;
@@ -1982,37 +1982,37 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 		}
 		return 1;
 	}
-	
+
 	data:
 	ppm->data += (LXICO/8L)*((no&ICONMASK)%16)*ppm->nbp;
 	ppm->data += (160L*LYICO)*((no&ICONMASK)/16)*ppm->nbp;
-	
+
 	switch ( no&(~ICONMASK) )
 	{
 		case UL:
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
 			break;
-		
+
 		case UR:
 			ppm->data += (LXICO/8L/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
 			break;
-		
+
 		case DL:
 			ppm->data += (160L*LYICO/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
 			break;
-		
+
 		case DR:
 			ppm->data += (160L*LYICO/2 + LXICO/8L/2)*ppm->nbp;
 			ppm->dx /= 2L;
 			ppm->dy /= 2L;
 			break;
 	}
-	
+
 	return 0;				/* retour toujours ok */
 }
 
@@ -2030,31 +2030,31 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 static int LoadIcon(void)
 {
 	int		err;
-	
+
 	err = GetImage(&pmicon1c, IMAICON+0);			/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon1m, IMAICON+0+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon2c, IMAICON+1);			/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon2m, IMAICON+1+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon3c, IMAICON+2);			/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon3m, IMAICON+2+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon4c, IMAICON+3);			/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	err = GetImage(&pmicon4m, IMAICON+3+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
-	
+
 	return 0;
 }
 
@@ -2101,19 +2101,19 @@ void BlackScreen (void)
 	int		i;
 	u_char	t;
 	Trame88	trame;
-	
+
 	if ( (pgradesc->dfmod)&0x80 )		/* cran  fond blanc ? */
 		t = 0xFF;				/* trame noire */
 	else
 		t = 0x00;				/* trame blanche */
-	
+
 	for ( i=0 ; i<8 ; i++ )
 	{
 		trame[i] = t;			/* construit la trame 8x8 */
 	}
-	
+
 	HideMouse();				/* cache la souris */
-	
+
 	gra2_trame					/* efface toute la fentre */
 	(
 		pgradesc,				/* ^descripteur de fentre */
@@ -2122,7 +2122,7 @@ void BlackScreen (void)
 		LOADDOT,				/* mode                    */
 		trame					/* trame 8x8 noire/blanche */
 	);
-	
+
 	ShowMouse();				/* remet la souris */
 }
 
@@ -2148,19 +2148,19 @@ short FileRead (void *pdata, long pos, short nb, char file)
 	if ( file >= 'A' )  n = 6;
 	channel = fopen(filename+n, "rb");	/* ouvre le fichier */
 	if ( channel == NULL )  return errno;
-	
+
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
 	{
 		err = errno;
 		goto close;
 	}
-	
+
 	if ( fread(pdata, nb, 1, channel) != 1 )
 	{
 		err = errno;
 		goto close;
 	}
-	
+
 	close:
 	fclose(channel);					/* ferme le fichier */
 	return 0;
@@ -2187,19 +2187,19 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 	if ( file >= 'A' )  n = 6;
 	channel = fopen(filename+n, "ab");	/* ouvre le fichier */
 	if ( channel == NULL )  return errno;
-	
+
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
 	{
 		err = errno;
 		goto close;
 	}
-	
+
 	if ( fwrite(pdata, nb, 1, channel) != 1 )
 	{
 		err = errno;
 		goto close;
 	}
-	
+
 	close:
 	fclose(channel);					/* ferme le fichier */
 	return 0;
@@ -2226,10 +2226,10 @@ long FileGetLength (char file)
 	if ( file >= 'A' )  n = 6;
 	channel = fopen(filename+n, "r");	/* ouvre le fichier */
 	if ( channel == NULL )  return 0;
-	
+
 	fseek(channel, 0, SEEK_END);
 	lg = ftell(channel);
-	
+
 	fclose(channel);					/* ferme le fichier */
 	return lg;
 }
@@ -2247,7 +2247,7 @@ long FileGetLength (char file)
 short FileDelete (char file)
 {
 	char		filename[] = ":BLUPIXA.DAT";
-	
+
 	filename[7] = file;
 	return remove(filename);
 }
@@ -2266,7 +2266,7 @@ short FileRename (char oldfile, char newfile)
 {
 	char		oldfilename[] = ":BLUPIXA.DAT";
 	char		newfilename[] = "BLUPIXA.DAT";
-	
+
 	oldfilename[7] = oldfile;
 	newfilename[6] = newfile;
 	return rename(oldfilename, newfilename);
@@ -2287,14 +2287,14 @@ void FatalError (short err)
 	short		dberr;
 	Point		pos;
 	char		text[] = "Pas assez de mmoire pendant le jeu !\n\n1) Cliquez VU ou appuyez RETURN\n2) Arrtez le SMAKY\n3) Redmarrez ...";
-	
+
 	dberr = dbox_terror(text, 0, pos);		/* dialogue d'erreur ... */
 	if ( dberr )
 	{
 		printf(text);						/* affiche un texte */
 		getchar();
 	}
-	
+
 	exit(err);								/* retour dans MAIN */
 }
 
@@ -2314,7 +2314,7 @@ short IfFileExist (char *pfilename)
 
 	channel = fopen(pfilename, "r");		/* ouvre le fichier */
 	if ( channel == NULL )  return 0;		/* fichier n'existe pas */
-	
+
 	fclose(channel);						/* ferme le fichier */
 	return 1;								/* fichier existe */
 }
@@ -2333,17 +2333,17 @@ short CheckMem (u_long flags)
 {
 	long		total, biggest;
 	long		mem = 0;
-	
+
 	G_argmem(&total, &biggest);			/* demande la mmoire restante */
 	total -= 10000;						/* petite marge de 10 kilos ! */
-	
+
 	if ( flags & 1<<0 )  mem += MEMBW+MEMRUNBW;
 	if ( flags & 1<<1 )  mem += MEMCOLOR+MEMRUNCOLOR;
-	
+
 	if ( flags & (1<<2|1<<3) )  mem += MEMAUDIO;
 	if ( flags & 1<<2 )         mem += MEMBRUIT;
 	if ( flags & 1<<3 )         mem += MEMMUSIC;
-	
+
 	return ( mem < total );
 }
 
@@ -2370,12 +2370,12 @@ short DboxMem (void)
 	char		*pdbox;
 	Point		debut, fin;
 	char		*menu = "\0\0\0\0\0\0\0\0\0\0\0\0";
-	
+
 	err = res_get(chres, RSGETPOINTER+RSGETnoHAND, 0L, RtypDbox, DBOX_MEM, 0L, &pdbox, &taille);
 	if ( err )  return err;
 	err = dbox_open(pdbox, DBSAV, (Point){0,0}, flags, &dbcanal);
 	if ( err )  return err;
-	
+
 	if ( pgradesc->dfcnp == 1 || !IfFileExist("(:,#:)BLUPIX01.COLOR") )
 	{
 		dbox_getco(dbcanal, 1+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "couleur" */
@@ -2385,7 +2385,7 @@ short DboxMem (void)
 	{
 		flags |= 1<<1;												/* enclenche "couleur" */
 	}
-	
+
 	if ( admode != 0 || !IfFileExist("(:,#:)BLUPIX01.AUDIO") )
 	{
 		dbox_getco(dbcanal, 2+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "bruitages" */
@@ -2394,7 +2394,7 @@ short DboxMem (void)
 	{
 		flags |= 1<<2;												/* enclenche "bruitages" */
 	}
-	
+
 	if ( admode != 0 || !IfFileExist("(:,#:)BLUPIX02.AUDIO") )
 	{
 		dbox_getco(dbcanal, 3+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "musiques" */
@@ -2403,7 +2403,7 @@ short DboxMem (void)
 	{
 		flags |= 1<<3;												/* enclenche "musiques" */
 	}
-	
+
 	if ( !CheckMem(flags) )
 	{
 		flags &= ~(1<<3);											/* dclenche "musiques" */
@@ -2417,10 +2417,10 @@ short DboxMem (void)
 			}
 		}
 	}
-	
+
 	if ( CheckMem(flags) )  dbox_getco(dbcanal, 50+DBGCLABEL+DBGCFULL, &debut, &fin);
 	else                    dbox_getco(dbcanal, 50+DBGCLABEL+DBGCGREY, &debut, &fin);
-	
+
 	ShowMouse();							/* utilise la souris */
 	do
 	{
@@ -2436,13 +2436,13 @@ short DboxMem (void)
 	dbox_close (dbcanal);
 	HideMouse();							/* enlve la souris */
 	L_afmenu(menu);							/* affiche les soft-keys */
-	
+
 	if ( flags & 1<<0 )  colormode = 0;		/* noir-blanc */
 	else                 colormode = 1;		/* couleur */
-	
+
 	if ( flags & 1<<2 )  sound1 = 1;		/* bruitages */
 	if ( flags & 1<<3 )  sound2 = 1;		/* musiques */
-	
+
 	if ( touche == F13 || touche == F14 || touche == F15 )  return 1;
 	return 0;
 }
@@ -2459,7 +2459,7 @@ short DboxMem (void)
 static void FatalLoad(char *name, int err)
 {
 	char*		errorname;
-	
+
 	errorname = strerror(err);
 	if ( (int)errorname == 0 )
 	{
@@ -2470,7 +2470,7 @@ static void FatalLoad(char *name, int err)
 		fprintf(stderr, "Erreur fatale %s avec %s ", errorname, name);
 	}
 	getchar();						/* attend une touche ... */
-	
+
 	CloseMachine();					/* libre les ressources */
 	exit(err);						/* retour dans MAIN */
 }
@@ -2490,17 +2490,17 @@ void OpenMachine(void)
 	long		pid;					/* identificateur du processus cr */
 	u_short		pino;					/* numro du processus cre */
 	u_int		adnombre;				/* nombre de sons audio */
-	
+
 	L_mouse(2);							/* souris par le clavier */
 	HideMouse();						/* enlve la souris */
-	
+
 	printf("%c%c%c",
 		NOCURS,							/* enlve le curseur */
 		MODGRA,1						/* mode GRACLIP */
 		);
-	
+
 	gra2_open(&pgradesc);				/* ouverture du module GRA2 */
-	
+
 	err = res_opelib();					/* ouverture du module RES */
 	if ( err )  FatalLoad("res", err);
 
@@ -2509,16 +2509,16 @@ void OpenMachine(void)
 
 	err = audio_opelib();				/* ouverture du module AUDIO */
 	if ( err )  FatalLoad("audio", err);
-		
+
 	err = audio_open(&adcanal, &admode);	/* ouvre la librairie audio */
 	if ( err )  FatalLoad("audio", err);
-	
+
 	err = res_open ("(:,#:)BLUPIX(_%L,).RS", RSOPCACHE, 0x10000*MAJREV+MINREV, &chres);
 	if ( err )  FatalLoad("BLUPIX.RS", err);
 
 	err = DboxMem();					/* demande comment dmarrer ... */
 	if ( err )  exit(err);				/* retour dans MAIN */
-	
+
 	if ( colormode )
 	{
 		err = tcol_opelib();			/* ouverture du module TCOLOR */
@@ -2526,24 +2526,24 @@ void OpenMachine(void)
 		err = tcol_litcanal(&tcolcanal);
 		if ( err )  FatalLoad("tcolor", err);
 	}
-	
+
 	if ( sound1 )  audio_cache(&adcanal, "(:,#:)BLUPIX01.AUDIO", &adcanalson1, &adnombre);
 	if ( sound2 )  audio_cache(&adcanal, "(:,#:)BLUPIX02.AUDIO", &adcanalson2, &adnombre);
-	
+
 	err = N_cretask(FilsSound, 200, 10, "BLUPIX_PLAY", 0, 0, &pid, &pino);
-	
+
 	err = LoadIcon();					/* charge l'image des icnes */
 	if ( err )  FatalLoad("icnes", err);
-	
+
 	origine.x = ((pgradesc->dfd.x)-LXIMAGE)/2;
 	origine.y = ((pgradesc->dfd.y)-LYIMAGE)/2;
-	
+
 	StartRandom(0, 0);					/* coup de sac du gnrateur alatoire toto */
 	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
-	
+
 	L_repkey(-1, 0);					/* pas de repeat automatique */
 	keystatus = 0;
-	
+
 	AfMenu();							/* affiche les soft-keys */
 }
 
@@ -2559,7 +2559,7 @@ void OpenMachine(void)
 void CloseMachine(void)
 {
 	short		max;
-	
+
 	GivePixmap(&pmicon1c);			/* libre les pixmap des icnes */
 	GivePixmap(&pmicon1m);
 	GivePixmap(&pmicon2c);
@@ -2583,9 +2583,9 @@ void CloseMachine(void)
 	if ( adcanalson2 != 0 )  audio_uncache(&adcanal, &adcanalson2);
 	audio_close(&adcanal);			/* ferme la librairie audio */
 	audio_clolib();					/* fermeture du module AUDIO */
-	
+
 	res_close(chres);				/* ferme le fichier de ressources */
-	
+
 	if ( colormode )
 	{
 		tcol_clolib();				/* fermeture du module TCOLOR */
@@ -2623,7 +2623,7 @@ long MachinePartieLg (void)
 short MachinePartieWrite (long pos, char file)
 {
 	short		err;
-	
+
 	err = FileWrite(&nextrand, pos, sizeof(u_long)*10, file);
 	return err;
 }
@@ -2639,7 +2639,7 @@ short MachinePartieWrite (long pos, char file)
 short MachinePartieRead (long pos, char file)
 {
 	short		err;
-	
+
 	err = FileRead(&nextrand, pos, sizeof(u_long)*10, file);
 	return err;
 }

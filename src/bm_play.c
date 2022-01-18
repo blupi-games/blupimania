@@ -415,7 +415,7 @@ void PutNum (char **ppch, short num, short nbdigits)
 	short		shift = 10000;
 	short		digit;
 	char		put = 0;
-	
+
 	if ( nbdigits > 0 )
 	{
 		for( i=nbdigits ; i>0 ; i-- )
@@ -454,7 +454,7 @@ void PutNum (char **ppch, short num, short nbdigits)
 void MondeEdit (void)
 {
 	short		i = 0;
-	
+
 	do
 	{
 		descmonde.palette[i] = tabpalette[i];
@@ -475,9 +475,9 @@ void MondeVide (void)
 {
 	short		x, y;
 	short		i = 0;
-	
+
 	memset(&descmonde, 0, sizeof(Monde));
-	
+
 	for ( y=0 ; y<MAXCELY ; y++ )
 	{
 		for ( x=0 ; x<MAXCELX ; x++ )
@@ -485,9 +485,9 @@ void MondeVide (void)
 			descmonde.tmonde[y][x] = tabmonde[y][x];
 		}
 	}
-	
+
 	descmonde.freq = 50;
-	
+
 	do
 	{
 		descmonde.palette[i] = tabpalette0[i];
@@ -512,7 +512,7 @@ char BanqueToFile (char banque)
 		else                   return banque-'A'+'I';	/* I..P */
 	}
 	if ( banque >= 'I' && banque <= 'L' )  return banque-'I'+'E';	/* E..H */
-	
+
 	return banque;
 }
 
@@ -527,16 +527,16 @@ char BanqueToFile (char banque)
 void MondeMax (char banque)
 {
 	short	max = 2;
-	
+
 	maxmonde = FileGetLength(BanqueToFile(banque))/sizeof(Monde);
-	
+
 	if ( banque <= 'B' )  max = 5;
 	if ( banque == 'D' ||
 		 banque == 'F' ||
 		 banque == 'H' )  max = 3;
-	
+
 	if ( GetDemo() == 1 && maxmonde > max )  maxmonde = max;
-	
+
 	if ( construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
 	if ( GetDemo() == 1 && construit )  maxmonde = 1;
 }
@@ -548,7 +548,7 @@ void convshort (unsigned short *s)
 {
 	char	t;
 	char 	*p = (char*)s;
-	
+
 	t    = p[0];
 	p[0] = p[1];
 	p[1] = t;
@@ -557,7 +557,7 @@ void convshort (unsigned short *s)
 void ConvMonde (Monde *m)
 {
 	int		i, j;
-	
+
 	for ( i=0 ; i<MAXCELX ; i++ )
 		for ( j=0 ; j<MAXCELY ; j++ )
 			convshort(&m->tmonde[j][i]);
@@ -583,12 +583,12 @@ short MondeRead (short monde, char banque)
 {
 	short           err = 0;
 	short           max;
-	
+
 	if ( construit && GetDemo() == 0 )  max = maxmonde-1;
 	else                                max = maxmonde;
-	
+
 	if ( monde >= max )  goto vide;
-	
+
 	err = FileRead(&descmonde, monde*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 	if ( err )
 	{
@@ -599,7 +599,7 @@ short MondeRead (short monde, char banque)
 	ConvMonde (&descmonde) ;
 #endif
 	return 0;
-	
+
 	vide:
 	MondeVide();            /* retourne un monde vide */
 	return err;
@@ -627,7 +627,7 @@ short MondeWrite (short monde, char banque)
 	ConvMonde (&descmonde) ;
 #endif
 	MondeMax(banque);
-	
+
 	return err;
 }
 
@@ -645,19 +645,19 @@ short MondeWrite (short monde, char banque)
 short JoueurRead (void)
 {
 	short		err;
-	
+
 	memset(&fj, 0, sizeof(Joueur));			/* met tout  zro */
 	fj.vitesse = 1;							/* vitesse normale */
-	
+
 	err = FileRead(&fj, 0, sizeof(Joueur), GetDemo()?'X':'Z');
 	if ( err )
 	{
 		fj.noisevolume = 10-3;
 		fj.musicvolume = 10-3;
 	}
-	
+
 	modetelecom = fj.modetelecom;
-	
+
 	PlayNoiseVolume(fj.noisevolume);
 	PlayMusicVolume(fj.musicvolume);
 	return err;
@@ -676,7 +676,7 @@ short JoueurRead (void)
 short JoueurWrite (void)
 {
 	short		err;
-	
+
 	err = FileWrite(&fj, 0, sizeof(Joueur), GetDemo()?'X':'Z');
 	return err;
 }
@@ -780,7 +780,7 @@ void ShowImage (void)
 	Rectangle	rect;
 	char		*ptx;
 	short		image, err, nbessai, max;
-	
+
 	static char *txrecommence[19] =
 	{
 #if FRENCH
@@ -805,7 +805,7 @@ void ShowImage (void)
 		"\013\144Empoigne le probl\265me par un autre bout ?"
 #endif
 	};
-	
+
 	static char *txsuivant[20] =
 	{
 #if FRENCH
@@ -834,14 +834,14 @@ plus vite la prochaine fois !",
 mais rien n'est moins s\250r !"
 #endif
 	};
-	
+
 	static char *txfini[9] =
 	{
 #if FRENCH
 		"Bravo, tu as termin\266 la premi\265re partie du niveau\0011.\n\
 Essaye maintenant la deuxi\265me partie, en t\266l\266commandant BLUPI\001...",
 		"Bravo, le niveau 1 est termin\266.\nEssaye maintenant le niveau\0012\001...",
-		
+
 		"Bravo, tu as termin\266 le niveau\0012, lorsque BLUPI est autonome.\n\
 T\266l\266commande maintenant BLUPI dans la deuxi\265me partie\001...",
 		"Bravo, tu as termin\266 le niveau\0012.\n\
@@ -863,30 +863,30 @@ pour tes copains (niveau\0015)\001...",
 Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 #endif
 	};
-	
+
 	if ( phase != PHASE_GENERIC )
 	{
 		BlackScreen();							/* efface tout l'cran */
 	}
-	
+
 	image = ConvPhaseToNumImage(phase);
-	
+
 #ifdef VOLUME
 	if ( image == 35 )  image = 37;				/* image avec potentiomtres pour le volume */
 #endif
-	
+
 	if ( image == 33 &&
 		 GetDemo() == 1 )  image = 38;			/* image avec avertissement "demo" */
-	
+
 	if ( image == 25 &&
 		 GetDemo() == 1 )  image = 39;			/* image sans choix de l'nigme */
-	
+
 	err = GetImage(&pmimage, image);
 	if ( err )  FatalBreak(err);				/* erreur fatale */
-	
+
 	nbessai = retry+1;
 	if ( nbessai > 100 )  nbessai = 100;
-	
+
 	if ( phase == PHASE_RECOMMENCE )
 	{
 		max = 0;
@@ -902,7 +902,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p2.y = LYIMAGE-319+72;
 		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
 	}
-	
+
 	if ( phase == PHASE_SUIVANT )
 	{
 		max = 0;
@@ -918,7 +918,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p2.y = LYIMAGE-275+163;
 		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
 	}
-	
+
 	if ( phase >= PHASE_FINI0 && phase <= PHASE_FINI8 )
 	{
 		ptx = txfini[phase-PHASE_FINI0];
@@ -928,14 +928,14 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p2.y = LYIMAGE-266+190;
 		DrawParagraph(&pmimage, rect, ptx, TEXTSIZEMID, MODEOR);
 	}
-	
+
 	CopyPixel									/* affiche l'image de base */
 	(
 		&pmimage, (p.y=0, p.x=0, p),
 		0, (p.y=0, p.x=0, p),
 		(p.y=pmimage.dy, p.x=pmimage.dx, p), MODELOAD
 	);
-	
+
 	if ( phase == PHASE_PLAY )
 	{
 		GivePixmap(&pmimage);					/* libre l'image si jeu */
@@ -967,7 +967,7 @@ static short tcolor[] =
 	0,	12,	0xDB,0x95,0x61,
 	0,	13,	0xB9,0x6B,0x34,
 	0,	14,	0xA9,0xD8,0xFF,
-	
+
 	1,	0,	0xFF,0xFF,0xFF,
 	1,	1,	0xFF,0xFF,0x69,
 	1,	2,	0xFF,0xCE,0x49,
@@ -983,7 +983,7 @@ static short tcolor[] =
 	1,	12,	0xF2,0xAE,0x8C,
 	1,	13,	0xCD,0x85,0x85,
 	1,	14,	0xA7,0xD3,0xFF,
-	
+
 	2,	0,	0xD0,0xD0,0xD0,
 	2,	1,	0xD3,0xD3,0x00,
 	2,	2,	0xCB,0xA2,0x33,
@@ -999,7 +999,7 @@ static short tcolor[] =
 	2,	12,	0xB1,0x6B,0x36,
 	2,	13,	0x8D,0x3B,0x00,
 	2,	14,	0x8D,0xB4,0xD5,
-	
+
 	3,	0,	0xFF,0xFF,0xFF,
 	3,	1,	0xFF,0xFF,0x00,
 	3,	2,	0xFF,0xD8,0x6E,
@@ -1015,7 +1015,7 @@ static short tcolor[] =
 	3,	12,	0xD3,0x97,0x69,
 	3,	13,	0xD1,0x6F,0x0D,
 	3,	14,	0xD8,0xB1,0xFF,
-	
+
 	4,	0,	0xFF,0xFF,0xFF,
 	4,	1,	0xE9,0xFC,0x3F,
 	4,	2,	0xED,0xC7,0x5E,
@@ -1031,7 +1031,7 @@ static short tcolor[] =
 	4,	12,	0xBE,0x9A,0x72,
 	4,	13,	0xC5,0x5A,0x1C,
 	4,	14,	0xAB,0xAF,0xFF,
-	
+
 	-1
 };
 
@@ -1046,18 +1046,18 @@ static short tcolor[] =
 void ChangeCouleur (void)
 {
 	short	i = 0;
-	
+
 	if ( !IfColor() )  return;
-	
+
 	while (1)
 	{
 		if ( tcolor[i] == -1 )  break;
-		
+
 		if ( tcolor[i] == descmonde.color )
 		{
 			ModColor(tcolor[i+1], tcolor[i+2],tcolor[i+3],tcolor[i+4]);
 		}
-		
+
 		i += 5;
 	}
 }
@@ -1077,16 +1077,16 @@ void DrawRadioButton (Pt pos, short state)
 	Pixmap		pm;
 	short		icon;
 	Pt			src, dim;
-	
+
 	src.x = 0;
 	src.y = 0;
-	
+
 	dim.x = 31;
 	dim.y = 31;
-	
+
 	if ( state )  icon = ICO_BUTTON_ROND1;
 	else          icon = ICO_BUTTON_ROND0;
-	
+
 	GetIcon(&pm, icon, 1);
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine le bouton */
 }
@@ -1104,10 +1104,10 @@ void DrawJoueur (void)
 {
 	short		i;
 	Pt			pos;
-	
+
 	pos.x = 241;
 	pos.y = LYIMAGE-297-1;
-	
+
 	for ( i=0 ; i<MAXJOUEUR ; i++ )
 	{
 		if ( fj.joueur == i )  DrawRadioButton(pos, 1);
@@ -1129,10 +1129,10 @@ void DrawVitesse (void)
 {
 	short		i;
 	Pt			pos;
-	
+
 	pos.x = 31;
 	pos.y = LYIMAGE-292-1;
-	
+
 	for ( i=0 ; i<3 ; i++ )
 	{
 		if ( fj.vitesse == i )  DrawRadioButton(pos, 1);
@@ -1154,10 +1154,10 @@ void DrawScroll (void)
 {
 	short		i;
 	Pt			pos;
-	
+
 	pos.x = 272;
 	pos.y = LYIMAGE-292-1;
-	
+
 	for ( i=0 ; i<2 ; i++ )
 	{
 		if ( fj.scroll == i )  DrawRadioButton(pos, 1);
@@ -1179,7 +1179,7 @@ void DrawScroll (void)
 void DrawVolume (short pot, short volume)
 {
 	Rectangle	rect;
-	
+
 	if ( pot == 0 )
 	{
 		rect.p1.x = 21+26;
@@ -1190,15 +1190,15 @@ void DrawVolume (short pot, short volume)
 		rect.p1.x = 21+40+16+10;
 		rect.p2.x = 21+40+16+10+4;
 	}
-	
+
 	rect.p1.y = LYIMAGE-135-1+3;
 	rect.p2.y = LYIMAGE-135-1+3+((10-volume)*50/10);
-	
+
 	DrawFillRect(0, rect, MODELOAD, COLORBLANC);
-	
+
 	rect.p1.y = rect.p2.y;
 	rect.p2.y = LYIMAGE-135-1+3+50;
-	
+
 	DrawFillRect(0, rect, MODELOAD, COLORROUGE);
 }
 #endif
@@ -1218,10 +1218,10 @@ void DrawBruitage ()
 	DrawVolume(1, fj.musicvolume);
 #else
 	Pt			pos;
-	
+
 	pos.x = 31;
 	pos.y = LYIMAGE-140-1;
-	
+
 	DrawRadioButton(pos, fj.noisevolume==0 ? 0:1);
 	pos.y += 32;
 	DrawRadioButton(pos, fj.noisevolume==0 ? 1:0);
@@ -1241,10 +1241,10 @@ void DrawTelecom (void)
 {
 	short		i;
 	Pt			pos;
-	
+
 	pos.x = 272;
 	pos.y = LYIMAGE-172-1;
-	
+
 	for ( i=0 ; i<2 ; i++ )
 	{
 		if ( fj.modetelecom == i )  DrawRadioButton(pos, 1);
@@ -1266,10 +1266,10 @@ void DrawCouleur (void)
 {
 	short		i;
 	Pt			pos;
-	
+
 	pos.x = 146;
 	pos.y = LYIMAGE-101-1;
-	
+
 	for ( i=0 ; i<5 ; i++ )
 	{
 		if ( descmonde.color == i )  DrawRadioButton(pos, 1);
@@ -1293,7 +1293,7 @@ void DrawArrows (char mode)
 	short		icon;
 	Pt			src, dst, dim;
 	Rectangle	rect;
-	
+
 	if ( typejeu == 0 || pause )
 	{
 		icon = ICO_ARROWS;
@@ -1302,24 +1302,24 @@ void DrawArrows (char mode)
 	{
 		icon = ICO_TELECOM;
 	}
-	
+
 	src.x = 0;
 	src.y = 0;
-	
+
 	dst.x = 7;
 	dst.y = LYIMAGE-92-1;
-	
+
 	dim.x = 54;
 	dim.y = 52;
-	
+
 	GetIcon(&pm, icon, 1);
 	CopyPixel(&pm, src, 0, dst, dim, MODELOAD);		/* dessine flches ou tlcommande */
-	
+
 	if ( icon == ICO_TELECOM )
 	{
 		dim.x = 16;
 		dim.y = 16;
-		
+
 		dst.x = 7+9;
 		dst.y = LYIMAGE-92-1+26;
 		src.x = 0;
@@ -1327,7 +1327,7 @@ void DrawArrows (char mode)
 		if ( mode == KEYGOFRONT )  src.x = 15;
 		if ( mode == KEYGOBACK  )  src.x = 30;
 		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette avant/arrire */
-		
+
 		dst.x = 7+29;
 		dst.y = LYIMAGE-92-1+26;
 		src.x = 54;
@@ -1336,7 +1336,7 @@ void DrawArrows (char mode)
 		if ( mode == KEYGORIGHT )  src.y = 30;
 		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette gauche/droite */
 	}
-	
+
 	if ( typeedit )
 	{
 		rect.p1.x = 26;
@@ -1360,22 +1360,22 @@ void DrawPause (void)
 {
 	Pixmap		pm;
 	Pt			src, dst, dim;
-	
+
 	if ( typeedit )  return;
-	
+
 	if ( pause )  src.x = 20;
 	else          src.x = 0;
 	src.y = 0;
-	
+
 	dst.x = 26;
 	dst.y = LYIMAGE-1-28;
-	
+
 	dim.x = 18;
 	dim.y = 18;
-	
+
 	GetIcon(&pm, ICO_BUTTON_PAUSE+ICOMOFF, 1);
 	CopyPixel(&pm, src, 0, dst, dim, MODEAND);
-	
+
 	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
 	CopyPixel(&pm, src, 0, dst, dim, MODEOR);
 }
@@ -1395,15 +1395,15 @@ void DrawBigDigit (Pt pos, short num)
 {
 	Pixmap		pm;
 	Pt			src, dim;
-	
+
 	GetIcon(&pm, ICO_CHAR_BIG, 1);
-	
+
 	src.x = (num%4)*20;
 	src.y = (num/4)*26;
-	
+
 	dim.x = 20;
 	dim.y = 26;
-	
+
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);
 }
 
@@ -1421,9 +1421,9 @@ void DrawBigNum (Pt pos, short num)
 	pos.x += 20;
 	DrawBigDigit(pos, 10);				/* efface les units */
 	pos.x -= 20;
-	
+
 	if ( num > 99 )  num = 99;
-	
+
 	if ( num < 10 )
 	{
 		pos.x += 20/2;
@@ -1459,7 +1459,7 @@ void DrawObjectif (void)
 #if GERMAN
 	char		tomake[] = "Ratsel zum bauen ...";
 #endif
-	
+
 	switch ( phase )
 	{
 		case PHASE_RECOMMENCE:
@@ -1480,7 +1480,7 @@ void DrawObjectif (void)
 			rect.p2.x = 49+343;
 			rect.p2.y = LYIMAGE-254+130;
 	}
-	
+
 	if ( construit && monde == maxmonde-1 )
 	{
 		if ( GetDemo() == 0 || *ptext == 0 )
@@ -1541,15 +1541,15 @@ void DrawStatusBar (short avance, short max)
 	char			lcolor, rcolor;
 	char			chaine[6];
 	ShowMode		mode;
-	
+
 	if ( max != 0 )  pos = (avance*100)/max;
 	else             pos = 0;
-	
+
 	if ( pos < 0   )  pos = 0;
 	if ( pos > 100 )  pos = 100;
-	
+
 	RectStatusBar(&rect);
-	
+
 	if ( IfColor() )
 	{
 		lcolor = COLORVERTC;
@@ -1562,18 +1562,18 @@ void DrawStatusBar (short avance, short max)
 		rcolor = COLORBLANC;
 		mode   = MODEXOR;
 	}
-	
+
 	part = rect;
 	part.p2.x = part.p1.x + ((part.p2.x-part.p1.x)*pos)/100;
 	DrawFillRect(0, part, MODELOAD, lcolor);	/* dessine le rectangle gauche */
-	
+
 	part.p1.x = part.p2.x;
 	part.p2.x = rect.p2.x;
 	DrawFillRect(0, part, MODELOAD, rcolor);	/* dessine le rectangle droite */
-	
+
 	pgra.x = (rect.p2.x+rect.p1.x)/2;
 	pgra.y = rect.p1.y+TEXTSIZELIT+1;
-	
+
 	if ( pos < 10 )
 	{
 		pgra.x -= 7;
@@ -1601,7 +1601,7 @@ void DrawStatusBar (short avance, short max)
 			chaine[4] = 0;
 		}
 	}
-	
+
 	DrawText(0, pgra, chaine, TEXTSIZELIT, mode);
 }
 
@@ -1617,16 +1617,16 @@ void DrawStatusBar (short avance, short max)
 short DetectStatusBar (Pt pos, short max, Rectangle *prect)
 {
 	short		monde, progres;
-	
+
 	if ( max == 0 )  return 0;
-	
+
 	monde = ((pos.x-prect->p1.x)*max) / (prect->p2.x-prect->p1.x);
 	if ( monde < 0     )  monde = 0;
 	if ( monde > max-1 )  monde = max-1;
-	
+
 	progres = fj.progres[fj.joueur][fj.niveau[fj.joueur]];
 	if ( !construit && monde > progres )  monde = progres;
-	
+
 	return monde;
 }
 
@@ -1643,23 +1643,23 @@ void DrawNumMonde (void)
 {
 	Pixmap		pm;
 	Pt			pos, src, dim;
-	
+
 	if ( construit && GetDemo() == 1 )  return;
-	
+
 	pos.x = 557;
 	pos.y = LYIMAGE-249;
-	
+
 	DrawBigNum(pos, monde+1);						/* dessine le numro du monde */
-	
+
 	src.x = 0;
 	src.y = 0;
-	
+
 	dim.x = 58;
 	dim.y = 50;
-	
+
 	pos.x = 478,
 	pos.y = LYIMAGE-283-1;
-	
+
 	if ( monde < maxmonde-1 &&
 		 (construit || monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
 	{
@@ -1670,9 +1670,9 @@ void DrawNumMonde (void)
 		GetIcon(&pm, ICO_ARROWUP, 1);
 	}
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche suprieure (+) */
-	
+
 	pos.y = LYIMAGE-230-1;
-	
+
 	if ( monde > 0 )
 	{
 		GetIcon(&pm, ICO_ARROWDOWN+1, 1);
@@ -1682,7 +1682,7 @@ void DrawNumMonde (void)
 		GetIcon(&pm, ICO_ARROWDOWN, 1);
 	}
 	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche infrieure (-) */
-	
+
 	if ( phase == PHASE_DEPLACE )  return;
 	DrawStatusBar(monde, maxmonde-1);				/* dessine la barre d'avance */
 }
@@ -1701,19 +1701,19 @@ void TrackingStatusBar (Pt pos)
 	Rectangle	rect;
 	short		newmonde = monde;
 	short		key;
-	
+
 	RectStatusBar(&rect);
-	
+
 	monde = DetectStatusBar(pos, maxmonde, &rect);
 	DrawNumMonde();							/* affiche le numro du monde */
 	MondeRead(monde, banque);				/* lit le nouveau monde sur disque */
 	DrawObjectif();							/* affiche l'objectif */
-	
+
 	while ( 1 )
 	{
 		key = GetEvent(&pos);
 		if ( key == KEYCLICREL )  break;
-		
+
 		newmonde = DetectStatusBar(pos, maxmonde, &rect);
 		if ( monde != newmonde )
 		{
@@ -1740,13 +1740,13 @@ short MondeDeplace (short src, short dst)
 {
 	short		i;
 	Monde		first, temp;
-	
+
 	if ( src == dst || src == dst-1 )  return 1;
-	
+
 	if ( src < dst )
 	{
 		FileRead(&first, src*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
-		
+
 		for ( i=src+1 ; i<dst ; i++ )
 		{
 			DrawStatusBar(i-(src+1), dst-(src+1));
@@ -1754,14 +1754,14 @@ short MondeDeplace (short src, short dst)
 			FileWrite(&temp, (i-1)*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 		}
 		DrawStatusBar(100, 100);
-		
+
 		FileWrite(&first, (dst-1)*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 	}
-	
+
 	if ( src > dst )
 	{
 		FileRead(&first, src*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
-		
+
 		for ( i=src-1 ; i>=dst ; i-- )
 		{
 			DrawStatusBar(i-(src-1), dst-src);
@@ -1769,10 +1769,10 @@ short MondeDeplace (short src, short dst)
 			FileWrite(&temp, (i+1)*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 		}
 		DrawStatusBar(100, 100);
-		
+
 		FileWrite(&first, dst*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 	}
-	
+
 	return 0;
 }
 
@@ -1790,12 +1790,12 @@ short MondeDuplique (short m)
 {
 	short		max, i;
 	Monde		temp;
-	
+
 	max = maxmonde;
 	if ( construit )  max --;
-	
+
 	if ( m >= max )  return 1;
-	
+
 	for ( i=max-1 ; i>=m ; i-- )
 	{
 		DrawStatusBar(i-(max-1), m-max);
@@ -1803,7 +1803,7 @@ short MondeDuplique (short m)
 		FileWrite(&temp, (i+1)*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
 	}
 	DrawStatusBar(100, 100);
-	
+
 	monde ++;
 	maxmonde ++;
 	return 0;
@@ -1823,14 +1823,14 @@ short MondeDetruit (short m)
 {
 	short		max, i, j;
 	Monde		temp;
-	
+
 	max = maxmonde;
 	if ( construit )  max --;
-	
+
 	if ( m >= max )  return 1;
-	
+
 	FileDelete('-');						/* dtruit le fichier temporaire (v.) */
-	
+
 	j = 0;
 	for ( i=0 ; i<max ; i++ )
 	{
@@ -1843,13 +1843,13 @@ short MondeDetruit (short m)
 		}
 	}
 	DrawStatusBar(100, 100);
-	
+
 	FileDelete(BanqueToFile(banque));		/* dtruit l'ancien fichier dfinitif */
 	FileRename('-', BanqueToFile(banque));	/* renomme le fichier temporaire -> dfinitif */
-	
+
 	maxmonde --;
 	return 0;
-	
+
 	error:
 	FileDelete('-');
 	return 1;
@@ -1868,7 +1868,7 @@ short MondeDetruit (short m)
 
 long PlayPartieLg (void)
 {
-	return 
+	return
 		sizeof(Monde) +
 		sizeof(Partie);
 }
@@ -1885,18 +1885,18 @@ short PlayPartieWrite (long pos, char file)
 {
 	short		err;
 	Partie		partie;
-	
+
 	memset(&partie, 0, sizeof(Partie));
-	
+
 	partie.check = 123456;
 	partie.monde = monde;
 	partie.typejeu = typejeu;
 	partie.banque = banque;
-	
+
 	err = FileWrite(&partie, pos, sizeof(Partie), file);
 	if ( err )  return err;
 	pos += sizeof(Partie);
-	
+
 	err = FileWrite(&descmonde, pos, sizeof(Monde), file);
 	return err;
 }
@@ -1913,17 +1913,17 @@ short PlayPartieRead (long pos, char file)
 {
 	short		err;
 	Partie		partie;
-	
+
 	err = FileRead(&partie, pos, sizeof(Partie), file);
 	if ( err )  return err;
 	pos += sizeof(Partie);
-	
+
 	if ( partie.check != 123456 )  return 1;
-	
+
 	monde = partie.monde;
 	typejeu = partie.typejeu;
 	banque = partie.banque;
-	
+
 	if ( banque < 'I' )
 	{
 		fj.niveau[fj.joueur] = banque-'A';
@@ -1933,7 +1933,7 @@ short PlayPartieRead (long pos, char file)
 		fj.niveau[fj.joueur] = 8;
 	}
 	MondeMax(banque);
-	
+
 	err = FileRead(&descmonde, pos, sizeof(Monde), file);
 	return err;
 }
@@ -1952,7 +1952,7 @@ short PartieCheckFile ()
 {
 	short		err;
 	Header		header;
-	
+
 	err = FileRead(&header, 0, sizeof(Header), GetDemo()?'W':'Y');
 	if ( err == 0 )
 	{
@@ -1965,18 +1965,18 @@ short PartieCheckFile ()
 			 header.lg[5] == 0 )  return 0;		/* fichier ok */
 	}
 	FileDelete(GetDemo()?'W':'Y');
-	
+
 	memset(&header, 0, sizeof(Header));
-	
+
 	header.ident = 1;
 	header.lg[0] = PlayPartieLg();
 	header.lg[1] = MovePartieLg();
 	header.lg[2] = DecorPartieLg();
 	header.lg[3] = PalPartieLg();
 	header.lg[4] = MachinePartieLg();
-	
+
 	FileWrite(&header, 0, sizeof(Header), GetDemo()?'W':'Y');
-	
+
 	return 1;		/* le fichier n'tait pas correct */
 }
 
@@ -1995,9 +1995,9 @@ short PartieSauve (short rang)
 {
 	long		pos;
 	short		err;
-	
+
 	PartieCheckFile();					/* adapte le fichier si ncessaire */
-	
+
 	pos = sizeof(Header) +
 		  (PlayPartieLg()+
 		   MovePartieLg()+
@@ -2005,23 +2005,23 @@ short PartieSauve (short rang)
 		   PalPartieLg()+
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
-	
+
 	err = PlayPartieWrite(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
-	
+
 	err = MovePartieWrite(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += MovePartieLg();
-	
+
 	err = DecorPartieWrite(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
-	
+
 	err = PalPartieWrite(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += PalPartieLg();
-	
+
 	err = MachinePartieWrite(pos, GetDemo()?'W':'Y');
 	return err;
 }
@@ -2038,10 +2038,10 @@ short PartiePrend (short rang)
 {
 	long		pos;
 	short		err;
-	
+
 	err = PartieCheckFile();			/* fichier ok ? */
 	if ( err )  return err;
-	
+
 	pos = sizeof(Header) +
 		  (PlayPartieLg()+
 		   MovePartieLg()+
@@ -2049,33 +2049,33 @@ short PartiePrend (short rang)
 		   PalPartieLg()+
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
-	
+
 	err = PlayPartieRead(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
-	
+
 	err = MovePartieRead(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += MovePartieLg();
-	
+
 	err = DecorPartieRead(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
-	
+
 	err = PalPartieRead(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
 	pos += PalPartieLg();
-	
+
 	err = MachinePartieRead(pos, GetDemo()?'W':'Y');
 	if ( err )  return err;
-	
+
 	IconDrawOpen();
 	MoveRedraw();						/* redessine sans changement */
 	IconDrawClose(1);
-	
+
 	ChangeCouleur();					/* change les couleurs */
 	MusicStart(4+monde);
-	
+
 	return 0;
 }
 
@@ -2093,32 +2093,32 @@ void PartieDrawIcon (short key)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			pos, p;
-	
+
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
-	
+
 	if ( key == KEYLOAD || key == -KEYLOAD )
 	{
 		pos.x += LXICO+20;
 	}
-	
+
 	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE+ICOMOFF, 1);
 	if ( key ==  KEYLOAD )  GetIcon(&pmicon, ICO_PREND+ICOMOFF, 1);
 	if ( key == -KEYSAVE )  GetIcon(&pmicon, ICO_ATTENTE+0+ICOMOFF, 1);
 	if ( key == -KEYLOAD )  GetIcon(&pmicon, ICO_ATTENTE+1+ICOMOFF, 1);
-	
+
 	CopyPixel								/* masque le fond */
 	(
 		&pmicon, (p.y=0, p.x=0, p),
 		0, pos,
 		(p.y=LYICO, p.x=LXICO, p), MODEAND
 	);
-	
+
 	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE, 1);
 	if ( key ==  KEYLOAD )  GetIcon(&pmicon, ICO_PREND, 1);
 	if ( key == -KEYSAVE )  GetIcon(&pmicon, ICO_ATTENTE+0, 1);
 	if ( key == -KEYLOAD )  GetIcon(&pmicon, ICO_ATTENTE+1, 1);
-	
+
 	CopyPixel								/* dessine la chair */
 	(
 		&pmicon, (p.y=0, p.x=0, p),
@@ -2138,7 +2138,7 @@ void PartieDrawIcon (short key)
 short PartieClicToEvent (Pt pos)
 {
 	short		*ptable;
-	
+
 	static short table[] =
 	{
 		2,77,19,19,		KEYUNDO,		/* case de fermeture */
@@ -2146,19 +2146,19 @@ short PartieClicToEvent (Pt pos)
 		41,55,31,23,	KEYF2,			/* partie #2 */
 		7,29,31,23,		KEYF3,			/* partie #3 */
 		41,29,31,23,	KEYF4,			/* partie #4 */
-		
+
 		102,77,19,19,	KEYUNDO,		/* case de fermeture */
 		107,55,31,23,	'1',			/* partie #1 */
 		141,55,31,23,	'2',			/* partie #2 */
 		107,29,31,23,	'3',			/* partie #3 */
 		141,29,31,23,	'4',			/* partie #4 */
-		
+
 		-1
 	};
-	
+
 	pos.x -= POSXDRAW+20;
 	pos.y -= POSYDRAW+DIMYDRAW-LYICO-20;
-	
+
 	ptable = table;
 	while ( ptable[0] != -1 )
 	{
@@ -2169,7 +2169,7 @@ short PartieClicToEvent (Pt pos)
 		return ptable[4];
 		ptable += 5;
 	}
-	
+
 	return 0;
 }
 
@@ -2185,10 +2185,10 @@ void PartieDisque (short mode)
 {
 	short		key;
 	Pt			pos;
-	
+
 	if ( mode != KEYLOAD )  PartieDrawIcon(KEYSAVE);	/* dessine l'icne */
 	if ( mode != KEYSAVE )  PartieDrawIcon(KEYLOAD);	/* dessine l'icne */
-	
+
 	while (1)
 	{
 		key = GetEvent(&pos);
@@ -2196,31 +2196,31 @@ void PartieDisque (short mode)
 		{
 			key = PartieClicToEvent(pos);
 		}
-		
-		if ( key == KEYUNDO || key == KEYQUIT || key == KEYHOME || 
+
+		if ( key == KEYUNDO || key == KEYQUIT || key == KEYHOME ||
 			 key == KEYF1 || key == KEYF2 || key == KEYF3 || key == KEYF4 ||
 			 key == '1'   || key == '2'   || key == '3'   || key == '4'   )  break;
 	}
 	PlayEvSound(SOUND_CLIC);
-	
+
 	if ( mode != KEYLOAD && key <= KEYF1 && key >= KEYF4 )
 	{
 		PartieDrawIcon(-KEYSAVE);					/* dessine l'icne d'attente */
 		PartieSauve(-key+KEYF1);					/* sauve la partie */
 	}
-	
+
 	if ( mode == KEYSAVE && key >= '1' && key <= '4' )
 	{
 		PartieDrawIcon(-KEYSAVE);					/* dessine l'icne d'attente */
 		PartieSauve(key-'1');						/* sauve la partie */
 	}
-	
+
 	if ( mode != KEYSAVE && key >= '1' && key <= '4' )
 	{
 		PartieDrawIcon(-KEYLOAD);					/* dessine l'icne d'attente */
 		PartiePrend(key-'1');						/* reprend une partie */
 	}
-	
+
 	IconDrawAll();									/* faudra tout redessiner */
 }
 
@@ -2237,10 +2237,10 @@ void StopDrawIcon (void)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			pos, p;
-	
+
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
-	
+
 	GetIcon(&pmicon, ICO_STOPOUI+ICOMOFF, 1);
 	CopyPixel								/* masque le fond */
 	(
@@ -2248,7 +2248,7 @@ void StopDrawIcon (void)
 		0, pos,
 		(p.y=LYICO, p.x=LXICO, p), MODEAND
 	);
-	
+
 	GetIcon(&pmicon, ICO_STOPOUI, 1);
 	CopyPixel								/* dessine la chair */
 	(
@@ -2256,9 +2256,9 @@ void StopDrawIcon (void)
 		0, pos,
 		(p.y=LYICO, p.x=LXICO, p), MODEOR
 	);
-	
+
 	pos.x += LXICO+20;
-	
+
 	GetIcon(&pmicon, ICO_STOPNON+ICOMOFF, 1);
 	CopyPixel								/* masque le fond */
 	(
@@ -2266,7 +2266,7 @@ void StopDrawIcon (void)
 		0, pos,
 		(p.y=LYICO, p.x=LXICO, p), MODEAND
 	);
-	
+
 	GetIcon(&pmicon, ICO_STOPNON, 1);
 	CopyPixel								/* dessine la chair */
 	(
@@ -2288,13 +2288,13 @@ short StopClicToEvent (Pt pos)
 {
 	pos.x -= POSXDRAW+20;
 	pos.y -= POSYDRAW+DIMYDRAW-LYICO-20;
-	
+
 	if ( pos.y < 0 ||
 		 pos.y > LYICO )  return KEYUNDO;
-	
+
 	if ( pos.x >= 0 &&
 		 pos.x <= LXICO )  return KEYHOME;
-	
+
 	return KEYUNDO;
 }
 
@@ -2313,20 +2313,20 @@ short StopPartie (void)
 	Pt			pos;
 	Pt			spos, sdim;
 	Pt			p;
-	
+
 	PlayEvSound(SOUND_CLIC);
-	
+
 	spos.x = POSXDRAW+20;
 	spos.y = POSYDRAW+DIMYDRAW-LYICO-20;
 	sdim.x = LXICO+20+LXICO;
 	sdim.y = LYICO;
-	
+
 	if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
-	
+
 	CopyPixel(0, spos, &pmsave, (p.y=0, p.x=0, p), sdim, MODELOAD);	/* sauve l'cran */
-	
+
 	StopDrawIcon();									/* dessine les icnes */
-	
+
 	while (1)
 	{
 		key = GetEvent(&pos);
@@ -2334,14 +2334,14 @@ short StopPartie (void)
 		{
 			key = StopClicToEvent(pos);
 		}
-		
+
 		if ( key != 0 && key != KEYCLICREL )  break;
 	}
 	PlayEvSound(SOUND_CLIC);
-	
+
 	CopyPixel(&pmsave, (p.y=0, p.x=0, p), 0, spos, sdim, MODELOAD);	/* restitue l'cran */
 	GivePixmap(&pmsave);
-	
+
 	return key;
 }
 
@@ -2359,13 +2359,13 @@ short StopPartie (void)
 void JoueurEditOpen (void)
 {
 	Rectangle	rect;
-	
+
 	rect.p1.x = 299;
 	rect.p1.y = LYIMAGE-297+fj.joueur*40;
 	rect.p2.x = 299+180;
 	rect.p2.y = rect.p1.y+23;
 	EditOpen(fj.nom[fj.joueur], MAXNOMJ, rect);
-	
+
 	typetext = 1;
 }
 
@@ -2399,7 +2399,7 @@ void DrawIdent (void)
 	char	chaine[20];
 	char	*p;
 	Pt		pos;
-	
+
 	joueur = fj.joueur;
 	for ( fj.joueur=0 ; fj.joueur<MAXJOUEUR ; fj.joueur++ )
 	{
@@ -2407,7 +2407,7 @@ void DrawIdent (void)
 		JoueurEditClose();
 	}
 	fj.joueur = joueur;
-	
+
 	pos.x = 500;
 	pos.y = LYIMAGE-286;
 	for ( joueur=0 ; joueur<MAXJOUEUR ; joueur++ )
@@ -2431,7 +2431,7 @@ void DrawIdent (void)
 			DrawText(0, pos, chaine, TEXTSIZELIT, MODEOR);	/* affiche la progression */
 		}
 		pos.y += 15;
-		
+
 		if ( fj.nom[joueur][0] != 0 )
 		{
 			p = chaine;
@@ -2483,14 +2483,14 @@ void PhaseEditOpen (void)
 void PhaseEditClose (void)
 {
 	short		i;
-	
+
 	for ( i=0 ; i<MAXPALETTE ; i++ )
 	{
 		descmonde.palette[i] = savemonde.palette[i];	/* remet la palette initiale */
 	}
-	
+
 	MondeWrite(monde, banque);
-	
+
 	typeedit = 0;		/* fin de l'dition */
 }
 
@@ -2509,12 +2509,12 @@ short ChangePhase (Phase newphase)
 {
 	short		err, type;
 	Rectangle	rect;
-	
+
 	/*	Ferme la phase de jeu en cours. */
-	
+
 	MusicStop();
 	ClrEvents();
-			
+
 	switch ( phase )
 	{
 		case PHASE_IDENT:
@@ -2522,12 +2522,12 @@ short ChangePhase (Phase newphase)
 			BlackScreen();
 			JoueurWrite();				/* crit le fichier des joueurs */
 			break;
-			
+
 		case PHASE_REGLAGE:
 			BlackScreen();
 			JoueurWrite();				/* crit le fichier des joueurs */
 			break;
-			
+
 		case PHASE_PARAM:
 			PaletteEditClose(descmonde.palette);
 			EditClose();
@@ -2535,11 +2535,11 @@ short ChangePhase (Phase newphase)
 			MondeWrite(monde, banque);
 			typetext = 0;
 			break;
-			
+
 		case PHASE_DEPLACE:
 			monde = mondeinit;
 			break;
-			
+
 		case PHASE_PLAY:
 			if ( typeedit )
 			{
@@ -2550,56 +2550,56 @@ short ChangePhase (Phase newphase)
 			MoveClose();				/* fermeture des objets en mouvement */
 			IconClose();				/* fermeture des icnes */
 			break;
-		
+
 		case PHASE_FINI0:
 			fj.niveau[fj.joueur] = 1;	/* 1A -> 1T */
 			break;
-		
+
 		case PHASE_FINI1:
 			fj.niveau[fj.joueur] = 2;	/* 1T -> 2A */
 			break;
-		
+
 		case PHASE_FINI2:
 			fj.niveau[fj.joueur] = 3;	/* 2A -> 2T */
 			break;
-		
+
 		case PHASE_FINI3:
 			fj.niveau[fj.joueur] = 4;	/* 2T -> 3A */
 			break;
-		
+
 		case PHASE_FINI4:
 			fj.niveau[fj.joueur] = 5;	/* 3A -> 3T */
 			break;
-		
+
 		case PHASE_FINI5:
 			fj.niveau[fj.joueur] = 6;	/* 3T -> 4A */
 			break;
-		
+
 		case PHASE_FINI6:
 			fj.niveau[fj.joueur] = 7;	/* 4A -> 4T */
 			break;
-		
+
 		case PHASE_FINI7:
 			fj.niveau[fj.joueur] = 8;	/* 4T -> 5 */
 			break;
-		
+
 		case PHASE_FINI8:
 			monde = maxmonde-1;			/*  construire */
 			break;
-		
+
 		default:
 			break;
 	}
-	
+
 	/*	Change la phase de jeu. */
-	
+
 	phase = newphase;					/* change la phase */
 	ShowImage();						/* affiche l'image de base */
-	
+
 	/*	Ouvre la nouvelle phase de jeu. */
-	
+
 	musique = 0;						/* pas de musique de fond */
-	
+
 	switch ( phase )
 	{
 		case PHASE_GENERIC:
@@ -2609,11 +2609,11 @@ short ChangePhase (Phase newphase)
 			musique = 1;
 			lastaccord = -1;
 			break;
-		
+
 		case PHASE_SUIVANT:
 			MusicStart(2);
 			break;
-			
+
 		case PHASE_FINI0:
 		case PHASE_FINI1:
 		case PHASE_FINI2:
@@ -2627,14 +2627,14 @@ short ChangePhase (Phase newphase)
 			musique = 2;
 			lastaccord = -1;
 			break;
-			
+
 		case PHASE_IDENT:
 			JoueurRead();				/* lit le fichier des joueurs sur disque */
 			DrawJoueur();				/* affiche le joueur */
 			DrawIdent();				/* affiche tous les noms */
 			JoueurEditOpen();			/* prpare l'dition du nom */
 			break;
-			
+
 		case PHASE_REGLAGE:
 			DrawVitesse();				/* affiche la vitesse */
 			DrawScroll();				/* affiche le scroll */
@@ -2642,7 +2642,7 @@ short ChangePhase (Phase newphase)
 			DrawTelecom();				/* affiche le mode de tlcommande */
 			MusicStart(3);
 			break;
-			
+
 		case PHASE_PARAM:
 			MondeRead(monde, banque);	/* lit le monde  modifier sur disque */
 			PaletteEditOpen(descmonde.palette);
@@ -2654,70 +2654,70 @@ short ChangePhase (Phase newphase)
 			typetext = 1;
 			DrawCouleur();				/* affiche le mode de couleur */
 			break;
-			
+
 		case PHASE_PRIVE:
 			MondeRead(monde, banque);	/* lit le nouveau monde sur disque */
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			retry = 0;
 			break;
-			
+
 		case PHASE_DEPLACE:
 			mondeinit = monde;
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			break;
-			
+
 		case PHASE_OBJECTIF:
 			MondeRead(monde, banque);	/* lit le nouveau monde sur disque */
 			DrawNumMonde();				/* affiche le numro du monde */
 			DrawObjectif();				/* affiche l'objectif */
 			retry = 0;
 			break;
-			
+
 		case PHASE_RECOMMENCE:
 			PlayEvSound(SOUND_NON);
 			MondeRead(monde, banque);	/* relit le monde sur disque */
 			DrawObjectif();				/* affiche l'objectif */
 			retry ++;
 			break;
-			
+
 		case PHASE_PLAY:
 			ChangeCouleur();			/* change les couleurs */
-			
+
 			if ( typeedit )  PhaseEditOpen();
-			
+
 			err = IconOpen();			/* ouverture des icnes */
 			if ( err )  FatalBreak(err);
-	
+
 			err = MoveOpen();			/* ouverture des objets en mouvement */
 			if ( err )  FatalBreak(err);
-			
+
 			err = DecorOpen();			/* ouverture des dcors */
 			if ( err )  FatalBreak(err);
-			
+
 			IconDrawFlush();			/* vide tous les buffers internes */
 			DecorNewMonde(&descmonde);	/* initialise le monde */
-			
+
 			type = 0;
 			if ( typejeu == 0 || typeedit )  type = 1;
 			PaletteNew(descmonde.palette, type);
-			
+
 			DecorMake(1);				/* fabrique le dcor */
 			IconDrawAll();				/* redessine toute la fentre */
-			
+
 			pause = 0;
 			DrawArrows(0);				/* dessine les flches */
 			DrawPause();				/* dessine le bouton pause */
 			if ( typeedit == 0 )  MusicStart(4+monde);
 			break;
-		
+
 		default:
 			break;
 	}
-	
+
 	passindex = 0;
-	
+
 	ClrEvents();
 	return 0;							/* nouvelle phase ok */
 }
@@ -2733,7 +2733,7 @@ static short timage21[] =				/* initial */
 {
 	331,110,56,70,		0,			ACTION_NIVEAU8,
 	-1,-1,-1,-1,		'5',		ACTION_NIVEAUK5,
-	
+
 	123,279,40,46,		0,			ACTION_NIVEAU0,
 	160,302,41,53,		0,			ACTION_NIVEAU1,
 	298,284,50,59,		0,			ACTION_NIVEAU2,
@@ -3004,7 +3004,7 @@ static short timage52[] =				/* aide 1.3 */
 short* GetTimage (void)
 {
 	short	*pt;
-	
+
 	switch ( ConvPhaseToNumImage(phase) )
 	{
 		case 21:
@@ -3013,7 +3013,7 @@ short* GetTimage (void)
 			if ( GetDemo() == 1 )  pt += 6*2;
 #endif
 			return pt;
-			
+
 		case 22:  return timage22;
 		case 23:  return timage23;
 		case 24:  return timage24;
@@ -3057,10 +3057,10 @@ short* GetTimage (void)
 PhAction ClicToAction (Pt pos)
 {
 	short	*pt;
-	
+
 	pt = GetTimage();
 	if ( pt == 0 )  return -1;
-	
+
 	while ( pt[0] != 0 )
 	{
 		if ( pos.x >= pt[0] &&
@@ -3072,7 +3072,7 @@ PhAction ClicToAction (Pt pos)
 		}
 		pt += 6;
 	}
-	
+
 	return -1;
 }
 
@@ -3089,17 +3089,17 @@ PhAction ClicToAction (Pt pos)
 PhAction EventToAction (char event)
 {
 	short	*pt;
-	
+
 	if ( event == 0 || event == KEYCLICREL )  return -1;
-	
+
 	pt = GetTimage();
 	if ( pt == 0 )  return -1;
-	
+
 	if ( pt[6] == 0 )				/* une seule action ? */
 	{
 		return pt[5];				/* retourne la seule action possible */
 	}
-	
+
 	while ( pt[0] != 0 )
 	{
 		if ( event == pt[4] )
@@ -3108,7 +3108,7 @@ PhAction EventToAction (char event)
 		}
 		pt += 6;
 	}
-	
+
 	return -1;
 }
 
@@ -3120,7 +3120,7 @@ PhAction EventToAction (char event)
 static short tanim21[] =				/* initial */
 {
 	ACTION_NIVEAU8,		320,122,	DELNORM,6,	128+88,128+89,128+90,128+89,128+90,128+89,
-	
+
 	ACTION_NIVEAU1,		141,327,	DELNORM,12,	128+97,128+96,128+97,128+96,128+97,128+96,
 												128+98,128+98,128+98,128+96,128+97,128+96,
 	ACTION_NIVEAU0,		107,310,	DELNORM,12,	128+81,128+80,128+81,128+80,128+81,128+80,
@@ -3210,14 +3210,14 @@ static short tanim35[] =				/* rglages */
 	ACTION_VITESSE0,	158,298,	3,12,		2,2,2,1,1,1,3,3,3,1,1,1,
 	ACTION_VITESSE1,	158,298,	2,8,		2,2,1,1,3,3,1,1,
 	ACTION_VITESSE2,	158,298,	DELQUICK,4,	2,1,3,1,
-	
+
 	ACTION_SCROLL0,		543,306,	2,16,		108,108,109,109,110,110,111,111,
 												112,112,111,111,110,110,109,109,
 	ACTION_SCROLL1,		543,306,	3,12,		108,108,108,108,108,108,112,112,112,112,112,112,
-	
+
 	ACTION_BRUIT0,		140,141,	2,4,		77,77,78,78,
 	ACTION_BRUIT1,		140,147,	2,4,		93,93,94,94,
-	
+
 	ACTION_NOISEVOLP,	140,141,	2,4,		77,77,78,78,
 	ACTION_MUSICVOLP,	140,141,	2,4,		77,77,78,78,
 	ACTION_NOISEVOLM,	140,147,	2,4,		93,93,94,94,
@@ -3237,7 +3237,7 @@ static short tanim35[] =				/* rglages */
 short* AnimGetTable (void)
 {
 	short	*pt;
-	
+
 	switch ( ConvPhaseToNumImage(phase) )
 	{
 		case 21:
@@ -3246,7 +3246,7 @@ short* AnimGetTable (void)
 			if ( GetDemo() == 1 )  pt += 5+pt[4];
 #endif
 			return pt;
-			
+
 		case 22:  return tanim22;
 		case 23:  return tanim23;
 		case 24:  return tanim24;
@@ -3272,9 +3272,9 @@ short* AnimGetTable (void)
 short* AnimSearch (PhAction ac)
 {
 	short	*pt = AnimGetTable();
-	
+
 	if ( pt == 0 )  return 0;
-	
+
 	while ( pt[0] != -1 )
 	{
 		if ( ac == pt[0] )  return pt;
@@ -3297,9 +3297,9 @@ void AnimIconAddBack (Pt pos, char bFront)
 	short	*pt = animpb;
 	Pt		ipos, p;
 	Pixmap	pmicon;						/* pixmap de l'icne  dessiner */
-	
+
 	if ( phase != PHASE_INIT || pt == 0 )  return;
-	
+
 	while ( pt[0] != -1 )
 	{
 		if ( bFront == 0 && pt >= animpt )  return;
@@ -3317,7 +3317,7 @@ void AnimIconAddBack (Pt pos, char bFront)
 					&pmtemp, (p.y=ipos.y-pos.y, p.x=ipos.x-pos.x, p),
 					(p.y=LYICO, p.x=LXICO, p), MODEAND
 				);
-				
+
 				GetIcon(&pmicon, pt[5], 1);				/* cherche le pixmap de la chair */
 				CopyPixel								/* dessine la chair */
 				(
@@ -3343,16 +3343,16 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			p;
-	
+
 	CopyPixel								/* copie l'image originale */
 	(
 		&pmimage, pos,
 		&pmtemp, (p.y=0, p.x=0, p),
 		(p.y=LYICO, p.x=LXICO, p), MODELOAD
 	);
-	
+
 	if ( bOther )  AnimIconAddBack(pos, 0);	/* ajoute les autres icnes derrire */
-	
+
 	GetIcon(&pmicon, icon+ICOMOFF, 1);		/* cherche le pixmap du fond */
 	CopyPixel								/* masque le fond */
 	(
@@ -3360,7 +3360,7 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 		&pmtemp, (p.y=0, p.x=0, p),
 		(p.y=LYICO, p.x=LXICO, p), MODEAND
 	);
-	
+
 	GetIcon(&pmicon, icon, 1);				/* cherche le pixmap de la chair */
 	CopyPixel								/* dessine la chair */
 	(
@@ -3368,9 +3368,9 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 		&pmtemp, (p.y=0, p.x=0, p),
 		(p.y=LYICO, p.x=LXICO, p), MODEOR
 	);
-	
+
 	if ( bOther )  AnimIconAddBack(pos, 1);	/* ajoute les autres icnes devant */
-	
+
 	CopyPixel								/* met dans l'cran */
 	(
 		&pmtemp, (p.y=0, p.x=0, p),
@@ -3391,16 +3391,16 @@ short AnimDraw (void)
 {
 	short		icon;
 	Pt			pos;
-	
+
 	if ( animpt == 0 )  return DELNORM;
 
 	icon = animpt[5+animnext%animpt[4]];
-	
+
 	pos.x = animpt[1];
 	pos.y = LYIMAGE-animpt[2]-1;
-	
+
 	AnimDrawIcon(0, icon, pos, 1);			/* dessine l'icne */
-	
+
 	return animpt[3];						/* retourne le dlai */
 }
 
@@ -3415,7 +3415,7 @@ short AnimDraw (void)
 void AnimDrawInit (void)
 {
 	short	*pt = AnimGetTable();
-	
+
 	if ( pt == 0 )  return;
 
 	animpb = pt;
@@ -3435,11 +3435,11 @@ void AnimDrawInit (void)
 		animpt = pt;
 		animnext = 0;
 		AnimDraw();
-		
+
 		next:
 		pt += 5+pt[4];
 	}
-	
+
 	if ( phase == PHASE_INIT )
 	{
 		pt = animpb;
@@ -3457,7 +3457,7 @@ void AnimDrawInit (void)
 			pt += 5+pt[4];
 		}
 	}
-	
+
 	animpt  = 0;
 	animdel = 0;
 }
@@ -3475,10 +3475,10 @@ void AnimTracking (Pt pos)
 {
 	short		*pt;
 	short		delai;
-	
+
 	pt = AnimGetTable();
 	if ( pt == 0 )  return;
-	
+
 	if ( animdel != 0 )
 	{
 		if ( animpos.x != pos.x || animpos.y != pos.y )
@@ -3488,9 +3488,9 @@ void AnimTracking (Pt pos)
 		}
 		goto anim;
 	}
-	
+
 	pt = AnimSearch(ClicToAction(pos));		/* dtecte l'animation  effectuer */
-	
+
 	if ( pt != animpt )
 	{
 		if ( animpt != 0 )
@@ -3502,14 +3502,14 @@ void AnimTracking (Pt pos)
 		animpt   = pt;
 		animnext = 0;
 	}
-	
+
 	anim:
 	if ( animpt == 0 )  return;
-	
+
 	OpenTime();
 	delai = AnimDraw();
 	CloseTime(delai);
-	
+
 	animnext ++;
 }
 
@@ -3541,8 +3541,8 @@ static short tgeneric[] =
 	1,	45,128,		1,
 	1,	45,128,		2,
 	2,	45,128,		2,
-	
-	
+
+
 	1,	45,128,		2,
 	1,	45,128,		2,
 	1,	45,128,		2,
@@ -3559,7 +3559,7 @@ static short tgeneric[] =
 	1,	116,128,	2,
 	1,	116,128,	2,
 	1,	116,128,	2,
-	
+
 	1,	116,128,	1,
 	1,	116,128,	1,
 	1,	116,128,	1,
@@ -3589,8 +3589,8 @@ static short tgeneric[] =
 	1,	116,128,	23,
 	1,	116,128,	23,
 	2,	116,128,	23,
-	
-	
+
+
 	1,	116,128,	4,
 	1,	116,128,	4,
 	1,	116,128,	4,
@@ -3606,7 +3606,7 @@ static short tgeneric[] =
 	1,	186,128,	4,
 	1,	186,128,	4,
 	1,	186,128,	4,
-	
+
 	1,	186,128,	18,
 	1,	186,128,	1,
 	1,	186,128,	33,
@@ -3627,8 +3627,8 @@ static short tgeneric[] =
 	1,	186,128,	81,
 	1,	186,128,	82,
 	2,	186,128,	82,
-	
-	
+
+
 	1,	186,128,	82,
 	1,	186,128,	82,
 	1,	186,128,	82,
@@ -3646,7 +3646,7 @@ static short tgeneric[] =
 	1,	253,128,	82,
 	1,	253,128,	82,
 	1,	253,128,	82,
-	
+
 	1,	253,128,	33,
 	1,	253,128,	1,
 	1,	253,128,	18,
@@ -3677,8 +3677,8 @@ static short tgeneric[] =
 	1,	253,128,	18,
 	1,	253,128,	18,
 	2,	253,128,	18,
-	
-	
+
+
 	1,	253,128,	18,
 	1,	253,128,	18,
 	1,	253,128,	18,
@@ -3695,7 +3695,7 @@ static short tgeneric[] =
 	1,	324,128,	18,
 	1,	324,128,	18,
 	1,	324,128,	18,
-	
+
 	1,	324,128,	4,
 	1,	324,128,	5,
 	1,	324,128,	4,
@@ -3723,8 +3723,8 @@ static short tgeneric[] =
 	1,	324,128,	4,
 	1,	324,128,	6,
 	2,	324,128,	6,
-	
-	
+
+
 	1,	324,128,	6,
 	1,	324,128,	6,
 	1,	324,128,	6,
@@ -3740,7 +3740,7 @@ static short tgeneric[] =
 	1,	388,128,	6,
 	1,	388,128,	6,
 	1,	388,128,	6,
-	
+
 	1,	388,128,	4,
 	1,	388,128,	18,
 	1,	388,128,	1,
@@ -3768,8 +3768,8 @@ static short tgeneric[] =
 	1,	388,128,	114,
 	1,	388,128,	113,
 	2,	388,128,	113,
-	
-	
+
+
 	1,	388,128,	113,
 	1,	388,128,	113,
 	1,	388,128,	113,
@@ -3785,7 +3785,7 @@ static short tgeneric[] =
 	1,	449,128,	113,
 	1,	449,128,	113,
 	1,	449,128,	113,
-	
+
 	1,	449,128,	33,
 	1,	449,128,	50,
 	1,	449,128,	36,
@@ -3809,8 +3809,8 @@ static short tgeneric[] =
 	1,	449,128,	65,
 	1,	449,128,	65,
 	2,	449,128,	65,
-	
-	
+
+
 	1,	449,128,	65,
 	1,	449,128,	65,
 	1,	449,128,	65,
@@ -3826,7 +3826,7 @@ static short tgeneric[] =
 	1,	512,128,	65,
 	1,	512,128,	65,
 	1,	512,128,	65,
-	
+
 	1,	512,128,	36,
 	1,	512,128,	36,
 	1,	512,128,	29,
@@ -3848,7 +3848,7 @@ static short tgeneric[] =
 	1,	512,128,	36,
 	1,	512,128,	50,
 	2,	512,128,	50,
-	
+
 	1,	512,128,	50,
 	1,	512,128,	50,
 	1,	512,128,	50,
@@ -3867,7 +3867,7 @@ static short tgeneric[] =
 	1,	512,128,	50,
 	1,	512,128,	50,
 	1,	512,128,	50,
-	
+
 	0
 };
 
@@ -3885,23 +3885,23 @@ void GenericNext (void)
 {
 	Pixmap	*ppm;
 	Pt		pos;
-	
+
 	if ( tgeneric[generic*4] == 0 )
 	{
 		ShowImage();					/* raffiche l'image gnrique */
 		generic = 0;
 	}
-	
+
 	if ( tgeneric[generic*4] == 1 )  ppm = 0;
 	else                             ppm = &pmimage;
-	
+
 	pos.x = tgeneric[generic*4+1];
 	pos.y = LYIMAGE-tgeneric[generic*4+2];
-	
+
 	OpenTime();
 	AnimDrawIcon(ppm, tgeneric[generic*4+3], pos, 0);
 	CloseTime(DELNORM);
-	
+
 	generic ++;
 }
 
@@ -3921,7 +3921,7 @@ short ExecuteAction (char event, Pt pos)
 	PhAction	action;
 	short		dstmonde;
 	short		lastmusique;
-	
+
 	if ( event == KEYCLIC )
 	{
 		action = ClicToAction(pos);				/* action selon la position vise */
@@ -3930,24 +3930,24 @@ short ExecuteAction (char event, Pt pos)
 	{
 		action = EventToAction(event);			/* action selon la touche presse */
 	}
-	
+
 	if ( action != -1 )
 	{
 		PlayEvSound(SOUND_CLIC);
 	}
-	
+
 	if ( action == ACTION_IDENT )
 	{
 		ChangePhase(PHASE_IDENT);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_REGLAGE )
 	{
 		ChangePhase(PHASE_REGLAGE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_DEBUT )
 	{
 		if ( fj.nom[fj.joueur][0] != 0 )		/* nom du joueur existe ? */
@@ -3960,7 +3960,7 @@ short ExecuteAction (char event, Pt pos)
 		}
 		return 0;
 	}
-	
+
 	if ( action == ACTION_FINI )
 	{
 		lastmusique = musique;
@@ -3982,27 +3982,27 @@ short ExecuteAction (char event, Pt pos)
 		musique = lastmusique;
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_AIDE &&
 		 action <= ACTION_AIDE42 )
 	{
 		ChangePhase(action-ACTION_AIDE+PHASE_AIDE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_OBJECTIF )
 	{
 		if ( construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_JOUE )
 	{
 		ChangePhase(PHASE_PLAY);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_SUIVANT )
 	{
 		monde ++;
@@ -4018,14 +4018,14 @@ short ExecuteAction (char event, Pt pos)
 		musique = lastmusique;
 		return 0;
 	}
-	
+
 	if ( action == ACTION_ANNULE )
 	{
 		if ( construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_INIT);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_STOPPEOK )
 	{
 		if ( fj.progres[fj.joueur][fj.niveau[fj.joueur]] < monde+1 )
@@ -4037,20 +4037,20 @@ short ExecuteAction (char event, Pt pos)
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_STOPPEKO )
 	{
 		if ( construit )  ChangePhase(PHASE_PRIVE);
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_PARAM )
 	{
 		ChangePhase(PHASE_PARAM);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_MONDEPREC &&
 		 (GetDemo() == 0 || !construit) )
 	{
@@ -4064,7 +4064,7 @@ short ExecuteAction (char event, Pt pos)
 		}
 		return 1;
 	}
-	
+
 	if ( action == ACTION_MONDESUIV &&
 		 (GetDemo() == 0 || !construit) )
 	{
@@ -4079,34 +4079,34 @@ short ExecuteAction (char event, Pt pos)
 		}
 		return 1;
 	}
-	
+
 	if ( action == ACTION_MONDEBAR &&
 		 (GetDemo() == 0 || !construit) )
 	{
 		TrackingStatusBar(pos);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_EDIT )
 	{
 		typeedit = 1;
 		ChangePhase(PHASE_PLAY);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_OPER &&
 		 GetDemo() == 0 )
 	{
 		ChangePhase(PHASE_OPER);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_DEPLACE )
 	{
 		ChangePhase(PHASE_DEPLACE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_ORDRE )
 	{
 		dstmonde = monde;
@@ -4115,7 +4115,7 @@ short ExecuteAction (char event, Pt pos)
 		ChangePhase(PHASE_PRIVE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_DUPLIQUE )
 	{
 		ChangePhase(PHASE_ATTENTE);			/* affiche "attendez-un instant ..." */
@@ -4123,7 +4123,7 @@ short ExecuteAction (char event, Pt pos)
 		ChangePhase(PHASE_PRIVE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_DETRUIT )
 	{
 		ChangePhase(PHASE_ATTENTE);			/* affiche "attendez-un instant ..." */
@@ -4131,7 +4131,7 @@ short ExecuteAction (char event, Pt pos)
 		ChangePhase(PHASE_PRIVE);
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_JOUEUR0 &&
 		 action <= ACTION_JOUEUR3 )
 	{
@@ -4141,7 +4141,7 @@ short ExecuteAction (char event, Pt pos)
 		JoueurEditOpen();					/* prpare l'dition du nouveau nom */
 		return 0;
 	}
-	
+
 	if ( (action >= ACTION_NIVEAU0 &&
 		  action <= ACTION_NIVEAU8) ||
 		 action == ACTION_NIVEAUGO )
@@ -4149,12 +4149,12 @@ short ExecuteAction (char event, Pt pos)
 #ifdef DEMONC
 		if ( action == ACTION_NIVEAU8 && GetDemo() == 1 )  return 0;
 #endif
-		
+
 		if ( action != ACTION_NIVEAUGO )
 		{
 			fj.niveau[fj.joueur] = action - ACTION_NIVEAU0;
 		}
-		
+
 		if ( fj.niveau[fj.joueur] < 8 )		/* fastoche/costaud/durdur/mga ? */
 		{
 			banque = fj.niveau[fj.joueur]+'A';
@@ -4174,7 +4174,7 @@ short ExecuteAction (char event, Pt pos)
 		else              ChangePhase(PHASE_OBJECTIF);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_NIVEAUK1 )
 	{
 		if ( fj.niveau[fj.joueur] == 0 )  fj.niveau[fj.joueur] = 1;
@@ -4213,7 +4213,7 @@ short ExecuteAction (char event, Pt pos)
 		AnimDrawInit();
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_VITESSE0 &&
 		 action <= ACTION_VITESSE2 )
 	{
@@ -4221,7 +4221,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawVitesse();
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_SCROLL0 &&
 		 action <= ACTION_SCROLL1 )
 	{
@@ -4229,7 +4229,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawScroll();
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_BRUIT0 &&
 		 action <= ACTION_BRUIT1 )
 	{
@@ -4248,7 +4248,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawBruitage();
 		return 0;
 	}
-	
+
 	if ( action == ACTION_NOISEVOLP &&
 		 fj.noisevolume < 10 )
 	{
@@ -4258,7 +4258,7 @@ short ExecuteAction (char event, Pt pos)
 		PlaySound(SOUND_MAGIE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_NOISEVOLM &&
 		 fj.noisevolume > 0 )
 	{
@@ -4268,7 +4268,7 @@ short ExecuteAction (char event, Pt pos)
 		PlaySound(SOUND_MAGIE);
 		return 0;
 	}
-	
+
 	if ( action == ACTION_MUSICVOLP &&
 		 fj.musicvolume < 10 )
 	{
@@ -4277,7 +4277,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawBruitage();
 		return 0;
 	}
-	
+
 	if ( action == ACTION_MUSICVOLM &&
 		 fj.musicvolume > 0 )
 	{
@@ -4286,7 +4286,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawBruitage();
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_TELECOM0 &&
 		 action <= ACTION_TELECOM1 )
 	{
@@ -4295,7 +4295,7 @@ short ExecuteAction (char event, Pt pos)
 		DrawTelecom();
 		return 0;
 	}
-	
+
 	if ( action >= ACTION_COULEUR0 &&
 		 action <= ACTION_COULEUR4 )
 	{
@@ -4303,12 +4303,12 @@ short ExecuteAction (char event, Pt pos)
 		DrawCouleur();
 		return 0;
 	}
-	
+
 	if ( action == ACTION_QUITTE )
 	{
 		return 2;
 	}
-	
+
 	return 1;
 }
 
@@ -4341,9 +4341,9 @@ void MusicBackground (void)
 {
 	short	*ptable = tmusic;
 	short	n, sound;
-	
+
 	if ( musique == 0 || !IfPlayReady() )  return;
-	
+
 	while ( ptable[0] != 0 )
 	{
 		if ( musique == ptable[0] )
@@ -4368,7 +4368,7 @@ void MusicBackground (void)
 			}
 			lastaccord = sound;
 			if ( sound != 0 )  sound --;					/* accord de base plus souvent */
-			
+
 			PlaySound(ptable[1]+sound);
 			return;
 		}
@@ -4391,14 +4391,14 @@ static short PlayInit (void)
 {
 	short		err;
 	Pt			p;
-	
+
 	OpenMachine();						/* ouverture gnrale */
-	
+
 	IconInit();							/* calcule bbox des icnes */
 
 	err = GetPixmap(&pmtemp, (p.y=LYICO, p.x=LXICO, p), 0, 1);
 	if ( err )  FatalBreak(err);
-	
+
 	monde       = 0;					/* premier monde */
 	banque      = 'A';					/* banque de base */
 	phase       = -1;					/* pas de phase connue */
@@ -4416,9 +4416,9 @@ static short PlayInit (void)
 	animpb      = 0;					/* pas d'animation en cours */
 	animpt      = 0;					/* pas d'animation en cours */
 	generic     = 0;					/* pas du gnrique */
-	
+
 	InitRandomEx(1, 1, 4+1, musiquehex);/* init hazard musique exclusive */
-	
+
 	MondeVide();
 
 	BlackScreen();						/* efface l'cran */
@@ -4445,10 +4445,10 @@ static short PlayEvent (short key, Pt pos)
 	short		term, max, delai, last;
 	KeyStatus	keystatus;
 	Rectangle	rect;
-	
+
 	static char *pass[] = {"petitblupi", "enigmeblupi", "totalblupi",
 						   "gentilblupi", "sauteblupi", "megablupi"};
-	
+
 	if ( phase == PHASE_GENERIC )
 	{
 #if __SMAKY__
@@ -4461,7 +4461,7 @@ static short PlayEvent (short key, Pt pos)
 		}
 		return 1;
 	}
-	
+
 	if ( phase != PHASE_PLAY )
 	{
 		if ( phase == PHASE_INIT && GetDemo() == 0 &&
@@ -4523,35 +4523,35 @@ static short PlayEvent (short key, Pt pos)
 				passindex = 0;
 			}
 		}
-		
+
 		if ( phase == PHASE_INIT && key == KEYQUIT &&
 			 StopPartie() == KEYHOME )
 		{
 			return 2;
 		}
-		
+
 		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
 			ChangePhase(PHASE_INIT);
 			return 1;
 		}
-		
+
 		if ( phase == PHASE_IDENT && key != KEYRETURN )
 		{
 			if ( EditEvent(key, pos) >= 0 )  return 1;
 		}
-		
+
 		if ( phase == PHASE_PARAM )
 		{
 			if ( PaletteEditEvent(descmonde.palette, key, pos) == 0 )  return 1;
 			if ( EditEvent(key, pos) >= 0 )  return 1;
 		}
-		
+
 		term = ExecuteAction(key, pos);
-		
+
 		if ( term == 2 &&
 			 StopPartie() == KEYHOME )  return 2;
-		
+
 		if ( term != 0 )
 		{
 #ifdef __SMAKY__
@@ -4559,7 +4559,7 @@ static short PlayEvent (short key, Pt pos)
 #endif
 			AnimTracking(pos);				/* tracking de l'animation */
 		}
-		
+
 		OpenTime();
 		CloseTime(3);						/* pour ne pas trop occuper le CPU ! */
 		return 1;
@@ -4586,7 +4586,7 @@ static short PlayEvent (short key, Pt pos)
 				}
 			}
 		}
-		
+
 		if ( typeedit == 0 &&
 			 (key == KEYSAVE || key == KEYLOAD || key == KEYIO) )
 		{
@@ -4594,7 +4594,7 @@ static short PlayEvent (short key, Pt pos)
 			PartieDisque(key);						/* prend/sauve la partie en cours ... */
 			return 1;
 		}
-		
+
 		if ( key == KEYF5 )							/* bruitages oui/non */
 		{
 			if ( fj.noisevolume == 0 )
@@ -4617,14 +4617,14 @@ static short PlayEvent (short key, Pt pos)
 			}
 			return 1;
 		}
-		
+
 		if ( key == KEYF6 )							/* dcalage progressif/rapide */
 		{
 			if ( fj.scroll )  fj.scroll = 0;
 			else              fj.scroll = 1;
 			return 1;
 		}
-		
+
 		if ( key == KEYF7 )							/* vitesse = tortue */
 		{
 			fj.vitesse = 0;
@@ -4640,14 +4640,14 @@ static short PlayEvent (short key, Pt pos)
 			fj.vitesse = 2;
 			return 1;
 		}
-		
+
 		if ( typejeu == 1 &&
 			 fj.modetelecom == 1 &&
 			 pause == 0 )
 		{
 			if ( key == KEYLEFT   )  key = KEYGOLEFT;
 			if ( key == KEYRIGHT  )  key = KEYGORIGHT;
-			
+
 			keystatus = GetKeyStatus();
 			if ( keystatus != 0 )
 			{
@@ -4661,7 +4661,7 @@ static short PlayEvent (short key, Pt pos)
 				lastkey = 0;
 			}
 		}
-		
+
 		if ( key == KEYGOFRONT || key == KEYGOBACK || key == KEYGOLEFT || key == KEYGORIGHT )
 		{
 			DrawArrows(key);				/* dessine les manettes de la tlcommande */
@@ -4670,7 +4670,7 @@ static short PlayEvent (short key, Pt pos)
 		{
 			DrawArrows(0);						/* dessine les manettes de la tlcommande */
 		}
-		
+
 		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
 			if ( typeedit == 1 ||
@@ -4681,7 +4681,7 @@ static short PlayEvent (short key, Pt pos)
 				return 1;
 			}
 		}
-		
+
 		if ( typejeu == 0 || typeedit || pause )
 		{
 			ovisu = DecorGetOrigine();
@@ -4727,7 +4727,7 @@ static short PlayEvent (short key, Pt pos)
 				DrawArrows(0);				/* oui -> remet les flches/tlcommande */
 			}
 		}
-		
+
 		if ( key == KEYPAUSE && typeedit == 0 )
 		{
 			PlayEvSound(SOUND_CLIC);
@@ -4735,14 +4735,14 @@ static short PlayEvent (short key, Pt pos)
 			DrawPause();					/* dessine le bouton pause */
 			DrawArrows(0);					/* dessine les flches */
 		}
-		
+
 		switch ( fj.vitesse )
 		{
 			case 0:  {delai = DELSLOW;  break;}
 			case 2:  {delai = DELQUICK; break;}
 			default: {delai = DELNORM;  break;}
 		}
-		
+
 		if ( pause == 0 )
 		{
 			OpenTime();
@@ -4751,7 +4751,7 @@ static short PlayEvent (short key, Pt pos)
 			term = MoveNext(key, pos);		/* anime jusqu'au pas suivant */
 			IconDrawClose(1);
 			CloseTime(delai);
-			
+
 			if ( term == 1 )				/* termin gagn ? */
 			{
 				if ( construit )  max = maxmonde-1;
@@ -4779,7 +4779,7 @@ static short PlayEvent (short key, Pt pos)
 					max += delai;
 				}
 				while ( max < 100 );		/* attend une seconde ... */
-				
+
 				if ( typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
 				return 1;
@@ -4830,12 +4830,12 @@ static void PlayRelease (void)
 	HideMouse();
 	OpenTime();
 	CloseTime(130);
-	
+
 	BlackScreen();			/* efface tout l'cran */
-	
+
 	GivePixmap(&pmimage);
 	GivePixmap(&pmtemp);
-	
+
 	DecorClose();			/* fermeture des dcors */
 	IconClose();			/* fermeture des icnes */
 	MoveClose();			/* fermeture des objets en mouvement */
@@ -4855,21 +4855,21 @@ int main (int argc, char *argv[])
 	int			err;						/* condition de sortie */
 	short		key;						/* touche presse  */
 	Pt			pos;						/* position de la souris */
-	
+
 	PlayInit();								/* initialise le jeu */
-	
+
 	if ( argc == 2 && strcmp(argv[1], "-d") == 0 )
 	{
 		SetDemo(1);
 	}
-	
+
 	while (1)
 	{
 		key = GetEvent(&pos);				/* gre le clavier */
 		err = PlayEvent(key, pos);			/* fait voluer le jeu */
 		if ( err == 2 )  break;				/* quitte si termin */
 	}
-	
+
 	PlayRelease();							/* fermeture gnrale */
 	return 0;
 }
