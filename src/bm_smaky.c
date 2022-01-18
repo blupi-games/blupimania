@@ -2215,12 +2215,14 @@ void BlackScreen (void)
 short FileRead (void *pdata, long pos, short nb, char file)
 {
 	FILE		*channel;
-	char		filename[] = "(:,#:)BLUPIXA.DAT";
+	char		filename[4096];
 	short		n = 0;
 	short		err;
 
-	filename[12] = file;
-	if ( file >= 'A' )  n = 6;
+        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+
+	filename[strlen(filename) - 5] = file;
+	//if ( file >= 'a' )  n = 6;
 	channel = fopen(filename+n, "rb");	/* ouvre le fichier */
 	if ( channel == NULL )  return errno;
 

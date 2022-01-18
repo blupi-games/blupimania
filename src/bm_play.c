@@ -654,7 +654,7 @@ short JoueurRead (void)
 	memset(&fj, 0, sizeof(Joueur));			/* met tout  zro */
 	fj.vitesse = 1;							/* vitesse normale */
 
-	err = FileRead(&fj, 0, sizeof(Joueur), GetDemo()?'X':'Z');
+	err = FileRead(&fj, 0, sizeof(Joueur), GetDemo()?'x':'z');
 	if ( err )
 	{
 		fj.noisevolume = 10-3;
@@ -1960,7 +1960,7 @@ short PartieCheckFile ()
 	short		err;
 	Header		header;
 
-	err = FileRead(&header, 0, sizeof(Header), GetDemo()?'W':'Y');
+	err = FileRead(&header, 0, sizeof(Header), GetDemo()?'w':'y');
 	if ( err == 0 )
 	{
 		if ( header.ident == 1 &&
