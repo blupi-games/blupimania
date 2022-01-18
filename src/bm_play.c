@@ -3304,6 +3304,8 @@ void AnimIconAddBack (Pt pos, char bFront)
 	short	*pt = animpb;
 	Pt		ipos, p;
 	Pixmap	pmicon;						/* pixmap de l'icne  dessiner */
+	Pt orig = {0, 0};
+        Pt dim = {LYICO, LXICO};
 
 	if ( phase != PHASE_INIT || pt == 0 )  return;
 
@@ -3317,6 +3319,7 @@ void AnimIconAddBack (Pt pos, char bFront)
 			if ( ipos.x < pos.x+LXICO && ipos.x+LXICO > pos.x &&
 				 ipos.y < pos.y+LYICO && ipos.y+LYICO > pos.y )
 			{
+#if 0
 				GetIcon(&pmicon, pt[5]+ICOMOFF, 1);		/* cherche le pixmap du fond */
 				CopyPixel								/* masque le fond */
 				(
@@ -3324,13 +3327,14 @@ void AnimIconAddBack (Pt pos, char bFront)
 					&pmtemp, (p.y=ipos.y-pos.y, p.x=ipos.x-pos.x, p),
 					(p.y=LYICO, p.x=LXICO, p), MODEAND
 				);
-
+#endif
+                                Pt _pos = {ipos.y - pos.y, ipos.x - pos.x};
 				GetIcon(&pmicon, pt[5], 1);				/* cherche le pixmap de la chair */
 				CopyPixel								/* dessine la chair */
 				(
-					&pmicon, (p.y=0, p.x=0, p),
-					&pmtemp, (p.y=ipos.y-pos.y, p.x=ipos.x-pos.x, p),
-					(p.y=LYICO, p.x=LXICO, p), MODEOR
+					&pmicon, orig,
+					&pmtemp, _pos,
+					dim, MODEOR
 				);
 			}
 		}
