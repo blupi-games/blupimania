@@ -511,12 +511,12 @@ void MondeVide (void)
 
 char BanqueToFile (char banque)
 {
-	if ( banque >= 'A' && banque <= 'H' )
+	if ( banque >= 'a' && banque <= 'h' )
 	{
-		if ( GetDemo() == 0 )  return banque-'A'+'1';	/* 1..8 */
-		else                   return banque-'A'+'I';	/* I..P */
+		if ( GetDemo() == 0 )  return banque-'a'+'1';	/* 1..8 */
+		else                   return banque-'a'+'i';	/* i..p */
 	}
-	if ( banque >= 'I' && banque <= 'L' )  return banque-'I'+'E';	/* E..H */
+	if ( banque >= 'i' && banque <= 'l' )  return banque-'i'+'e';	/* e..h */
 
 	return banque;
 }
@@ -535,10 +535,10 @@ void MondeMax (char banque)
 
 	maxmonde = FileGetLength(BanqueToFile(banque))/sizeof(Monde);
 
-	if ( banque <= 'B' )  max = 5;
-	if ( banque == 'D' ||
-		 banque == 'F' ||
-		 banque == 'H' )  max = 3;
+	if ( banque <= 'b' )  max = 5;
+	if ( banque == 'd' ||
+		 banque == 'f' ||
+		 banque == 'h' )  max = 3;
 
 	if ( GetDemo() == 1 && maxmonde > max )  maxmonde = max;
 
@@ -1951,8 +1951,8 @@ short PlayPartieRead (int pos, char file)
 /* --------------- */
 
 /*
-	Vrifie si le fichier de sauvegarde de la partie est correct,
-	c'est--dire s'il correspond  cette version de soft !
+	Vérifie si le fichier de sauvegarde de la partie est correct,
+	c'est-à-dire s'il correspond à cette version de soft !
  */
 
 short PartieCheckFile ()
@@ -1971,7 +1971,7 @@ short PartieCheckFile ()
 			 header.lg[4] == MachinePartieLg() &&
 			 header.lg[5] == 0 )  return 0;		/* fichier ok */
 	}
-	FileDelete(GetDemo()?'W':'Y');
+	FileDelete(GetDemo()?'w':'y');
 
 	memset(&header, 0, sizeof(Header));
 
@@ -1982,9 +1982,9 @@ short PartieCheckFile ()
 	header.lg[3] = PalPartieLg();
 	header.lg[4] = MachinePartieLg();
 
-	FileWrite(&header, 0, sizeof(Header), GetDemo()?'W':'Y');
+	FileWrite(&header, 0, sizeof(Header), GetDemo()?'w':'y');
 
-	return 1;		/* le fichier n'tait pas correct */
+	return 1;		/* le fichier n'était pas correct */
 }
 
 
@@ -4172,7 +4172,7 @@ short ExecuteAction (char event, Pt pos)
 
 		if ( fj.niveau[fj.joueur] < 8 )		/* fastoche/costaud/durdur/mga ? */
 		{
-			banque = fj.niveau[fj.joueur]+'A';
+			banque = fj.niveau[fj.joueur]+'a';
 			if ( g_passdaniel )  g_construit = 1;
 			else               g_construit = 0;
 			MondeMax(banque);
@@ -4180,7 +4180,7 @@ short ExecuteAction (char event, Pt pos)
 		}
 		else								/* priv ? */
 		{
-			banque = fj.joueur+'I';
+			banque = fj.joueur+'i';
 			         g_construit = 1;
 			MondeMax(banque);
 			         g_monde = 0;
