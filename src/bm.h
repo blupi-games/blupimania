@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-
+#define __MSDOS__ 1
 #ifdef __MSDOS__
 typedef unsigned short u_short;
 #endif
@@ -367,13 +367,19 @@ short	MovePartieRead	(int pos, char file);
 /* bm_decor.c */
 /* ---------- */
 
+typedef struct {
+  short icon;
+  Pt cel;
+  Pt off;
+} ImageStack;
+
 Pt		GraToCel		(Pt gra);
 Pt		CelToGra		(Pt cel);
 short	DecorGetInitCel	(Pt cel);
 void	DecorPutInitCel	(Pt cel, short icon);
 short	DecorGetCel		(Pt cel);
 void	DecorPutCel		(Pt cel, short icon);
-void	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
+const ImageStack *	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
 Pt		DecorDetCel		(Pt pmouse);
 void	DecorSuperCel	(Pt pmouse);
 short	DecorEvent		(Pt pos, short poscel, short icon);

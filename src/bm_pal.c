@@ -127,7 +127,7 @@ void DrawButton (Pt pos, short icon, short state)
 {
 	Pixmap		pm;
 	short		iconbutton;
-	Pt			src, dim, p;
+	Pt			src, dim, p1 = {1, 1}, p2 = {30, 30};
 
 	if ( pos.x < 0 )  return;
 
@@ -152,7 +152,7 @@ void DrawButton (Pt pos, short icon, short state)
 		iconbutton = ICO_BUTTON_BUILDSP;
 		dim.x = 52;
 	}
-
+#if 0
 	GetIcon(&pm, iconbutton+ICOMOFF, 1);
 	CopyPixel							/* efface le fond du bouton */
 	(
@@ -160,9 +160,8 @@ void DrawButton (Pt pos, short icon, short state)
 		0, pos,
 		dim, MODEAND
 	);
-
+#endif
 	if ( icon == 0 )  return;
-
 	GetIcon(&pm, iconbutton, 1);
 	CopyPixel							/* dessine le cadre du bouton */
 	(
@@ -183,21 +182,21 @@ void DrawButton (Pt pos, short icon, short state)
 		pos.x += 7;						/* dcalage si bouton press */
 		pos.y += 2;
 	}
-
+#if 0
 	GetIcon(&pm, icon+ICOMOFF, 1);
 	CopyPixel							/* efface le contenu du bouton */
 	(
-		&pm, (p.y=1, p.x=1, p),
+		&pm, p1,
 		0, pos,
-		(p.y=30, p.x=30, p), MODEAND
+		p2, MODEAND
 	);
-
+#endif
 	GetIcon(&pm, icon, 1);
 	CopyPixel							/* dessine le contenu du bouton */
 	(
-		&pm, (p.y=1, p.x=1, p),
+		&pm, p1,
 		0, pos,
-		(p.y=30, p.x=30, p), MODEOR
+		p2, MODEOR
 	);
 }
 
@@ -227,10 +226,10 @@ void DrawF1toF4 (short rang)
 
 	dim.x = 8;
 	dim.y = 7;
-
+/*
 	GetIcon(&pm, ICO_BUTTON_PAUSE+ICOMOFF, 1);
 	CopyPixel(&pm, src, 0, dst, dim, MODEAND);
-
+*/
 	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
 	CopyPixel(&pm, src, 0, dst, dim, MODEOR);
 }
@@ -1317,7 +1316,9 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		return;
 	}
 
-	GetPixmap(&pminfo, (p.y=LYICO, p.x=LXICO, p), 0, 1);
+	p.y = LYICO;
+        p.x = LXICO;
+	GetPixmap(&pminfo, p, 0, 1);
 
 	GetIcon(&pm, ICO_INFO, 1);
 	DuplPixel(&pm, &pminfo);			/* copie l'icne dans pminfo pour pouvoir modifier */

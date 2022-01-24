@@ -2099,7 +2099,7 @@ short PartiePrend (short rang)
 void PartieDrawIcon (short key)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
-	Pt			pos, p;
+	Pt			pos, p, zero = {0, 0}, dim = {LYICO, LXICO};
 
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
@@ -2116,9 +2116,9 @@ void PartieDrawIcon (short key)
 
 	CopyPixel								/* masque le fond */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, zero,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEAND
+		dim, MODEAND
 	);
 
 	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE, 1);
@@ -2128,9 +2128,9 @@ void PartieDrawIcon (short key)
 
 	CopyPixel								/* dessine la chair */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, zero,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEOR
+		dim, MODEOR
 	);
 }
 
@@ -4413,6 +4413,7 @@ static short PlayInit (void)
 
         pmtemp.texture = SDL_CreateTexture (
           g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
+        SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
         pmtemp.dx = LXICO;
         pmtemp.dy = LYICO;
         //SDL_SetTextureBlendMode (pmtemp.texture, SDL_BLENDMODE_BLEND);

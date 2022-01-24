@@ -296,7 +296,7 @@ void MoveModifCel (Pt cel)
 
 	i = DecorGetCel(cel);
 	if ( i == ICO_TELE || i == ICO_TELE+3 || i == ICO_TELE+4 ||
-		 i == ICO_TABLEBOIT || ICO_TABLEVIDE )  return;
+		 i == ICO_TABLEBOIT || i == ICO_TABLEVIDE )  return;
 
 	for ( i=0 ; i<MAXTOTO ; i++ )
 	{
@@ -3694,8 +3694,11 @@ void DrawOne (short i, Pt ovisu)
 
 	if ( toto[i].offz < LYICO+OFFZTOTO )		/* si trop bas -> ne dessine pas */
 	{
-		IconDrawPut(toto[i].icon, btransp, pos, toto[i].offz, celdd,
-					(r.r.p1.y=0, r.r.p1.x=0, r.r.p2.y=DIMYDRAW, r.r.p2.x=DIMXDRAW, r) );
+          r.r.p1.y=0;
+          r.r.p1.x=0;
+          r.r.p2.y=DIMYDRAW;
+          r.r.p2.x=DIMXDRAW;
+		IconDrawPut(toto[i].icon, btransp, pos, toto[i].offz, celdd, r);
 	}
 }
 

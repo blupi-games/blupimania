@@ -850,7 +850,7 @@ void DuplPixel(Pixmap *ppms, Pixmap *ppmd)
 
 void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectangle *pzone)
 {
-	Pt		p;
+	Pt		p1, p2, _dim;
 
 	(*pzone).p1.x = pos.x;
 	(*pzone).p1.y = pos.y;
@@ -862,41 +862,65 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 
 	if ( shift.x < 0 && shift.x > -dim.x )
 	{
+          p1.y = pos.y;
+          p1.x = pos.x;
+          p2.y=pos.y;
+          p2.x=pos.x-shift.x;
+          _dim.y=dim.y;
+          _dim.x=dim.x+shift.x;
 		CopyPixel
 		(
-			ppm, (p.y=pos.y, p.x=pos.x, p),
-			ppm, (p.y=pos.y, p.x=pos.x-shift.x, p),
-			(p.y=dim.y, p.x=dim.x+shift.x, p), MODELOAD
+			ppm, p1,
+			ppm, p2,
+			_dim, MODELOAD
 		);
 		(*pzone).p2.x = pos.x - shift.x;
 	}
 	if ( shift.x > 0 && shift.x < dim.x )
 	{
+          p1.y=pos.y;
+          p1.x=pos.x+shift.x;
+                p2.y = pos.y;
+                p2.x = pos.x;
+                _dim.y=dim.y;
+                _dim.x=dim.x-shift.x;
 		CopyPixel
 		(
-			ppm, (p.y=pos.y, p.x=pos.x+shift.x, p),
-			ppm, (p.y=pos.y, p.x=pos.x, p),
-			(p.y=dim.y, p.x=dim.x-shift.x, p), MODELOAD
+			ppm, p1,
+			ppm, p2,
+			_dim, MODELOAD
 		);
 		(*pzone).p1.x = pos.x + dim.x - shift.x;
 	}
 	if ( shift.y < 0 && shift.y > -dim.y )
 	{
+                p1.y = pos.y;
+                p1.x = pos.x;
+                p2.y = pos.y-shift.y;
+                p2.x=pos.x;
+                _dim.y=dim.y+shift.y;
+                _dim.x=dim.x;
 		CopyPixel
 		(
-			ppm, (p.y=pos.y, p.x=pos.x, p),
-			ppm, (p.y=pos.y-shift.y, p.x=pos.x, p),
-			(p.y=dim.y+shift.y, p.x=dim.x, p), MODELOAD
+			ppm, p1,
+			ppm, p2,
+			_dim, MODELOAD
 		);
 		(*pzone).p2.y = pos.y - shift.y;
 	}
 	if ( shift.y > 0 && shift.y < dim.y )
 	{
+                p1.y = pos.y+shift.y;
+                p1.x = pos.x;
+                p2.y = pos.y;
+                p2.x = pos.x;
+                _dim.y=dim.y-shift.y;
+                _dim.x=dim.x;
 		CopyPixel
 		(
-			ppm, (p.y=pos.y+shift.y, p.x=pos.x, p),
-			ppm, (p.y=pos.y, p.x=pos.x, p),
-			(p.y=dim.y-shift.y, p.x=dim.x, p), MODELOAD
+			ppm, p1,
+			ppm, p2,
+			_dim, MODELOAD
 		);
 		(*pzone).p1.y = pos.y + dim.y - shift.y;
 	}
@@ -984,6 +1008,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 			if ( dim.y <= 0 )  return 1;
 		}
 	}
+
 #if 0
 	switch (mode)
 	{
@@ -1038,7 +1063,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
           SDL_RenderCopy (
             g_renderer, ppms ? ppms->texture : NULL, &srcRect, &dstRect);
           SDL_SetRenderTarget (g_renderer, target);
-
+          /* XXX */ SDL_RenderPresent(g_renderer);
 #if 0
 	if ( pgradesc->dfcnp <= 1 )
 	{										/* noir-blanc */
@@ -1360,7 +1385,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 /*
 	Dessine une surface rectangulaire remplie avec une couleur donne
 	dans un pixmap.
-		*ppm		->	pixmap o dessiner (0 = cran)
+		*ppm		->	pixmap où dessiner (0 = écran)
 		rect.p1		->	coin sup/gauche
 		rect.p2		->	coin inf/droite
 		mode		->	mode de dessin
@@ -1369,7 +1394,39 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 
 void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 {
+  SDL_Rect _rect;
+  _rect.x = rect.p1.x;
+  _rect.y = rect.p1.y;
+  _rect.w = rect.p2.x - rect.p1.x;
+  _rect.h = rect.p2.y - rect.p1.y;
+
+  static const SDL_Color colors[] = {
+    {255,255,255,0}, // BLANC
+    {255,255,0,0}, // JAUNE
+    {255,204,64,0}, // ORANGE
+    {255,0,0,0}, // ROUGE
+    {220,220,220,0}, // GRIS CLAIR
+    {190,190,190,0}, // GRIS FONCE
+    {0,255,255,0}, // CYAN
+    {0,0,255,0}, // BLEU
+    {0,255,0,0}, // VERT CLAIR
+    {0,205,0,0}, // VERT FONCE
+    {224,161,255,0}, // VIOLET
+    {255,0,255,0}, // MAGENTA
+    {224,164,164,0}, // BRUN CLAIR
+    {187,0,0,0}, // BRUN FONCE
+    {169,216,255,0}, // BLEU MOYEN
+    {0,0,0,0}, // NOIR
+  };
+
+  SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : NULL);
+  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_RenderFillRect(g_renderer, &_rect);
+  SDL_SetRenderTarget(g_renderer, target);
+
 #if 0
+
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;
 	Point		p, d;
@@ -1724,7 +1781,7 @@ static void ClearMem (char *pt, int lg, int fill)
 /* --------- */
 
 /*
-	Charge un fichier image cod, si ncessaire.
+	Charge un fichier image codé, si nécessaire.
  */
 
 static int LoadImage(int numero, Pixmap *pim)
@@ -1758,6 +1815,7 @@ static int LoadImage(int numero, Pixmap *pim)
         pim->texture = SDL_CreateTexture (
           g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, pim->dx,
           pim->dy);
+        SDL_SetTextureBlendMode(pim->texture, SDL_BLENDMODE_BLEND);
 
         SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
         SDL_SetRenderTarget (g_renderer, pim->texture);
@@ -1815,6 +1873,24 @@ static int LoadImage(int numero, Pixmap *pim)
 
 short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 {
+    if (ppm->texture)
+      SDL_DestroyTexture(ppm->texture);
+
+        ppm->texture = SDL_CreateTexture (
+          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, dim.x,
+          dim.y);
+        SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
+        ppm->dx = dim.x;
+        ppm->dy = dim.y;
+
+        SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
+        SDL_SetRenderTarget(g_renderer, ppm->texture);
+        if (fill == 0)
+          SDL_SetRenderDrawColor (g_renderer, 255, 255, 255, 255);
+        else if (fill == 1)
+          SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 255);
+        SDL_RenderClear (g_renderer);
+        SDL_SetRenderTarget(g_renderer, target);
 #if 0
 	int		nbp = 1;
 
@@ -2100,28 +2176,24 @@ static int LoadIcon(void)
 
 	err = GetImage(&pmicon1c, IMAICON+0);			/* charge l'image des icnes */
 	if ( err )  return err;
-        SDL_SetTextureBlendMode(pmicon1c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon1m, IMAICON+0+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon2c, IMAICON+1);			/* charge l'image des icnes */
 	if ( err )  return err;
-        SDL_SetTextureBlendMode(pmicon2c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon2m, IMAICON+1+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon3c, IMAICON+2);			/* charge l'image des icnes */
 	if ( err )  return err;
-        SDL_SetTextureBlendMode(pmicon3c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon3m, IMAICON+2+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon4c, IMAICON+3);			/* charge l'image des icnes */
 	if ( err )  return err;
-        SDL_SetTextureBlendMode(pmicon4c.texture, SDL_BLENDMODE_BLEND);
 
 	err = GetImage(&pmicon4m, IMAICON+3+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;

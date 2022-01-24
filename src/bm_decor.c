@@ -48,7 +48,7 @@ Partie;
 
 
 void DecorShift (Pt oldpos, Pt newpos, short bDraw);
-
+static short IfHideIcon(Pt pos, Rectangle zone);
 
 
 
@@ -291,18 +291,19 @@ void DecorPutInitCel (Pt cel, short icon)
 /* ============= */
 
 /*
-	Fabrique le masque permettant de dessiner une icne sur une cellule
-	tout en tant masque par les lments du dcor placs devant.
-	La table[] donne les coordonnes relatives des cellules succeptibles
-	de masquer l'objet plac dans la cellule (0;0).
+	Fabrique le masque permettant de dessiner une icône sur une cellule
+	tout en étant masquée par les éléments du décor placés devant.
+	La table[] donne les coordonnées relatives des cellules succeptibles
+	de masquer l'objet placé dans la cellule (0;0).
 	Voir l'explication de cette table[] dans IMASK.IMAGE !
-		ppm ->	pixmap ayant les dimensions d'une icne (80x80)
-		pos ->	coordonnes exactes de l'icne  masquer [gra]
-		cel ->	coordonnes de la cellule charnire [monde]
+		ppm ->	pixmap ayant les dimensions d'une icône (80x80)
+		pos ->	coordonnées exactes de l'icône à masquer [gra]
+		cel ->	coordonnées de la cellule charnière [monde]
  */
 
-void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
+const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 {
+#if 0
 	static char table[] =
 	{
 		-1,  1,
@@ -322,22 +323,104 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 		 2,  3,
 		 3,  1,
 		 3,  2,
+		 4,  1,
+		 4,  2,
+		 5,  1,
+		 5,  2,
+		 6,  1,
+		 6,  2,
+		 7,  1,
+		 7,  2,
 		-100
 	};
+#endif
 
-	short		i = 0;
+        static ImageStack list[20*20]; //[sizeof(table)/sizeof(*table)/2];
+        memset(list, 0 , sizeof(list));
+
 	short		icon;
-	Pixmap		pm;
-	Pt			p, c, off, dst;
+	Pt			p, off;
 
-	GetPixmap(ppm, (p.y=LYICO,p.x=LXICO,p), 0, 1);		/* efface le pixmap du masque */
-
+        p.y = LYICO;
+        p.x = LXICO;
+	//GetPixmap(ppm, p, 0, 1);		/* efface le pixmap du masque */
+#if 0
 	off = CelToGra(cel);
 	off.x += PLXICO*ovisu.x;
 	off.y += PRYICO*ovisu.y;
 	off.x = pos.x - off.x;
 	off.y = pos.y - off.y;
+#endif
+        Rectangle	zone;
+        zone.p1.x = 0;
+	zone.p1.y = 0;
+	zone.p2.x = DIMXDRAW;
+	zone.p2.y = DIMYDRAW;
 
+        int k = 0;
+        Pt pv = pos;
+	for ( int i=cel.y - 1 ; i<=MAXCELY ; i++, k++ )
+	{
+		Pt ph = pv;
+		for ( int j=cel.x - 1 ; j<=MAXCELX ; j++, k++ )
+                {
+                  if (i < cel.y && j - cel.x < 1)
+                    continue;
+                  if (j < cel.x && i - cel.y < 1)
+                    continue;
+
+                  if ( IfHideIcon(ph, zone) )
+                    continue;
+
+                  Pt c = {i, j};
+
+                  if ( c.x < MAXCELX && c.y < MAXCELY )
+                  {
+                          icon = pmonde->tmonde[c.y][c.x];
+                  }
+                  else
+                  {
+                          icon = ICO_SOL;
+                  }
+
+                  if ( i == cel.y && j == cel.x &&
+                          icon >= ICO_PORTEO_EO && icon < ICO_PORTEO_EO+6 )
+                    continue;
+
+                  /* MS: prevent redraw when Blupi is on this sort of case */
+                  if (icon >= ICO_SENSUNI_S && icon <= ICO_SENSUNI_O)
+                    continue;
+                  if (icon >= ICO_ACCEL_S   && icon <= ICO_ACCEL_O)
+                    continue;
+
+                  if ( c.x < MAXCELX && c.y < MAXCELY &&
+                          (icon >= ICO_BLOQUE || icon == ICO_DEPART ) )	/* icône en hauteur ? */
+                  {
+                    list[k].icon = icon;
+                    list[k].cel= c;
+
+                    list[k].off = CelToGra(c);
+                    list[k].off.x += PLXICO*(ovisu.x);
+                    list[k].off.y += PRYICO*(ovisu.y);
+                  }
+                  else if ( posz > 0 &&				 /* icône en dessous du sol ? */
+                          (i > cel.y || j > cel.x ||
+                            (icon != ICO_DEPART &&
+                            icon != ICO_TROU &&
+                            icon != ICO_TROUBOUCHE)) )
+                  {
+                    list[k].icon = icon;
+                    list[k].cel= c;
+
+                    list[k].off = CelToGra(c);
+                    list[k].off.x += PLXICO*(ovisu.x);
+                    list[k].off.y += PRYICO*(ovisu.y);
+                  }
+
+                }
+        }
+
+#if 0
 	while ( table[i] != -100 )
 	{
 		c.x = cel.x + table[i+0];
@@ -356,39 +439,63 @@ void DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 			 icon >= ICO_PORTEO_EO && icon < ICO_PORTEO_EO+6 )  goto next;
 
 		if ( c.x < MAXCELX && c.y < MAXCELY &&
-			 (icon >= ICO_BLOQUE || icon == ICO_DEPART) )	/* icne en hauteur ? */
+			 (icon >= ICO_BLOQUE || icon == ICO_DEPART) )	/* icône en hauteur ? */
 		{
+                  list[i/2].icon = icon;
+                  list[i/2].cel= c;
+
+                  list[i/2].off = CelToGra(c);
+                  list[i/2].off.x += PLXICO*(ovisu.x);
+                  list[i/2].off.y += PRYICO*(ovisu.y);
+
+#if 0
 			GetIcon(&pm, icon+ICOMOFF, 1);
 			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1] - off.x;
 			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0] - off.y;
+                        p.y = 0;
+                        p.x = 0;
 			CopyPixel
 			(
-				&pm, (p.y=0, p.x=0, p),
+				&pm, p,
 				ppm, dst,
-				(p.y=LYICO,p.x=LXICO,p), MODEOR
+				dim, MODEOR
 			);
+#endif
 		}
 
-		if ( posz > 0 &&						/* icne en dessous du sol ? */
+		if ( posz > 0 &&						/* icône en dessous du sol ? */
 			 (table[i+0] > 0 || table[i+1] > 0 ||
 			  (icon != ICO_DEPART &&
 			   icon != ICO_TROU &&
 			   icon != ICO_TROUBOUCHE)) )
 		{
+                  list[i/2].icon = icon;
+                  list[i/2].cel= c;
+
+                  list[i/2].off = CelToGra(c);
+                  list[i/2].off.x += PLXICO*(ovisu.x);
+                  list[i/2].off.y += PRYICO*(ovisu.y);
+#if 0
 			GetIcon(&pm, ICO_SOL+ICOMOFF, 1);
 			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1] - off.x;
 			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0] - off.y;
+                        p.y = 0;
+                        p.x = 0;
 			CopyPixel
 			(
-				&pm, (p.y=0, p.x=0, p),
+				&pm, p,
 				ppm, dst,
-				(p.y=LYICO,p.x=LXICO,p), MODEOR
+				dim, MODEOR
 			);
+#endif
 		}
 
 		next:
 		i += 2;
 	}
+#endif
+
+	return list;
 }
 
 
@@ -1010,7 +1117,7 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 	Pixmap	pm;
 	Pixmap	pmfront = {0,0,0,0,0,0,0};
 	Pt		dst;
-	Pt		p;
+	Pt		p1 = {LYICO, LXICO}, p2 = {0, 0};
 	short	icon;
 
 	if ( g_typejeu == 1 )
@@ -1020,7 +1127,7 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 		return;
 	}
 
-	GetPixmap(ppm, (p.y=LYICO, p.x=LXICO, p), 0, 0);
+	GetPixmap(ppm, p1, 0, 0);
 
 	GetIcon(&pm, ICO_SOL+ICOMOFF, 1);		/* masque pour le sol */
 	DuplPixel(&pm, ppm);
@@ -1031,9 +1138,9 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 		GetIcon(&pm, icon+ICOMOFF, 1);
 		CopyPixel							/* ajoute le masque en hauteur */
 		(
-			&pm, (p.y=0, p.x=0, p),
-			ppm, (p.y=0, p.x=0, p),
-			(p.y=LYICO, p.x=LXICO, p), MODEOR
+			&pm, p2,
+			ppm, p2,
+			p1, MODEOR
 		);
 	}
 
@@ -1046,11 +1153,12 @@ void GetCelMask (Pixmap *ppm, Pt cel)
 	DecorIconMask(&pmfront, dst, 0, cel);	/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = icon;
 
+
 	CopyPixel								/* masque selon les dcors placs devant */
 	(
-		&pmfront, (p.y=0, p.x=0, p),
-		ppm, (p.y=0, p.x=0, p),
-		(p.y=LYICO, p.x=LXICO, p), MODEAND
+		&pmfront, p2,
+		ppm, p2,
+		p1, MODEAND
 	);
 
 	GivePixmap(&pmfront);
@@ -1390,11 +1498,15 @@ void SuperCelSet (void)
 		);
 	}
 
+        p.y = 0;
+        p.x = 0;
+	dim.x = LXICO;
+	dim.y = LYICO;
 	CopyPixel								/* allume dans pmdecor */
 	(
-		&pmsuper, (p.y=0, p.x=0, p),
+		&pmsuper, p,
 		&pmdecor, superpos,
-		(p.y=LYICO, p.x=LXICO, p), MODEOR
+		dim, MODEOR
 	);
 
 	rg.r.p1.x = superpos.x;
@@ -1917,14 +2029,14 @@ void DecorModif (Pt cel, short newicon)
 		-100
 	};
 
-	short		i = 0;
+	//short		i = 0;
 	short		icon;
 	Pixmap		pmnewdecor = {0,0,0,0,0,0,0};
 	Pixmap		pmnewmask  = {0,0,0,0,0,0,0};
 	Pixmap		pmmask     = {0,0,0,0,0,0,0};
 	Pixmap		pmisol, pmissol;
 	Pixmap		pm;
-	Pt			p, c, dst;
+	Pt			p, dst, zero = {0, 0}, dim = {LYICO, LXICO};
 	Reg			rg;
 
 	if ( newicon == pmonde->tmonde[cel.y][cel.x] )  return;
@@ -1937,13 +2049,20 @@ void DecorModif (Pt cel, short newicon)
 	/*	Gnre dans pmnewdecor l'image de la nouvelle partie du dcor,
 		en redessinant toutes les cellules places derrire. */
 
-	GetPixmap(&pmnewdecor, (p.y=LYICO,p.x=LXICO,p), 1, 1);	/* noirci le pixmap du dcor */
+	GetPixmap(&pmnewdecor, dim, 1, 1);	/* noirci le pixmap du dcor */
 	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
 
-	while ( table[i] != -100 )
+        int k = 0;
+	for ( int i=cel.y - 3 ; i<=MAXCELY ; i++, k++ )
 	{
-		c.x = cel.x + table[i+0];
-		c.y = cel.y + table[i+1];
+		for ( int j=cel.x - 3 ; j<=MAXCELX ; j++, k++ )
+                {
+
+	//while ( table[i] != -100 )
+	//{
+		//c.x = cel.x + table[i+0];
+		//c.y = cel.y + table[i+1];
+                Pt c = {i, j};
 
 		if ( c.x >= 0 && c.y >= 0 )
 		{
@@ -1951,8 +2070,10 @@ void DecorModif (Pt cel, short newicon)
 			if ( c.y == MAXCELY )  icon = ICO_BORDG;	/* bord gauche du plateau */
 			if ( c.x <  MAXCELX && c.y <  MAXCELY )  icon = pmonde->tmonde[c.y][c.x];
 
-			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1];
-			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0];
+			//dst.x = PLXICO*table[i+0] - PRXICO*table[i+1];
+			//dst.y = PRYICO*table[i+1] + PLYICO*table[i+0];
+                        dst.x = PLXICO*(j - cel.x) - PRXICO*(i - cel.y);
+			dst.y = PRYICO*(i - cel.y) + PLYICO*(j - cel.x);
 
 			if ( icon != ICO_BORDG && icon != ICO_BORDD )
 			{
@@ -1961,9 +2082,9 @@ void DecorModif (Pt cel, short newicon)
 #endif
 				CopyPixel						/* efface la surface au sol */
 				(
-					&pmisol, (p.y=0, p.x=0, p),
+					&pmisol, zero,
 					&pmnewdecor, dst,
-					(p.y=LYICO,p.x=LXICO,p), MODEAND
+					dim, MODEAND
 				);
 			}
 
@@ -1981,31 +2102,32 @@ void DecorModif (Pt cel, short newicon)
 				GetIcon(&pmissol, GetIconCaisseSSol(c), 1);
 				CopyPixel						/* dessine le sol sous la boule */
 				(
-					&pmissol, (p.y=0, p.x=0, p),
+					&pmissol, zero,
 					&pmnewdecor, dst,
-					(p.y=LYICO,p.x=LXICO,p), MODEOR
+					dim, MODEOR
 				);
 			}
 
 			GetIcon(&pm, icon+ICOMOFF, 1);
 			CopyPixel							/* efface le volume en hauteur */
 			(
-				&pm, (p.y=0, p.x=0, p),
+				&pm, zero,
 				&pmnewdecor, dst,
-				(p.y=LYICO,p.x=LXICO,p), MODEAND
+				dim, MODEAND
 			);
 
 			GetIcon(&pm, icon, 1);
 			CopyPixel							/* dessine la cellule */
 			(
-				&pm, (p.y=0, p.x=0, p),
+				&pm, zero,
 				&pmnewdecor, dst,
-				(p.y=LYICO,p.x=LXICO,p), MODEOR
+				dim, MODEOR
 			);
 		}
 
-		i += 2;
+		//i += 2;
 	}
+        }
 
 	/*	Copie la nouvelle partie du dcor dans pmdecor, mais en la masquant
 		au pralable par les objets pouvant tre placs devant. */
@@ -2018,31 +2140,31 @@ void DecorModif (Pt cel, short newicon)
 	DecorIconMask(&pmmask, dst, 0, cel);			/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = newicon;
 
-	GetPixmap(&pmnewmask, (p.y=LYICO,p.x=LXICO,p), 1, 1);	/* noirci le masque pour newdecor */
+	GetPixmap(&pmnewmask, dim, 1, 1);	/* noirci le masque pour newdecor */
 	CopyPixel
 	(
-		&pmmask, (p.y=0, p.x=0, p),
-		&pmnewmask, (p.y=0, p.x=0, p),
-		(p.y=LYICO,p.x=LXICO,p), MODEAND
+		&pmmask, zero,
+		&pmnewmask, zero,
+		dim, MODEAND
 	);
 	CopyPixel										/* efface l'emplacemant chang */
 	(
-		&pmnewmask, (p.y=0, p.x=0, p),
+		&pmnewmask, zero,
 		&pmdecor, dst,
-		(p.y=LYICO,p.x=LXICO,p), MODEAND
+		dim, MODEAND
 	);
 
 	CopyPixel
 	(
-		&pmmask, (p.y=0, p.x=0, p),
-		&pmnewdecor, (p.y=0, p.x=0, p),
-		(p.y=LYICO,p.x=LXICO,p), MODEAND
+		&pmmask, zero,
+		&pmnewdecor, zero,
+		dim, MODEAND
 	);
 	CopyPixel										/* dessine l'emplacement chang */
 	(
-		&pmnewdecor, (p.y=0, p.x=0, p),
+		&pmnewdecor, zero,
 		&pmdecor, dst,
-		(p.y=LYICO,p.x=LXICO,p), MODEOR
+		dim, MODEOR
 	);
 
 	rg.r.p1.x = dst.x;
@@ -2143,23 +2265,33 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 
 void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
-	Pt		p;
+	Pt		p, p2, zero = {0, 0}, dim;
 
 	OpenTime();
 
+        p.y = POSYDRAW;
+        p.x = POSXDRAW+part;
+        dim.y = DIMYDRAW;
+        dim.x = DIMXDRAW-part;
 	CopyPixel
 	(
-		ppmold, (p.y=0, p.x=0, p),
-		0,      (p.y=POSYDRAW, p.x=POSXDRAW+part, p),
-		(p.y=DIMYDRAW, p.x=DIMXDRAW-part, p),
+		ppmold, zero,
+		0,      p,
+		dim,
 		MODELOAD
 	);
 
+        p.y = POSYDRAW;
+        p.x = POSXDRAW;
+        p2.y = 0;
+        p2.x = total-part;
+        dim.y = DIMYDRAW;
+        dim.x = part;
 	CopyPixel
 	(
-		ppmnew, (p.y=0, p.x=total-part, p),
-		0,      (p.y=POSYDRAW, p.x=POSXDRAW, p),
-		(p.y=DIMYDRAW, p.x=part, p),
+		ppmnew, p2,
+		0,      p,
+		dim,
 		MODELOAD
 	);
 
@@ -2246,7 +2378,7 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 
 void DecorSetOrigine (Pt origine, short quick)
 {
-	Pt		p, oldpos, newpos, termpos;
+	Pt		p, oldpos, newpos, termpos, zero = {0, 0}, dim = {DIMYDRAW, DIMXDRAW};
 	Reg		rg;
 	Pixmap	*ppmicon;
 	short	err;
@@ -2292,11 +2424,13 @@ void DecorSetOrigine (Pt origine, short quick)
 
 		err = SavePixmap(&pmdecor);				/* sauve le nouveau dcor */
 		if ( err != 0 )  return;
+                p.y = POSYDRAW;
+                p.x = POSXDRAW;
 		CopyPixel								/* pmdecor <-- cran (actuel) */
 		(
-			0,        (p.y=POSYDRAW, p.x=POSXDRAW, p),
-			&pmdecor, (p.y=0, p.x=0, p),
-			(p.y=DIMYDRAW, p.x=DIMXDRAW, p),
+			0,        p,
+			&pmdecor, zero,
+			dim,
 			MODELOAD
 		);
 
@@ -2445,7 +2579,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 	/*	Met  jour le dcor dans pmdecor correspondant  la zone dcouverte. */
 
-	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
+	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
 
 	pv = newpos;
 	for ( i=0 ; i<=MAXCELY ; i++ )
@@ -2463,9 +2597,9 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 				if ( icon != ICO_BORDG && icon != ICO_BORDD )
 				{
 #ifdef __MSDOS__
-					GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
+					//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
 #endif
-					CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
+					//CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
 				}
 #ifndef __MSDOS__
 				if ( icon != lasti )
@@ -2476,7 +2610,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 						 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 						 icon == ICO_GLISSE )
 					{
-						GetIcon(&pmimask, icon+ICOMOFF, 1);
+						//GetIcon(&pmimask, icon+ICOMOFF, 1);
 					}
 					GetIcon(&pmichair, icon, 1);
 				}
@@ -2500,7 +2634,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 					 icon == ICO_GLISSE )
 				{
-					CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
+					//CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
 				}
 				CopyIconDecor(&pmichair, ph, MODEOR, zone);		/* dessine la cellule */
 			}
@@ -2628,13 +2762,19 @@ short DecorOpen (void)
 	Pt			p;
 	short		err;
 
-	err = GetPixmap(&pmdecor, (p.y=DIMYDRAW,p.x=DIMXDRAW,p), 1, 1);
+        p.y = DIMYDRAW;
+        p.x = DIMXDRAW;
+	err = GetPixmap(&pmdecor, p, 1, 1);
 	if ( err )  return err;
 
-	err = GetPixmap(&pmsuper, (p.y=LYICO,p.x=LXICO,p), 0, 1);
+        p.y = LYICO;
+        p.x = LXICO;
+	err = GetPixmap(&pmsuper, p, 0, 1);
 	if ( err )  return err;
 
-	err = GetPixmap(&pmsback, (p.y=LYICO,p.x=LXICO,p), 0, 1);
+        p.y = LYICO;
+        p.x = LXICO;
+	err = GetPixmap(&pmsback, p, 0, 1);
 	if ( err )  return err;
 
 	lastsensuni = 0;
@@ -2726,7 +2866,9 @@ short DecorPartieRead (long pos, char file)
 
 	ovisu = partie.ovisu;
 
-	err = GetPixmap(&pmdecor, (p.y=DIMYDRAW,p.x=DIMXDRAW,p), 1, 1);
+        p.y = DIMYDRAW;
+        p.x = DIMXDRAW;
+	err = GetPixmap(&pmdecor, p, 1, 1);
 	if ( err )  return err;
 
 	lastovisu.x = 10000;					/* le contenu de pmdecor est vide */
