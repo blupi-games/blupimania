@@ -4576,7 +4576,7 @@ SDLEventToSmakyKey (const SDL_Event * event)
 	Retourne 2 si le jeu est terminé.
  */
 
-static short PlayEvent (const SDL_Event * event, Pt pos)
+static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 {
 	char		ev;
 	Pt			ovisu;
@@ -4883,7 +4883,7 @@ static short PlayEvent (const SDL_Event * event, Pt pos)
 			default: {delai = DELNORM;  break;}
 		}
 
-		if ( g_pause == 0 )
+		if ( g_pause == 0 && next )
 		{
 			OpenTime();
 			IconDrawOpen();
@@ -5026,19 +5026,22 @@ int main (int argc, char *argv[])
           NULL);
 
         SDL_Event event;
+        SDL_bool next = SDL_FALSE;
         while (SDL_WaitEvent (&event))
         {
           if (event.type == SDL_MOUSEMOTION)
             continue;
 
-          //if (event.user.code == 1548)
-          {
+          next = SDL_FALSE;
+          if (event.user.code == 1548)
+            next = SDL_TRUE;
+
               SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
               SDL_RenderPresent(g_renderer);
-          }
+
           //handleEvent (event);
           key = GetEvent(&pos);				/* gère le clavier */
-          err = PlayEvent(&event, pos);			/* fait évoluer le jeu */
+          err = PlayEvent(&event, pos, next);			/* fait évoluer le jeu */
           if ( err == 2 )  break;				/* quitte si terminé */
           if (event.type == SDL_QUIT)
             break;
