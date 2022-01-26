@@ -243,6 +243,7 @@ short		g_construit;						/* 1 -> construit */
 
 SDL_Renderer * g_renderer;
 SDL_Window *   g_window;
+Pixmap g_screen = { 0 };
 
 int g_rendererType   = 0;
 int			g_timerInterval = 100;	// inverval = 50ms
@@ -2243,7 +2244,7 @@ void PartieDisque (short mode)
 void StopDrawIcon (void)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
-	Pt			pos, p;
+	Pt			pos, p = {0, 0}, dim = {LYICO, LXICO};
 
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
@@ -2251,17 +2252,17 @@ void StopDrawIcon (void)
 	GetIcon(&pmicon, ICO_STOPOUI+ICOMOFF, 1);
 	CopyPixel								/* masque le fond */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, p,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEAND
+		dim, MODEAND
 	);
 
 	GetIcon(&pmicon, ICO_STOPOUI, 1);
 	CopyPixel								/* dessine la chair */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, p,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEOR
+		dim, MODEOR
 	);
 
 	pos.x += LXICO+20;
@@ -2269,17 +2270,17 @@ void StopDrawIcon (void)
 	GetIcon(&pmicon, ICO_STOPNON+ICOMOFF, 1);
 	CopyPixel								/* masque le fond */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, p,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEAND
+		dim, MODEAND
 	);
 
 	GetIcon(&pmicon, ICO_STOPNON, 1);
 	CopyPixel								/* dessine la chair */
 	(
-		&pmicon, (p.y=0, p.x=0, p),
+		&pmicon, p,
 		0, pos,
-		(p.y=LYICO, p.x=LXICO, p), MODEOR
+		dim, MODEOR
 	);
 }
 
@@ -2330,7 +2331,9 @@ short StopPartie (void)
 
 	if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
 
-	CopyPixel(0, spos, &pmsave, (p.y=0, p.x=0, p), sdim, MODELOAD);	/* sauve l'cran */
+        p.y = 0;
+        p.x = 0;
+	CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
 
 	StopDrawIcon();									/* dessine les icnes */
 
@@ -2346,7 +2349,9 @@ short StopPartie (void)
 	}
 	PlayEvSound(SOUND_CLIC);
 
-	CopyPixel(&pmsave, (p.y=0, p.x=0, p), 0, spos, sdim, MODELOAD);	/* restitue l'cran */
+        p.y = 0;
+        p.x = 0;
+	CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
 	GivePixmap(&pmsave);
 
 	return key;
@@ -4411,6 +4416,11 @@ static short PlayInit (void)
 
 	//IconInit();							/* calcule bbox des icônes */
 
+        g_screen.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+        SDL_SetTextureBlendMode(g_screen.texture, SDL_BLENDMODE_BLEND);
+        g_screen.dx = LXIMAGE();
+        g_screen.dy = LYIMAGE();
+
         pmtemp.texture = SDL_CreateTexture (
           g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
         SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
@@ -5021,8 +5031,11 @@ int main (int argc, char *argv[])
           if (event.type == SDL_MOUSEMOTION)
             continue;
 
-          if (event.user.code == 1548)
+          //if (event.user.code == 1548)
+          {
+              SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
               SDL_RenderPresent(g_renderer);
+          }
           //handleEvent (event);
           key = GetEvent(&pos);				/* gère le clavier */
           err = PlayEvent(&event, pos);			/* fait évoluer le jeu */

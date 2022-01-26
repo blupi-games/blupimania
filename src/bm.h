@@ -313,6 +313,7 @@ extern	short	g_passhole;			/* 1 -> ne tombe pas dans trou */
 
 extern SDL_Renderer * g_renderer;
 extern SDL_Window *   g_window;
+extern Pixmap g_screen;
 
 extern int g_rendererType;
 extern Sint32         g_timerInterval;

@@ -2011,32 +2011,12 @@ short GetIconCaisseSSol (Pt cel)
 
 void DecorModif (Pt cel, short newicon)
 {
-	static char table[] =
-	{
-		-2, -3,			/* cellule derrire */
-		-1, -3,			/* cellule derrire */
-		-3, -2,			/* cellule derrire */
-		-2, -2,			/* cellule derrire */
-		-1, -2,			/* cellule derrire */
-		 0, -2,			/* cellule derrire */
-		-2, -1,			/* cellule derrire */
-		-1, -1,			/* cellule derrire */
-		 0, -1,			/* cellule derrire */
-		-1,  0,			/* cellule derrire */
-		 0,  0,			/* cellule en question */
-		 1,  0,			/* cellule devant */
-		 0,  1,			/* cellule devant */
-		-100
-	};
-
-	//short		i = 0;
 	short		icon;
 	Pixmap		pmnewdecor = {0,0,0,0,0,0,0};
-	Pixmap		pmnewmask  = {0,0,0,0,0,0,0};
 	Pixmap		pmmask     = {0,0,0,0,0,0,0};
 	Pixmap		pmisol, pmissol;
 	Pixmap		pm;
-	Pt			p, dst, zero = {0, 0}, dim = {LYICO, LXICO};
+	Pt			dst, zero = {0, 0}, dim = {LYICO, LXICO};
 	Reg			rg;
 
 	if ( newicon == pmonde->tmonde[cel.y][cel.x] )  return;
@@ -2046,8 +2026,8 @@ void DecorModif (Pt cel, short newicon)
 	SuperCelFlush();								/* super cellule plus valable */
 	MoveModifCel(cel);								/* indique cellule modifie  move */
 
-	/*	Gnre dans pmnewdecor l'image de la nouvelle partie du dcor,
-		en redessinant toutes les cellules places derrire. */
+	/*	Génère dans pmnewdecor l'image de la nouvelle partie du décor,
+		en redessinant toutes les cellules placées derrière. */
 
 	GetPixmap(&pmnewdecor, dim, 1, 1);	/* noirci le pixmap du dcor */
 	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
@@ -2058,10 +2038,6 @@ void DecorModif (Pt cel, short newicon)
 		for ( int j=cel.x - 3 ; j<=MAXCELX ; j++, k++ )
                 {
 
-	//while ( table[i] != -100 )
-	//{
-		//c.x = cel.x + table[i+0];
-		//c.y = cel.y + table[i+1];
                 Pt c = {i, j};
 
 		if ( c.x >= 0 && c.y >= 0 )
@@ -2070,8 +2046,6 @@ void DecorModif (Pt cel, short newicon)
 			if ( c.y == MAXCELY )  icon = ICO_BORDG;	/* bord gauche du plateau */
 			if ( c.x <  MAXCELX && c.y <  MAXCELY )  icon = pmonde->tmonde[c.y][c.x];
 
-			//dst.x = PLXICO*table[i+0] - PRXICO*table[i+1];
-			//dst.y = PRYICO*table[i+1] + PLYICO*table[i+0];
                         dst.x = PLXICO*(j - cel.x) - PRXICO*(i - cel.y);
 			dst.y = PRYICO*(i - cel.y) + PLYICO*(j - cel.x);
 
@@ -2124,8 +2098,6 @@ void DecorModif (Pt cel, short newicon)
 				dim, MODEOR
 			);
 		}
-
-		//i += 2;
 	}
         }
 
@@ -2139,20 +2111,6 @@ void DecorModif (Pt cel, short newicon)
 	pmonde->tmonde[cel.y][cel.x] = ICO_SOL;
 	DecorIconMask(&pmmask, dst, 0, cel);			/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = newicon;
-
-	GetPixmap(&pmnewmask, dim, 1, 1);	/* noirci le masque pour newdecor */
-	CopyPixel
-	(
-		&pmmask, zero,
-		&pmnewmask, zero,
-		dim, MODEAND
-	);
-	CopyPixel										/* efface l'emplacemant chang */
-	(
-		&pmnewmask, zero,
-		&pmdecor, dst,
-		dim, MODEAND
-	);
 
 	CopyPixel
 	(
@@ -2174,7 +2132,6 @@ void DecorModif (Pt cel, short newicon)
 	IconDrawUpdate(rg);								/* faudra redessiner cette partie */
 
 	GivePixmap(&pmnewdecor);
-	GivePixmap(&pmnewmask);
 	GivePixmap(&pmmask);
 
 	DecorSuperCel(lastpmouse);						/* remet la super cellule */
@@ -2231,27 +2188,40 @@ Pt DecorGetOrigine (void)
 
 void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
-	Pt		p;
+	Pt		p1, p2, dim;
 
 	OpenTime();
 
+    p1.y=0;
+    p1.x=part;
+    p2.y=POSYDRAW;
+    p2.x=POSXDRAW;
+    dim.y=DIMYDRAW;
+    dim.x=DIMXDRAW-part;
 	CopyPixel
 	(
-		ppmold, (p.y=0, p.x=part, p),
-		0,      (p.y=POSYDRAW, p.x=POSXDRAW, p),
-		(p.y=DIMYDRAW, p.x=DIMXDRAW-part, p),
+		ppmold, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
+    p1.y=0;
+    p1.x=DIMXDRAW-total;
+    p2.y=POSYDRAW;
+    p2.x=POSXDRAW+DIMXDRAW-part;
+    dim.y=DIMYDRAW;
+    dim.x=part;
 	CopyPixel
 	(
-		ppmnew, (p.y=0, p.x=DIMXDRAW-total, p),
-		0,      (p.y=POSYDRAW, p.x=POSXDRAW+DIMXDRAW-part, p),
-		(p.y=DIMYDRAW, p.x=part, p),
+		ppmnew, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
 	CloseTime(STEPDEL);
+        SDL_Delay(20);
 }
 
 /* ---------- */
@@ -2296,6 +2266,7 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	);
 
 	CloseTime(STEPDEL);
+        SDL_Delay(20);
 }
 
 /* ---------- */
@@ -2309,27 +2280,40 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 
 void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
-	Pt		p;
+	Pt		p1, p2, dim;
 
 	OpenTime();
 
+    p1.x=0;
+    p1.y=part;
+    p2.x=POSXDRAW;
+    p2.y=POSYDRAW;
+    dim.x=DIMXDRAW;
+    dim.y=DIMYDRAW-part;
 	CopyPixel
 	(
-		ppmold, (p.x=0, p.y=part, p),
-		0,      (p.x=POSXDRAW, p.y=POSYDRAW, p),
-		(p.x=DIMXDRAW, p.y=DIMYDRAW-part, p),
+		ppmold, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
+    p1.x=0;
+    p1.y=DIMYDRAW-total;
+    p2.x=POSXDRAW;
+    p2.y=POSYDRAW+DIMYDRAW-part;
+    dim.x=DIMXDRAW;
+    dim.y=part;
 	CopyPixel
 	(
-		ppmnew, (p.x=0, p.y=DIMYDRAW-total, p),
-		0,      (p.x=POSXDRAW, p.y=POSYDRAW+DIMYDRAW-part, p),
-		(p.x=DIMXDRAW, p.y=part, p),
+		ppmnew, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
 	CloseTime(STEPDEL);
+        SDL_Delay(20);
 }
 
 /* ---------- */
@@ -2343,27 +2327,40 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 
 void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
-	Pt		p;
+	Pt		p1, p2, dim;
 
 	OpenTime();
 
+    p1.x=0;
+    p1.y=0;
+    p2.x=POSXDRAW;
+    p2.y=POSYDRAW+part;
+    dim.x=DIMXDRAW;
+    dim.y=DIMYDRAW-part;
 	CopyPixel
 	(
-		ppmold, (p.x=0, p.y=0, p),
-		0,      (p.x=POSXDRAW, p.y=POSYDRAW+part, p),
-		(p.x=DIMXDRAW, p.y=DIMYDRAW-part, p),
+		ppmold, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
+    p1.x=0;
+    p1.y=total-part;
+    p2.x=POSXDRAW;
+    p2.y=POSYDRAW;
+    dim.x=DIMXDRAW;
+    dim.y=part;
 	CopyPixel
 	(
-		ppmnew, (p.x=0, p.y=total-part, p),
-		0,      (p.x=POSXDRAW, p.y=POSYDRAW, p),
-		(p.x=DIMXDRAW, p.y=part, p),
+		ppmnew, p1,
+		0,      p2,
+		dim,
 		MODELOAD
 	);
 
 	CloseTime(STEPDEL);
+        SDL_Delay(20);
 }
 
 /* =============== */
@@ -2383,7 +2380,7 @@ void DecorSetOrigine (Pt origine, short quick)
 	Pixmap	*ppmicon;
 	short	err;
 
-	if ( quick || lastovisu.x >= 10000 || g_updatescreen )
+	if (quick || lastovisu.x >= 10000 || g_updatescreen )
 	{
 		ovisu = origine;
 
@@ -2441,6 +2438,8 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixMx(&pmdecor, ppmicon,
 					   termpos.x-oldpos.x,
 					   newpos.x-oldpos.x);		/* adapte le dcor "<" */
+                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+                        SDL_RenderPresent(g_renderer);
 		}
 
 		while ( newpos.x > termpos.x )
@@ -2450,6 +2449,8 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixPx(&pmdecor, ppmicon,
 					   oldpos.x-termpos.x,
 					   oldpos.x-newpos.x);		/* adapte le dcor ">" */
+                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+                        SDL_RenderPresent(g_renderer);
 		}
 
 		while ( newpos.y < termpos.y )
@@ -2459,6 +2460,8 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixMy(&pmdecor, ppmicon,
 					   termpos.y-oldpos.y,
 					   newpos.y-oldpos.y);		/* adapte le dcor "^" */
+                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+                        SDL_RenderPresent(g_renderer);
 		}
 
 		while ( newpos.y > termpos.y )
@@ -2468,6 +2471,8 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixPy(&pmdecor, ppmicon,
 					   oldpos.y-termpos.y,
 					   oldpos.y-newpos.y);		/* adapte le dcor "v" */
+                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+                        SDL_RenderPresent(g_renderer);
 		}
 
 		RestorePixmap(&pmdecor);				/* restitue le nouveau dcor */
@@ -2561,25 +2566,27 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 	Pt			cel;
 	short		i, j, icon;
 
-	/*	Si c'est possible, dcale une partie du contenu actuel de pmdecor
-		pour n'avoir  redessiner plus que la partie effectivement
-		change, c'est--dire dcouverte. */
+	/*	Si c'est possible, décale une partie du contenu actuel de pmdecor
+		pour n'avoir à redessiner plus que la partie effectivement
+		changée, c'est-à-dire découverte. */
 
 	zone.p1.x = 0;
 	zone.p1.y = 0;
 	zone.p2.x = DIMXDRAW;
 	zone.p2.y = DIMYDRAW;
-
+int ss=0;
 	if ( oldpos.x < 10000 )
 	{
 		shift.x = oldpos.x - newpos.x;
 		shift.y = oldpos.y - newpos.y;
 		ScrollPixel(&pmdecor, shift, COLORNOIR, &zone);
-	}
+	ss=1;
 
-	/*	Met  jour le dcor dans pmdecor correspondant  la zone dcouverte. */
+        }
 
-	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
+	/*	Met à jour le décor dans pmdecor correspondant à la zone découverte. */
+
+	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
 
 	pv = newpos;
 	for ( i=0 ; i<=MAXCELY ; i++ )
@@ -2597,9 +2604,9 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 				if ( icon != ICO_BORDG && icon != ICO_BORDD )
 				{
 #ifdef __MSDOS__
-					//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
+					GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
 #endif
-					//CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
+					CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
 				}
 #ifndef __MSDOS__
 				if ( icon != lasti )
@@ -2610,7 +2617,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 						 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 						 icon == ICO_GLISSE )
 					{
-						//GetIcon(&pmimask, icon+ICOMOFF, 1);
+						GetIcon(&pmimask, icon+ICOMOFF, 1);
 					}
 					GetIcon(&pmichair, icon, 1);
 				}
@@ -2634,7 +2641,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 					 icon == ICO_GLISSE )
 				{
-					//CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
+					CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
 				}
 				CopyIconDecor(&pmichair, ph, MODEOR, zone);		/* dessine la cellule */
 			}
@@ -2667,6 +2674,12 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 		dim.y = zone.p2.y - zone.p1.y;
 		CopyPixel(&pmdecor, src, 0, dst, dim, MODELOAD);
 	}
+
+	if(ss){
+        /*  SDL_SetRenderTarget(g_renderer, NULL);
+          SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+          SDL_RenderPresent(g_renderer);*/
+        }
 }
 
 /* ========= */
@@ -2769,12 +2782,12 @@ short DecorOpen (void)
 
         p.y = LYICO;
         p.x = LXICO;
-	err = GetPixmap(&pmsuper, p, 0, 1);
+	err = GetPixmap(&pmsuper, p, -1, 1);
 	if ( err )  return err;
 
         p.y = LYICO;
         p.x = LXICO;
-	err = GetPixmap(&pmsback, p, 0, 1);
+	err = GetPixmap(&pmsback, p, -1, 1);
 	if ( err )  return err;
 
 	lastsensuni = 0;

@@ -259,28 +259,6 @@ short AutoNext (Auto *p, short result[])
 
 
 
-/* --------------- */
-/* DebugShowPixmap */
-/* --------------- */
-
-/*
-	Affiche un pixmap dans le coin sup/gauchde de l'cran, pour le debug.
- */
-
-void DebugShowPixmap (Pixmap *pm)
-{
-	Pt		p;
-
-	CopyPixel
-	(
-		pm, (p.y=0, p.x=0, p),
-		0, (p.y=0, p.x=0, p),
-		(p.y=pm->dy, p.x=pm->dx, p), MODELOAD
-	);
-}
-
-
-
 /* ============ */
 /* MoveModifCel */
 /* ============ */

@@ -495,11 +495,11 @@ short SPaletteOpen (short rang, Pixmap *ppm)
 void SPaletteClose (short rang, Pixmap *ppm)
 {
 	Pt		pos, dim;
-	Pt		p;
+	Pt		p = {0, 0};
 
 	SPaletteGetPosDim(rang, &pos, &dim);
 
-	CopyPixel(ppm, (p.y=0, p.x=0, p), 0, pos, dim, MODELOAD);	/* restitue l'cran */
+	CopyPixel(ppm, p, 0, pos, dim, MODELOAD);	/* restitue l'cran */
 	GivePixmap(ppm);
 }
 
@@ -1278,7 +1278,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	Pixmap		pm;
 	Pixmap		pminfo = {0,0,0,0,0,0,0};
 	Rectangle	rect;
-	Pt			p;
+	Pt			p1, p2, dim;
 
 	if ( status  == laststatus  &&
 		 force   == lastforce   &&
@@ -1307,18 +1307,24 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	if ( mechant )
 	{
 		GetIcon(&pm, ICO_INFO+1, 1);
+                p1.y = 1;
+                p1.x = 1;
+                p2.y = INFOPOSY;
+                p2.x = INFOPOSX;
+                dim.y = INFODIMY;
+                dim.x = INFODIMX;
 		CopyPixel
 		(
-			&pm, (p.y=1, p.x=1, p),
-			0, (p.y=INFOPOSY, p.x=INFOPOSX, p),
-			(p.y=INFODIMY, p.x=INFODIMX, p), MODELOAD
+			&pm, p1,
+			0, p2,
+			dim, MODELOAD
 		);
 		return;
 	}
 
-	p.y = LYICO;
-        p.x = LXICO;
-	GetPixmap(&pminfo, p, 0, 1);
+	p1.y = LYICO;
+        p1.x = LXICO;
+	GetPixmap(&pminfo, p1, 0, 1);
 
 	GetIcon(&pm, ICO_INFO, 1);
 	DuplPixel(&pm, &pminfo);			/* copie l'icne dans pminfo pour pouvoir modifier */
@@ -1343,11 +1349,17 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 
 	if ( vision == 0 )
 	{
+                p1.y = 62;
+                p1.x = 1;
+                p2.y = 23;
+                p2.x = 1;
+                dim.y = 40-23;
+                dim.x = 26-1;
 		CopyPixel									/* met les yeux ferms */
 		(
-			&pminfo, (p.y=62, p.x=1, p),
-			&pminfo, (p.y=23, p.x=1, p),
-			(p.y=40-23, p.x=26-1, p), MODELOAD
+			&pminfo, p1,
+			&pminfo, p2,
+			dim, MODELOAD
 		);
 	}
 
@@ -1396,11 +1408,17 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		}
 	}
 
+                p1.y = 1;
+                p1.x = 1;
+                p2.y = INFOPOSY;
+                p2.x = INFOPOSX;
+                dim.y = INFODIMY;
+                dim.x = INFODIMX;
 	CopyPixel								/* affiche les informations */
 	(
-		&pminfo, (p.y=1, p.x=1, p),
-		0, (p.y=INFOPOSY, p.x=INFOPOSX, p),
-		(p.y=INFODIMY, p.x=INFODIMX, p), MODELOAD
+		&pminfo, p1,
+		0, p2,
+		dim, MODELOAD
 	);
 
 	GivePixmap(&pminfo);

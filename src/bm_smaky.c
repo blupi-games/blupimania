@@ -821,13 +821,17 @@ void GetColor (short color, short *pred, short *pgreen, short *pblue)
 
 void DuplPixel(Pixmap *ppms, Pixmap *ppmd)
 {
-	Pt		p;
+	Pt		p, dim;
 
+        p.y = 0;
+        p.x = 0;
+        dim.y = ppmd->dy;
+        dim.x = ppmd->dx;
 	CopyPixel
 	(
-		ppms, (p.y=0, p.x=0, p),
-		ppmd, (p.y=0, p.x=0, p),
-		(p.y=ppmd->dy, p.x=ppmd->dx, p), MODELOAD
+		ppms, p,
+		ppmd, p,
+		dim, MODELOAD
 	);
 }
 
@@ -860,6 +864,10 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 	if ( shift.x == 0 && shift.y == 0 )  goto fill;
 	if ( shift.x != 0 && shift.y != 0 )  goto fill;
 
+        Pixmap tmp;
+        GetPixmap(&tmp, dim, 1, 0);
+        DuplPixel(ppm, &tmp);
+
 	if ( shift.x < 0 && shift.x > -dim.x )
 	{
           p1.y = pos.y;
@@ -871,7 +879,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		CopyPixel
 		(
 			ppm, p1,
-			ppm, p2,
+			&tmp, p2,
 			_dim, MODELOAD
 		);
 		(*pzone).p2.x = pos.x - shift.x;
@@ -887,7 +895,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		CopyPixel
 		(
 			ppm, p1,
-			ppm, p2,
+			&tmp, p2,
 			_dim, MODELOAD
 		);
 		(*pzone).p1.x = pos.x + dim.x - shift.x;
@@ -903,7 +911,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		CopyPixel
 		(
 			ppm, p1,
-			ppm, p2,
+			&tmp, p2,
 			_dim, MODELOAD
 		);
 		(*pzone).p2.y = pos.y - shift.y;
@@ -919,15 +927,28 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		CopyPixel
 		(
 			ppm, p1,
-			ppm, p2,
+			&tmp, p2,
 			_dim, MODELOAD
 		);
 		(*pzone).p1.y = pos.y + dim.y - shift.y;
 	}
 
+	DuplPixel(&tmp, ppm);
+        GivePixmap(&tmp);
+
 	fill:
 	if ( color == -1 )  return;
-	DrawFillRect(ppm, *pzone, MODELOAD, color);		/* init la zone  mettre  jour */
+	DrawFillRect(ppm, *pzone, MODELOAD, color);		/* init la zone à mettre à jour */
+
+
+
+        //SDL_RenderClear(g_renderer);
+ /*       p1.y = 0;
+        p1.x = 0;
+        dim.y = DIMYDRAW;
+        dim.x = DIMXDRAW;
+        CopyPixel(ppm, p1, NULL, p1, dim, 0);
+        SDL_RenderPresent(g_renderer);*/
 }
 
 
@@ -1059,11 +1080,11 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
           dstRect.h = dim.y;
 
           SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
-          SDL_SetRenderTarget (g_renderer, ppmd ? ppmd->texture : NULL);
+          SDL_SetRenderTarget (g_renderer, ppmd ? ppmd->texture : g_screen.texture);
           SDL_RenderCopy (
-            g_renderer, ppms ? ppms->texture : NULL, &srcRect, &dstRect);
+            g_renderer, ppms ? ppms->texture : g_screen.texture, &srcRect, &dstRect);
           SDL_SetRenderTarget (g_renderer, target);
-          /* XXX */ SDL_RenderPresent(g_renderer);
+          /* XXX */ //SDL_RenderPresent(g_renderer);
 #if 0
 	if ( pgradesc->dfcnp <= 1 )
 	{										/* noir-blanc */
@@ -1401,26 +1422,26 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
   _rect.h = rect.p2.y - rect.p1.y;
 
   static const SDL_Color colors[] = {
-    {255,255,255,0}, // BLANC
-    {255,255,0,0}, // JAUNE
-    {255,204,64,0}, // ORANGE
-    {255,0,0,0}, // ROUGE
-    {220,220,220,0}, // GRIS CLAIR
-    {190,190,190,0}, // GRIS FONCE
-    {0,255,255,0}, // CYAN
-    {0,0,255,0}, // BLEU
-    {0,255,0,0}, // VERT CLAIR
-    {0,205,0,0}, // VERT FONCE
-    {224,161,255,0}, // VIOLET
-    {255,0,255,0}, // MAGENTA
-    {224,164,164,0}, // BRUN CLAIR
-    {187,0,0,0}, // BRUN FONCE
-    {169,216,255,0}, // BLEU MOYEN
-    {0,0,0,0}, // NOIR
+    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
+    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
+    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
+    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
+    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
+    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
+    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
+    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
+    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
+    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
+    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
+    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
+    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
+    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
+    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
+    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
   };
 
   SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
-  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : NULL);
+  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
   SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
   SDL_RenderFillRect(g_renderer, &_rect);
   SDL_SetRenderTarget(g_renderer, target);
@@ -1561,10 +1582,11 @@ short SavePixmap (Pixmap *ppm)
 {
 	pmsave = *ppm;
 
-	pmsave.data = malloc( ((u_long)pmsave.dxb)*((u_long)pmsave.dy) );
-	if ( pmsave.data == NULL )  return 1;
-
-	memcpy(pmsave.data, ppm->data, ((u_long)pmsave.dxb)*((u_long)pmsave.dy));
+        pmsave.texture = SDL_CreateTexture (
+            g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, ppm->dx,
+            ppm->dy);
+        SDL_SetTextureBlendMode(pmsave.texture, SDL_BLENDMODE_BLEND);
+        DuplPixel(ppm, &pmsave);
 	return 0;
 }
 
@@ -1578,24 +1600,11 @@ short SavePixmap (Pixmap *ppm)
 
 short RestorePixmap (Pixmap *ppm)
 {
-	char	*data;
+	if ( pmsave.texture == 0 )  return 1;
 
-	if ( pmsave.data == 0       ||
-		 ppm->data   == 0       ||
-		 ppm->dxb != pmsave.dxb ||
-		 ppm->dx  != pmsave.dx  ||
-		 ppm->dy  != pmsave.dy  ||
-		 ppm->nbp != pmsave.nbp )  return 1;
-
-	memcpy(ppm->data, pmsave.data, ((u_long)pmsave.dxb)*((u_long)pmsave.dy));
-
-	data = ppm->data;
-	*ppm = pmsave;
-	ppm->data = data;
-
-	free(pmsave.data);
-	pmsave.data = 0;
-
+        DuplPixel(&pmsave, ppm);
+        SDL_DestroyTexture(pmsave.texture);
+        pmsave.texture = NULL;
 	return 0;
 }
 
@@ -1793,13 +1802,13 @@ static int LoadImage(int numero, Pixmap *pim)
 
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
-		if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
-		else                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.color.png", SDL_GetBasePath (), numero);
+		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
+		/*else*/                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.color.png", SDL_GetBasePath (), numero);
 	}
 	else
 	{
-		if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.image.png", SDL_GetBasePath ());
-		else                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.image.png", SDL_GetBasePath (), numero);
+		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.image.png", SDL_GetBasePath ());
+		/*else  */               snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.image.png", SDL_GetBasePath (), numero);
 	}
 
 	SDL_Surface * surface = IMG_Load (name);
@@ -1883,14 +1892,17 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
         ppm->dx = dim.x;
         ppm->dy = dim.y;
 
+        if (fill >= 0)
+        {
         SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
         SDL_SetRenderTarget(g_renderer, ppm->texture);
         if (fill == 0)
-          SDL_SetRenderDrawColor (g_renderer, 255, 255, 255, 255);
+          SDL_SetRenderDrawColor (g_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         else if (fill == 1)
-          SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 255);
+          SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear (g_renderer);
         SDL_SetRenderTarget(g_renderer, target);
+        }
 #if 0
 	int		nbp = 1;
 
@@ -1950,11 +1962,11 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
 
 short GivePixmap(Pixmap *ppm)
 {
-	if ( ppm->data != 0 )
-	{
-		free(ppm->data);			/* libre le pixmap */
-		ppm->data = 0;
-	}
+  if (ppm->texture)
+  {
+    SDL_DestroyTexture(ppm->texture);
+      ppm->texture = NULL;
+  }
 	return 0;
 }
 
@@ -2241,7 +2253,7 @@ Sauve Prend Pause\0";
 
 void BlackScreen (void)
 {
-    SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear (g_renderer);
 #if 0
 	int		i;
@@ -2661,7 +2673,7 @@ int OpenMachine(void)
   }
 
   g_renderer = SDL_CreateRenderer (
-    g_window, -1, g_rendererType | SDL_RENDERER_TARGETTEXTURE);
+    g_window, -1, g_rendererType | SDL_RENDERER_TARGETTEXTURE /*| SDL_RENDERER_SOFTWARE*/);
   if (!g_renderer)
   {
     printf ("%s", SDL_GetError ());
