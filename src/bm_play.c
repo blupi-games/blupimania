@@ -246,7 +246,8 @@ SDL_Window *   g_window;
 Pixmap g_screen = { 0 };
 
 int g_rendererType   = 0;
-int			g_timerInterval = 100;	// inverval = 50ms
+Sint32	g_timerInterval = 50;
+Sint32  g_timerSkip = 2;
 
 
 /* --------------------------- */
@@ -4594,7 +4595,8 @@ static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 #if __SMAKY__
 		MusicBackground();						/* gère la musique de fond */
 #endif
-		GenericNext();							/* anime le générique */
+                if (next)
+                  GenericNext();							/* anime le générique */
 		if ( key != 0 )
 		{
 			ChangePhase(PHASE_IDENT);
@@ -4697,7 +4699,8 @@ static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 #ifdef __SMAKY__
 			MusicBackground();				/* gre la musique de fond */
 #endif
-			AnimTracking(pos);				/* tracking de l'animation */
+                        if (next)
+                          AnimTracking(pos);				/* tracking de l'animation */
 		}
 
 		OpenTime();
@@ -4878,9 +4881,18 @@ static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 
 		switch ( fj.vitesse )
 		{
-			case 0:  {delai = DELSLOW;  break;}
-			case 2:  {delai = DELQUICK; break;}
-			default: {delai = DELNORM;  break;}
+			case 0:
+                          delai = DELSLOW;
+                          g_timerSkip = 3;
+                          break;
+			case 2:
+                          delai = DELQUICK;
+                          g_timerSkip = 1;
+                          break;
+			default:
+                          delai = DELNORM;
+                          g_timerSkip = 2;
+                          break;
 		}
 
 		if ( g_pause == 0 && next )
@@ -4925,7 +4937,7 @@ static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 				return 1;
 			}
 		}
-		else
+		if (g_pause != 0 || (g_pause == 0 && !next))
 		{
 			OpenTime();
 			IconDrawOpen();
@@ -4997,8 +5009,11 @@ PushUserEvent (Sint32 code, void * data)
 
 static Uint32 MainLoop (Uint32 interval, void * param)
 {
-            PushUserEvent (1548 /*EV_UPDATE*/, NULL);
-            return interval;
+  static int skip;
+  if (!(skip % g_timerSkip))
+      PushUserEvent (1548 /*EV_UPDATE*/, NULL);
+  ++skip;
+  return interval;
 }
 
 
@@ -5027,17 +5042,24 @@ int main (int argc, char *argv[])
 
         SDL_Event event;
         SDL_bool next = SDL_FALSE;
+        Uint32 timestamp = 0;
         while (SDL_WaitEvent (&event))
         {
-          if (event.type == SDL_MOUSEMOTION)
-            continue;
-
           next = SDL_FALSE;
+
+          if (event.type == SDL_MOUSEMOTION)
+          {
+            SDL_MouseMotionEvent * _event = (SDL_MouseMotionEvent *) &event;
+            if (_event->timestamp - timestamp < 25)
+              continue;
+            timestamp = _event->timestamp;
+          }
+
           if (event.user.code == 1548)
             next = SDL_TRUE;
 
-              SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-              SDL_RenderPresent(g_renderer);
+          SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+          SDL_RenderPresent(g_renderer);
 
           //handleEvent (event);
           key = GetEvent(&pos);				/* gère le clavier */
@@ -5048,14 +5070,6 @@ int main (int argc, char *argv[])
         }
 
         SDL_RemoveTimer (updateTimer);
-#if 0
-	while (1)
-	{
-		key = GetEvent(&pos);				/* gère le clavier */
-		err = PlayEvent(key, pos);			/* fait évoluer le jeu */
-		if ( err == 2 )  break;				/* quitte si terminé */
-	}
-#endif
 	PlayRelease();							/* fermeture générale */
 	return 0;
 }

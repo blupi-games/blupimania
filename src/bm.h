@@ -317,6 +317,7 @@ extern Pixmap g_screen;
 
 extern int g_rendererType;
 extern Sint32         g_timerInterval;
+extern Sint32         g_timerSkip;
 
 
 
