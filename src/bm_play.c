@@ -4577,7 +4577,7 @@ SDLEventToSmakyKey (const SDL_Event * event)
 	Retourne 2 si le jeu est terminé.
  */
 
-static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
+static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 {
 	char		ev;
 	Pt			ovisu;
@@ -4587,8 +4587,6 @@ static short PlayEvent (const SDL_Event * event, Pt pos, SDL_bool next)
 
 	static char *pass[] = {"petitblupi", "enigmeblupi", "totalblupi",
 						   "gentilblupi", "sauteblupi", "megablupi"};
-
-        int key = SDLEventToSmakyKey(event);
 
 	if ( phase == PHASE_GENERIC )
 	{
@@ -5043,6 +5041,7 @@ int main (int argc, char *argv[])
         SDL_Event event;
         SDL_bool next = SDL_FALSE;
         Uint32 timestamp = 0;
+        int nextKey = 0;
         while (SDL_WaitEvent (&event))
         {
           next = SDL_FALSE;
@@ -5050,20 +5049,32 @@ int main (int argc, char *argv[])
           if (event.type == SDL_MOUSEMOTION)
           {
             SDL_MouseMotionEvent * _event = (SDL_MouseMotionEvent *) &event;
-            if (_event->timestamp - timestamp < 25)
+            if (_event->timestamp - timestamp < 50)
               continue;
             timestamp = _event->timestamp;
           }
 
           if (event.user.code == 1548)
+          {
             next = SDL_TRUE;
+            key = nextKey;
+            nextKey = 0;
+          }
+          else
+          {
+            key = SDLEventToSmakyKey(&event);
+            if (key == KEYCLIC || key == KEYCLICR)
+            {
+              nextKey = key;
+              continue;
+            }
+          }
 
           SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
           SDL_RenderPresent(g_renderer);
 
-          //handleEvent (event);
-          key = GetEvent(&pos);				/* gère le clavier */
-          err = PlayEvent(&event, pos, next);			/* fait évoluer le jeu */
+          GetEvent(&pos);				/* gère le clavier */
+          err = PlayEvent(&event, key, pos, next);			/* fait évoluer le jeu */
           if ( err == 2 )  break;				/* quitte si terminé */
           if (event.type == SDL_QUIT)
             break;
