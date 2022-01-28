@@ -246,8 +246,9 @@ SDL_Window *   g_window;
 Pixmap g_screen = { 0 };
 
 int g_rendererType   = 0;
-Sint32	g_timerInterval = 50;
-Sint32  g_timerSkip = 2;
+Sint32	g_timerInterval = 25;
+Sint32  g_timerSkip = 3;
+Pt g_lastmouse = {0};
 
 
 /* --------------------------- */
@@ -4881,15 +4882,15 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		{
 			case 0:
                           delai = DELSLOW;
-                          g_timerSkip = 3;
+                          g_timerSkip = 4;
                           break;
 			case 2:
                           delai = DELQUICK;
-                          g_timerSkip = 1;
+                          g_timerSkip = 2;
                           break;
 			default:
                           delai = DELNORM;
-                          g_timerSkip = 2;
+                          g_timerSkip = 3;
                           break;
 		}
 
@@ -5040,7 +5041,6 @@ int main (int argc, char *argv[])
 
         SDL_Event event;
         SDL_bool next = SDL_FALSE;
-        Uint32 timestamp = 0;
         int nextKey = 0;
         while (SDL_WaitEvent (&event))
         {
@@ -5049,9 +5049,9 @@ int main (int argc, char *argv[])
           if (event.type == SDL_MOUSEMOTION)
           {
             SDL_MouseMotionEvent * _event = (SDL_MouseMotionEvent *) &event;
-            if (_event->timestamp - timestamp < 50)
-              continue;
-            timestamp = _event->timestamp;
+            g_lastmouse.x = _event->x;
+            g_lastmouse.y = _event->y;
+            continue;
           }
 
           if (event.user.code == 1548)
@@ -5063,6 +5063,7 @@ int main (int argc, char *argv[])
           else
           {
             key = SDLEventToSmakyKey(&event);
+            /* Ensure that the action is done on the next (game) frame */
             if (key == KEYCLIC || key == KEYCLICR)
             {
               nextKey = key;

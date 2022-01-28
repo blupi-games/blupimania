@@ -582,13 +582,13 @@ short GetEvent (Pt *ppos)
 {
 	long		key, maj;
 
-	*ppos = lastmouse;					/* rend la dernire position de la souris */
+	*ppos = g_lastmouse;					/* rend la dernire position de la souris */
 #if 0
 	N_settim(0);						/* met un timeout nul */
 	key = L_getkey();					/* lecture du clavier sans attendre */
 	N_settim(0xFFFF);					/* remet un timeout infini */
 #endif
-	lastmouse = getmousepos();			/* lit la position de la souris */
+	//lastmouse = getmousepos();			/* lit la position de la souris */
 #if 0
 	if ( errno )			return 0;	/* retourne si timeout */
 
