@@ -4936,7 +4936,7 @@ int main (int argc, char *argv[])
 
         SDL_Event event;
         SDL_bool next = SDL_FALSE;
-        int nextKey = 0;
+        int nextKeys[4] = {0};
         while (SDL_WaitEvent (&event))
         {
           next = SDL_FALSE;
@@ -4952,17 +4952,26 @@ int main (int argc, char *argv[])
           if (event.user.code == 1548)
           {
             next = SDL_TRUE;
-            key = nextKey;
-            nextKey = 0;
+            key = nextKeys[0];
+            nextKeys[0] = nextKeys[1];
+            nextKeys[1] = nextKeys[2];
+            nextKeys[2] = nextKeys[3];
+            nextKeys[3] = 0;
           }
           else
           {
             key = SDLEventToSmakyKey(&event);
             /* Ensure that the action is done on the next (game) frame */
-            if (key == KEYCLIC || key == KEYCLICR
-                || key == KEYLEFT || key == KEYRIGHT || key == KEYUP || key == KEYDOWN)
+            if (phase == PHASE_PLAY
+              && (key == KEYCLIC || key == KEYCLICR || key == KEYCLICREL
+                || key == KEYLEFT || key == KEYRIGHT || key == KEYUP || key == KEYDOWN))
             {
-              nextKey = key;
+              for (int i = 0; i < 4; ++i)
+                if (!nextKeys[i])
+                {
+                  nextKeys[i] = key;
+                  break;
+                }
               continue;
             }
           }
