@@ -247,7 +247,7 @@ Pixmap g_screen = { 0 };
 
 int g_rendererType   = 0;
 Sint32	g_timerInterval = 25;
-Sint32  g_timerSkip = 3;
+Sint32  g_timerSkip = 4;
 Pt g_lastmouse = {0};
 
 
@@ -4777,15 +4777,15 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		{
 			case 0:
                           delai = DELSLOW;
-                          g_timerSkip = 4;
+                          g_timerSkip = 5;
                           break;
 			case 2:
                           delai = DELQUICK;
-                          g_timerSkip = 2;
+                          g_timerSkip = 3;
                           break;
 			default:
                           delai = DELNORM;
-                          g_timerSkip = 3;
+                          g_timerSkip = 4;
                           break;
 		}
 
