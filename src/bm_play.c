@@ -265,6 +265,7 @@ static Monde	descmonde;					/* description du monde */
 static Monde	savemonde;					/* sauvetage d'un monde */
 static Joueur	fj;							/* fichier des joueurs */
 static char		lastkey;					/* dernire touche presse */
+static SDL_bool fromClic = SDL_FALSE;
 static short	retry;						/* nb de tentatives */
 static short	generic;					/* pas du gnrique */
 static short	musique = 0;				/* musique de fond */
@@ -4622,6 +4623,8 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 					MoveBuild(PaletteGetPress());
 				}
 			}
+			lastkey = key;
+                        fromClic = SDL_TRUE;
 		}
 
 		if ( g_typeedit == 0 &&
@@ -4680,17 +4683,20 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 		if ( g_typejeu == 1 &&
 			 fj.modetelecom == 1 &&
-			             g_pause == 0 )
+			             g_pause == 0
+			             && !fromClic )
 		{
-			if ( key == KEYLEFT   )  key = KEYGOLEFT;
-			if ( key == KEYRIGHT  )  key = KEYGORIGHT;
+			//if ( key == KEYLEFT   )  key = KEYGOLEFT;
+			//if ( key == KEYRIGHT  )  key = KEYGORIGHT;
 
 			keystatus = GetKeyStatus();
 			if ( keystatus != 0 )
 			{
+				if ( keystatus == STLEFT  )  key = KEYGOLEFT;
+				if ( keystatus == STRIGHT )  key = KEYGORIGHT;
 				if ( keystatus == STUP    )  key = KEYGOFRONT;
 				if ( keystatus == STDOWN  )  key = KEYGOBACK;
-				lastkey = key;
+                                lastkey = key;
 			}
 			else
 			{
@@ -4703,10 +4709,19 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		{
 			DrawArrows(key);				/* dessine les manettes de la télécommande */
 		}
+
 		if ( key == KEYCLICREL )
 		{
-			DrawArrows(0);						/* dessine les manettes de la tlcommande */
+			DrawArrows(0);						/* dessine les manettes de la télécommande */
+                        lastkey = 0;
+                        fromClic = SDL_FALSE;
 		}
+
+                if ( g_typejeu == 1 && g_pause == 0 )
+		{
+                  if (lastkey)
+                    key = lastkey;
+                }
 
 		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
