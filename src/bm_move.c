@@ -2535,7 +2535,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 
 	if ( eventcont == KEYGOFRONT )			/* avance */
 	{
-		lasttelecom = eventcont;
+		//lasttelecom = eventcont;
 		celcap1.x = -1;
 		if ( SpecAction(i, obstacle, testcel) )  return;
 		if ( obstacle == 0 )
@@ -2550,7 +2550,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 
 	if ( eventcont == KEYGOBACK )			/* recule */
 	{
-		lasttelecom = eventcont;
+		//lasttelecom = eventcont;
 		celcap1.x = -1;
 		backcel.x = 2*toto[i].poscel.x - testcel.x;
 		backcel.y = 2*toto[i].poscel.y - testcel.y;

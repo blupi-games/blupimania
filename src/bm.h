@@ -463,6 +463,7 @@ void	HideMouse		(void);
 
 void	ClrEvents		(void);
 short	GetEvent		(Pt *ppos);
+int SDLEventToSmakyKey (const SDL_Event * event);
 KeyStatus GetKeyStatus	(void);
 short	IfColor			(void);
 void	ModColor		(short color, short red, short green, short blue);

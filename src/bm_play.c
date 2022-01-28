@@ -4467,111 +4467,6 @@ static short PlayInit (void)
 /* PlayEvent */
 /* ========= */
 
-static int
-SDLEventToSmakyKey (const SDL_Event * event)
-{
-    int key = 0;
-
-    switch (event->type)
-    {
-      case SDL_KEYDOWN:
-        if (event->key.keysym.sym >= SDLK_a && event->key.keysym.sym <= SDLK_z)
-        {
-          key = (char) event->key.keysym.sym;
-          break;
-        }
-        switch (event->key.keysym.sym)
-        {
-          case SDLK_ESCAPE:
-            key = KEYQUIT;
-            break;
-          case SDLK_HOME:
-            key = KEYHOME;
-            break;
-          case SDLK_BACKSPACE:
-            key = KEYUNDO;
-            break;
-          case SDLK_RETURN:
-            key = KEYRETURN;
-            break;
-          case SDLK_PAUSE:
-            key = KEYPAUSE;
-            break;
-          case SDLK_F1:
-            key = KEYF1;
-            break;
-          case SDLK_F2:
-            key = KEYF2;
-            break;
-          case SDLK_F3:
-            key = KEYF3;
-            break;
-          case SDLK_F4:
-            key = KEYF4;
-            break;
-          case SDLK_F10:
-            key = KEYSAVE;
-            break;
-          case SDLK_F11:
-            key = KEYLOAD;
-            break;
-          case SDLK_F12:
-            key = KEYIO;
-            break;
-          case SDLK_LEFT:
-          case SDLK_KP_4:
-            key = KEYLEFT;
-            break;
-          case SDLK_RIGHT:
-          case SDLK_KP_6:
-            key = KEYRIGHT;
-            break;
-          case SDLK_UP:
-          case SDLK_KP_8:
-            key = KEYUP;
-            break;
-          case SDLK_DOWN:
-          case SDLK_KP_2:
-            key = KEYDOWN;
-            break;
-          case SDLK_SPACE:
-            key = KEYCENTER;
-            break;
-          case SDLK_F5:
-            key = KEYF5;
-            break;
-          case SDLK_F6:
-            key = KEYF6;
-            break;
-          case SDLK_F7:
-            key = KEYF7;
-            break;
-          case SDLK_F8:
-            key = KEYF8;
-            break;
-          case SDLK_F9:
-            key = KEYF9;
-            break;
-          default:
-            key = 0;
-        }
-        break;
-      case SDL_MOUSEBUTTONDOWN:
-        if (event->button.button == SDL_BUTTON_LEFT)
-          key = KEYCLIC;
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-          key = KEYCLICR;
-        break;
-      case SDL_MOUSEBUTTONUP:
-        key = KEYCLICREL;
-        break;
-      default:
-        key = 0;
-    }
-
-    return key;
-}
-
 /*
 	Donne un événement.
 	Retourne 1 si l'action est terminée.
@@ -5064,7 +4959,8 @@ int main (int argc, char *argv[])
           {
             key = SDLEventToSmakyKey(&event);
             /* Ensure that the action is done on the next (game) frame */
-            if (key == KEYCLIC || key == KEYCLICR)
+            if (key == KEYCLIC || key == KEYCLICR
+                || key == KEYLEFT || key == KEYRIGHT || key == KEYUP || key == KEYDOWN)
             {
               nextKey = key;
               continue;
