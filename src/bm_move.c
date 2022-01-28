@@ -2525,12 +2525,12 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 	nextrepos = toto[i].nextrepos;
 	toto[i].nextrepos = 50;					/* pas de repos avant longtemps si toto actif */
 
-	/*	Dplace le toto du joueur selon les actions de la tlcommande. */
+	/*	Déplace le toto du joueur selon les actions de la télécommande. */
 
 	eventcont = event;
 	if ( event == 0 && lasttelecom != 0 )
 	{
-		eventcont = lasttelecom;			/* continue si bouton toujours press */
+		eventcont = lasttelecom;			/* continue si bouton toujours pressé */
 	}
 
 	if ( eventcont == KEYGOFRONT )			/* avance */
@@ -2563,7 +2563,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 		return;
 	}
 
-	if ( event == KEYGOLEFT )				/* tourne  gauche */
+	if ( event == KEYGOLEFT )				/* tourne à gauche */
 	{
 		celcap1.x = -1;
 		if ( orientation == AC_MARCHE_E )

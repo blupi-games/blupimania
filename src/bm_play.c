@@ -4701,7 +4701,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 		if ( key == KEYGOFRONT || key == KEYGOBACK || key == KEYGOLEFT || key == KEYGORIGHT )
 		{
-			DrawArrows(key);				/* dessine les manettes de la tlcommande */
+			DrawArrows(key);				/* dessine les manettes de la télécommande */
 		}
 		if ( key == KEYCLICREL )
 		{
