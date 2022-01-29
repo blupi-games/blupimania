@@ -249,6 +249,7 @@ int g_rendererType   = 0;
 Sint32	g_timerInterval = 25;
 Sint32  g_timerSkip = 4;
 Pt g_lastmouse = {0};
+SDL_bool g_clearKeyEvents = SDL_FALSE;
 
 
 /* --------------------------- */
@@ -258,6 +259,7 @@ Pt g_lastmouse = {0};
 static Pixmap	pmimage = {0,0,0,0,0,0,0};	/* pixmap pour image */
 static Pixmap	pmtemp  = {0,0,0,0,0,0,0};	/* pixmap temporaire */
 static Phase	phase;						/* phase du jeu */
+static SDL_bool    ignoreKeyClicUp = SDL_FALSE;                      /* Previous step */
 static char		banque;						/* banque utilise */
 static short	mondeinit;					/* numro du monde initial */
 static short	maxmonde;					/* nb max de mondes */
@@ -2608,6 +2610,7 @@ short ChangePhase (Phase newphase)
 
 	/*	Change la phase de jeu. */
 
+        ignoreKeyClicUp = SDL_TRUE;
 	phase = newphase;					/* change la phase */
 	ShowImage();						/* affiche l'image de base */
 
@@ -4604,7 +4607,15 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 	}
 	else
 	{
-		if ( key == KEYCLIC || (key >= KEYF4 && key <= KEYF1) )
+                if (ignoreKeyClicUp == SDL_TRUE)
+                {
+                      /* Prevent key up just when entering in the play phase */
+                      if (key == KEYCLICREL) {
+                        ignoreKeyClicUp = SDL_FALSE;
+                        key = 0;
+                      }
+                }
+		if ( key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1) )
 		{
 			ev = PaletteEvent(key, pos);
 			if ( g_typejeu == 0 || g_typeedit )
@@ -4612,7 +4623,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				if ( ev < 0 )  key = ev;
 				if ( ev == 1 )
 				{
-					DecorEvent(pos, 0, PaletteGetPress());
+					DecorEvent(pos, 0, PaletteGetPress(), key);
 				}
 			}
 			else
@@ -4620,10 +4631,11 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				if ( ev < 0 )  key = ev;
 				if ( ev == 0 )
 				{
-					MoveBuild(PaletteGetPress());
+					MoveBuild(PaletteGetPress(), key);
 				}
 			}
-			lastkey = key;
+
+                        lastkey = key;
                         fromClic = SDL_TRUE;
 		}
 
@@ -4994,11 +5006,16 @@ int main (int argc, char *argv[])
           SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
           SDL_RenderPresent(g_renderer);
 
-          GetEvent(&pos);				/* gère le clavier */
-          err = PlayEvent(&event, key, pos, next);			/* fait évoluer le jeu */
+          err = PlayEvent(&event, key, g_lastmouse, next);			/* fait évoluer le jeu */
           if ( err == 2 )  break;				/* quitte si terminé */
           if (event.type == SDL_QUIT)
             break;
+
+          if (g_clearKeyEvents)
+          {
+            memset(nextKeys, 0, sizeof(nextKeys));
+            g_clearKeyEvents = SDL_FALSE;
+          }
         }
 
         SDL_RemoveTimer (updateTimer);

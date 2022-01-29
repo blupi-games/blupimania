@@ -3939,7 +3939,7 @@ void MoveRedraw (void)
 	Retourne 0 si l'vnement a t trait.
  */
 
-short MoveBuild (short outil)
+short MoveBuild (short outil, int key)
 {
 	short		i, temp, err;
 	short		orientation;
@@ -3971,7 +3971,7 @@ short MoveBuild (short outil)
 
 	temp = g_typejeu;
 	   g_typejeu = 0;							/* comme si jeu sans toto tlcommand */
-	err = DecorEvent(pos, 1, outil);		/* modifie le dcor */
+	err = DecorEvent(pos, 1, outil, key);		/* modifie le dcor */
 	   g_typejeu = temp;
 
 	if ( err )

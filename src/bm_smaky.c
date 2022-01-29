@@ -566,6 +566,7 @@ static void IfHideMouse (Rectangle r)
 
 void ClrEvents (void)
 {
+  g_clearKeyEvents = SDL_TRUE;
 }
 
 

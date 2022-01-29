@@ -329,8 +329,7 @@ static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, 
           GetIcon(&pmicon, /*256+29*/ list[j].icon, 1);
           Pt p1 = {0, 0};
           Pt p2 = list[j].off;
-          dim.y = LYICO;
-          dim.x = LXICO;
+          dim = list[j].dim;
           CopyPixel								/* dessine la chair */
           (
                   &pmicon,							/* source */

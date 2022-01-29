@@ -373,6 +373,7 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                     continue;
 
                   Pt c = {i, j};
+                  Pt dim = {LYICO, LXICO};
 
                   if ( c.x < MAXCELX && c.y < MAXCELY )
                   {
@@ -392,6 +393,13 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                     continue;
                   if (icon >= ICO_ACCEL_S   && icon <= ICO_ACCEL_O)
                     continue;
+                  if (icon == ICO_ARRIVEEVIDE)
+                    continue;
+                  if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM)
+                  {
+                    /* Consider to redraw only the ballon part (not the ground) */
+                    dim.y = 50;
+                  }
 
                   if ( c.x < MAXCELX && c.y < MAXCELY &&
                           (icon >= ICO_BLOQUE || icon == ICO_DEPART ) )	/* icône en hauteur ? */
@@ -402,6 +410,7 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                     list[k].off = CelToGra(c);
                     list[k].off.x += PLXICO*(ovisu.x);
                     list[k].off.y += PRYICO*(ovisu.y);
+                    list[k].dim = dim;
                   }
                   else if ( posz > 0 &&				 /* icône en dessous du sol ? */
                           (i > cel.y || j > cel.x ||
@@ -415,6 +424,7 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                     list[k].off = CelToGra(c);
                     list[k].off.x += PLXICO*(ovisu.x);
                     list[k].off.y += PRYICO*(ovisu.y);
+                    list[k].dim = dim;
                   }
 
                 }
@@ -1616,10 +1626,9 @@ void DecorSuperCel (Pt pmouse)
 	Retourne 0 si l'vnement a t trait.
  */
 
-short DecorEvent (Pt pos, short poscel, short outil)
+short DecorEvent (Pt pos, short poscel, short outil, int key)
 {
 	Pt		cel, new;
-	short	key;
 	short	init, con, first;
 
 	if ( outil < 0 )  return 1;
@@ -1627,8 +1636,7 @@ short DecorEvent (Pt pos, short poscel, short outil)
 	if ( poscel )  cel = pos;
 	else           cel = DecorDetCel(pos);	/* calcule la cellule montre par la souris */
 
-	if ( poscel == 0 &&
-		 GetEvent(&pos) != KEYCLICREL )		/* si l'on a pas relch tout de suite */
+	if ( poscel == 0 && key != KEYCLICREL )		/* si l'on a pas relch tout de suite */
 	{
 		IconDrawOpen();
 		SuperCelClear();					/* teint la super cellule */
@@ -1636,10 +1644,9 @@ short DecorEvent (Pt pos, short poscel, short outil)
 		IconDrawClose(1);
 
 		InvCel(cel, outil);					/* allume premire la cellule montre */
-		while ( 1 )
+		//while ( 1 )
 		{
-			key = GetEvent(&pos);
-			if ( key == KEYCLICREL )  break;
+			//if ( key == KEYCLICREL )  break;
 			new = DecorDetCel(pos);			/* calcule la cellule montre par la souris */
 			if ( new.x != cel.x || new.y != cel.y )
 			{
@@ -1647,9 +1654,14 @@ short DecorEvent (Pt pos, short poscel, short outil)
 				cel = new;
 				InvCel(cel, outil);			/* allume la nouvelle cellule montre */
 			}
+			return 0;
 		}
-		InvCel(cel, outil);					/* teint la dernire cellule montre */
 	}
+	else if (poscel == 0 && key == KEYCLICREL)
+        {
+          InvCel(cel, outil);					/* teint la dernire cellule montre */
+        }
+
 	if ( !IfCelValide(cel, outil) )  return 1;
 
 	PaletteUseObj(outil);					/* dcrmente le reste  disposition */

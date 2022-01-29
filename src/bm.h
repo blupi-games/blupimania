@@ -319,6 +319,7 @@ extern int g_rendererType;
 extern Sint32         g_timerInterval;
 extern Sint32         g_timerSkip;
 extern Pt g_lastmouse;			/* dernière position de la souris */
+extern SDL_bool g_clearKeyEvents;
 
 
 
@@ -356,7 +357,7 @@ short	MoveGetCel		(Pt cel);
 void	MoveBack		(Pt cel);
 short	MoveNext		(char event, Pt pos);
 void	MoveRedraw		(void);
-short	MoveBuild		(short outil);
+short	MoveBuild		(short outil, int key);
 void	MoveScroll		(short quick);
 void	MoveNewMonde	(short freq);
 short	MoveOpen		(void);
@@ -374,6 +375,7 @@ typedef struct {
   short icon;
   Pt cel;
   Pt off;
+  Pt dim;
 } ImageStack;
 
 Pt		GraToCel		(Pt gra);
@@ -385,7 +387,7 @@ void	DecorPutCel		(Pt cel, short icon);
 const ImageStack *	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
 Pt		DecorDetCel		(Pt pmouse);
 void	DecorSuperCel	(Pt pmouse);
-short	DecorEvent		(Pt pos, short poscel, short icon);
+short	DecorEvent		(Pt pos, short poscel, short icon, int key);
 void	DecorModif		(Pt cel, short icon);
 Pixmap*	DecorGetPixmap	(void);
 Pt		DecorGetOrigine	(void);
