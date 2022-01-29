@@ -4804,11 +4804,11 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		{
 			case 0:
                           delai = DELSLOW;
-                          g_timerSkip = 5;
+                          g_timerSkip = 6;
                           break;
 			case 2:
                           delai = DELQUICK;
-                          g_timerSkip = 3;
+                          g_timerSkip = 2;
                           break;
 			default:
                           delai = DELNORM;
