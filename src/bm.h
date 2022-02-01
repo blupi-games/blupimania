@@ -372,6 +372,7 @@ short	MovePartieRead	(int pos, char file);
 /* ---------- */
 
 typedef struct {
+  SDL_bool super;
   short icon;
   Pt cel;
   Pt off;
@@ -385,6 +386,7 @@ void	DecorPutInitCel	(Pt cel, short icon);
 short	DecorGetCel		(Pt cel);
 void	DecorPutCel		(Pt cel, short icon);
 const ImageStack *	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
+Pt GetSuperCel();
 Pt		DecorDetCel		(Pt pmouse);
 void	DecorSuperCel	(Pt pmouse);
 short	DecorEvent		(Pt pos, short poscel, short icon, int key);

@@ -2043,6 +2043,8 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
           SDL_SetRenderDrawColor (g_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         else if (fill == 1)
           SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        else if (fill == 2)
+          SDL_SetRenderDrawColor (g_renderer, 255, 255, 255, SDL_ALPHA_TRANSPARENT);
         SDL_RenderClear (g_renderer);
         SDL_SetRenderTarget(g_renderer, target);
         }

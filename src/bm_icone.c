@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "bm.h"
-
+#include "bm_icon.h"
 
 
 
@@ -249,72 +249,38 @@ static Reg IconRegion (short i, Pt pos)
 /* IconDrawOne */
 /* ----------- */
 
+typedef struct {
+  Pt p1;
+  Pt p2;
+  Pt dim;
+  int icon;
+} SuperCelHover;
+
 /*
 	Dessine une icne (chair+fond+ombre) dans un pixmap quelconque.
 	Ne dpasse pas de la rgion de clipping donne.
  */
 
-static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, Pixmap *ppm)
+static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, Pixmap *ppm)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Reg			use;						/* rgion  utiliser */
 	Pt			p1, dim;
+        SuperCelHover hover = {0};
 
 	use = AndRegion(clip, IconRegion(i, pos) );
-	if ( IfNilRegion(use) ) return;			/* retour si rien  dessiner */
+	if ( IfNilRegion(use) ) return hover;			/* retour si rien  dessiner */
 
 	const ImageStack * list = DecorIconMask(ppm, pos, posz, cel);	/* fabrique le masque */
-#if 0
-	if ( m == 0 )
-	{
-		GetIcon(&pmicon, i+ICOMOFF, 1);			/* cherche le pixmap du fond */
-		DuplPixel(&pmicon, &pmcopy);			/* copie l'icne */
-                p1.y = 0;
-                p1.x = 0;
-                dim.y = LYICO;
-                dim.x = LXICO;
-		CopyPixel								/* rogne l'icne de masque */
-		(
-			&pmmask, p1,
-			&pmcopy, p1,
-			dim, MODEAND
-		);
-                p1.y = use.r.p1.y - pos.y;
-                p1.x = use.r.p1.x - pos.x;
-                dim.y = use.r.p2.y - use.r.p1.y;
-                dim.x = use.r.p2.x - use.r.p1.x;
-		CopyPixel								/* dessine le fond */
-		(
-			&pmcopy,							/* source */
-			p1,
-			ppm,								/* destination */
-			use.r.p1,
-			dim,
-			MODEAND								/* mode */
-		);
-	}
-#endif
+
 	GetIcon(&pmicon, i, 1);					/* cherche le pixmap de la chair */
-#if 0
-	DuplPixel(&pmicon, &pmcopy);			/* copie l'icne */
-        p1.y = 0;
-        p1.x = 0;
-        dim.y = LYICO;
-        dim.x = LXICO;
-	CopyPixel							/* rogne l'icne de la chair */
-	(
-		&pmmask, p1,
-		&pmcopy, p1,
-		dim, MODEAND
-	);
-#endif
         p1.y = use.r.p1.y - pos.y;
         p1.x = use.r.p1.x - pos.x;
         dim.y = use.r.p2.y - use.r.p1.y;
         dim.x = use.r.p2.x - use.r.p1.x;
 	CopyPixel								/* dessine la chair */
 	(
-		/*&pmcopy,*/ &pmicon,							/* source */
+		&pmicon,							/* source */
 		p1,
 		ppm,								/* destination */
 		use.r.p1,
@@ -322,11 +288,28 @@ static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, 
 		MODEOR								/* mode */
 	);
 
-#if 1
         for (int j = 0; j < 400; ++j)
         {
           if (!list[j].icon) continue;
+
           GetIcon(&pmicon, /*256+29*/ list[j].icon, 1);
+
+          if (list[j].super)
+          {
+              dim.y = pmicon.dy;
+              dim.x = pmicon.dx;
+
+              hover.p1.y = 0;
+              hover.p1.x = 0;
+              hover.p2 = list[j].off;
+              hover.dim = list[j].dim;
+              hover.icon = list[j].icon;
+
+              /* In case of arrows (type 1), we need the original icon image */
+              if (g_typejeu != 1)
+                continue;
+          }
+
           Pt p1 = {0, 0};
           Pt p2 = list[j].off;
           dim = list[j].dim;
@@ -340,7 +323,7 @@ static void IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, Reg clip, 
                   MODEOR								/* mode */
           );
         }
-#endif
+        return hover;
 }
 
 
@@ -583,6 +566,7 @@ void IconDrawClose (short bdraw)
 	Pt			p1, p2, dim;
 	Reg			r,ro;
 	Pixmap		*ppmdecor;
+        SuperCelHover hover = {0};
 
 	ppmdecor = DecorGetPixmap();
 
@@ -601,13 +585,14 @@ void IconDrawClose (short bdraw)
 			MODELOAD
 		);
 
+
 		for ( j=0 ; j<MAXICONDRAW ; j++ )
 		{
 			if ( ListIconDrawNew[j].icon != 0 )
 			{
 				if ( IfSectRegion(ListRegOld[i].reg, ListIconDrawNew[j].bbox) )
 				{
-					IconDrawOne			/* dessine l'icône */
+					SuperCelHover _hover = IconDrawOne			/* dessine l'icône */
 					(
 						ListIconDrawNew[j].icon,
 						ListIconDrawNew[j].btransp,
@@ -617,9 +602,45 @@ void IconDrawClose (short bdraw)
 						ListIconDrawNew[j].clip,
 						&pmwork
 					);
+                                        if (_hover.icon)
+                                          hover = _hover;
 				}
 			}
 		}
+
+		if (hover.icon)
+                {
+                        Pixmap tmp = {0};
+                        Pixmap pmicon = {0};
+
+                        if (g_typejeu == 1)
+                        {
+                          hover.dim.y = LYICO;
+                          hover.dim.x = LXICO;
+                          GetPixmap(&tmp, hover.dim, 2, 0);
+                          GetIcon(&pmicon, ICO_CELARROWS, 1);
+                          DuplPixel(&pmicon, &tmp);
+                          SDL_SetTextureAlphaMod(tmp.texture, 128);
+                        }
+                        else
+                        {
+                          GetPixmap(&tmp, hover.dim, 2, 0);
+                          GetIcon(&pmicon, hover.icon, 1);
+                          DuplPixel(&pmicon, &tmp);
+                          SDL_SetTextureAlphaMod(tmp.texture, 128);
+                          SDL_SetTextureColorMod(tmp.texture, 32, 32, 32);
+                        }
+
+                        CopyPixel								/* dessine la chair */
+                        (
+                                &tmp,							/* source */
+                                hover.p1,
+                                &pmwork,								/* destination */
+                                hover.p2,
+                                hover.dim,
+                                MODEOR								/* mode */
+                        );
+                }
 
 		r.r.p1.y=0;
                 r.r.p1.x=0;

@@ -303,38 +303,6 @@ void DecorPutInitCel (Pt cel, short icon)
 
 const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 {
-#if 0
-	static char table[] =
-	{
-		-1,  1,
-		-1,  2,
-		 0,  0,
-		 0,  1,
-		 0,  2,
-		 0,  3,
-		 1, -1,
-		 1,  0,
-		 1,  1,
-		 1,  2,
-		 1,  3,
-		 2,  0,
-		 2,  1,
-		 2,  2,
-		 2,  3,
-		 3,  1,
-		 3,  2,
-		 4,  1,
-		 4,  2,
-		 5,  1,
-		 5,  2,
-		 6,  1,
-		 6,  2,
-		 7,  1,
-		 7,  2,
-		-100
-	};
-#endif
-
         static ImageStack list[20*20]; //[sizeof(table)/sizeof(*table)/2];
         memset(list, 0 , sizeof(list));
 
@@ -343,14 +311,7 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 
         p.y = LYICO;
         p.x = LXICO;
-	//GetPixmap(ppm, p, 0, 1);		/* efface le pixmap du masque */
-#if 0
-	off = CelToGra(cel);
-	off.x += PLXICO*ovisu.x;
-	off.y += PRYICO*ovisu.y;
-	off.x = pos.x - off.x;
-	off.y = pos.y - off.y;
-#endif
+
         Rectangle	zone;
         zone.p1.x = 0;
 	zone.p1.y = 0;
@@ -359,6 +320,8 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 
         int k = 0;
         Pt pv = pos;
+        Pt superCel = GetSuperCel();
+
 	for ( int i=cel.y - 1 ; i<=MAXCELY ; i++, k++ )
 	{
 		Pt ph = pv;
@@ -384,6 +347,18 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                           icon = ICO_SOL;
                   }
 
+                  if (superCel.x > -1 && c.x == superCel.x && c.y == superCel.y)
+                  {
+                    list[k].super = SDL_TRUE;
+                    list[k].icon = icon;
+                    list[k].cel= c;
+
+                    list[k].off = CelToGra(c);
+                    list[k].off.x += PLXICO*(ovisu.x);
+                    list[k].off.y += PRYICO*(ovisu.y);
+                    list[k].dim = dim;
+                  }
+
                   if ( i == cel.y && j == cel.x &&
                           icon >= ICO_PORTEO_EO && icon < ICO_PORTEO_EO+6 )
                     continue;
@@ -398,7 +373,7 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
                   if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM)
                   {
                     /* Consider to redraw only the ballon part (not the ground) */
-                    dim.y = 50;
+                    dim.y = 53;
                   }
 
                   if ( c.x < MAXCELX && c.y < MAXCELY &&
@@ -429,81 +404,6 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
 
                 }
         }
-
-#if 0
-	while ( table[i] != -100 )
-	{
-		c.x = cel.x + table[i+0];
-		c.y = cel.y + table[i+1];
-
-		if ( c.x < MAXCELX && c.y < MAXCELY )
-		{
-			icon = pmonde->tmonde[c.y][c.x];
-		}
-		else
-		{
-			icon = ICO_SOL;
-		}
-
-		if ( table[i+0] == 0 && table[i+1] == 0 &&
-			 icon >= ICO_PORTEO_EO && icon < ICO_PORTEO_EO+6 )  goto next;
-
-		if ( c.x < MAXCELX && c.y < MAXCELY &&
-			 (icon >= ICO_BLOQUE || icon == ICO_DEPART) )	/* icône en hauteur ? */
-		{
-                  list[i/2].icon = icon;
-                  list[i/2].cel= c;
-
-                  list[i/2].off = CelToGra(c);
-                  list[i/2].off.x += PLXICO*(ovisu.x);
-                  list[i/2].off.y += PRYICO*(ovisu.y);
-
-#if 0
-			GetIcon(&pm, icon+ICOMOFF, 1);
-			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1] - off.x;
-			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0] - off.y;
-                        p.y = 0;
-                        p.x = 0;
-			CopyPixel
-			(
-				&pm, p,
-				ppm, dst,
-				dim, MODEOR
-			);
-#endif
-		}
-
-		if ( posz > 0 &&						/* icône en dessous du sol ? */
-			 (table[i+0] > 0 || table[i+1] > 0 ||
-			  (icon != ICO_DEPART &&
-			   icon != ICO_TROU &&
-			   icon != ICO_TROUBOUCHE)) )
-		{
-                  list[i/2].icon = icon;
-                  list[i/2].cel= c;
-
-                  list[i/2].off = CelToGra(c);
-                  list[i/2].off.x += PLXICO*(ovisu.x);
-                  list[i/2].off.y += PRYICO*(ovisu.y);
-#if 0
-			GetIcon(&pm, ICO_SOL+ICOMOFF, 1);
-			dst.x = PLXICO*table[i+0] - PRXICO*table[i+1] - off.x;
-			dst.y = PRYICO*table[i+1] + PLYICO*table[i+0] - off.y;
-                        p.y = 0;
-                        p.x = 0;
-			CopyPixel
-			(
-				&pm, p,
-				ppm, dst,
-				dim, MODEOR
-			);
-#endif
-		}
-
-		next:
-		i += 2;
-	}
-#endif
 
 	return list;
 }
@@ -1114,64 +1014,9 @@ short IfCelValide (Pt cel, short outil)
 }
 
 
-/* ---------- */
-/* GetCelMask */
-/* ---------- */
-
-/*
-	Donne le masque correspondant  une cellule.
- */
-
-void GetCelMask (Pixmap *ppm, Pt cel)
+Pt GetSuperCel()
 {
-	Pixmap	pm;
-	Pixmap	pmfront = {0,0,0,0,0,0,0};
-	Pt		dst;
-	Pt		p1 = {LYICO, LXICO}, p2 = {0, 0};
-	short	icon;
-
-	if ( g_typejeu == 1 )
-	{
-		GetIcon(&pm, ICO_CELARROWS, 1);		/* quadruple flche */
-		DuplPixel(&pm, ppm);
-		return;
-	}
-
-	GetPixmap(ppm, p1, 0, 0);
-
-	GetIcon(&pm, ICO_SOL+ICOMOFF, 1);		/* masque pour le sol */
-	DuplPixel(&pm, ppm);
-
-	icon = DecorGetCel(cel);
-	if ( icon >= ICO_BLOQUE || icon == ICO_DEPART )	/* obstacle en hauteur ? */
-	{
-		GetIcon(&pm, icon+ICOMOFF, 1);
-		CopyPixel							/* ajoute le masque en hauteur */
-		(
-			&pm, p2,
-			ppm, p2,
-			p1, MODEOR
-		);
-	}
-
-	dst = CelToGra(cel);
-	dst.x += PLXICO*ovisu.x;
-	dst.y += PRYICO*ovisu.y;
-
-	icon = pmonde->tmonde[cel.y][cel.x];
-	pmonde->tmonde[cel.y][cel.x] = ICO_SOL;
-	DecorIconMask(&pmfront, dst, 0, cel);	/* calcule le masque de devant */
-	pmonde->tmonde[cel.y][cel.x] = icon;
-
-
-	CopyPixel								/* masque selon les dcors placs devant */
-	(
-		&pmfront, p2,
-		ppm, p2,
-		p1, MODEAND
-	);
-
-	GivePixmap(&pmfront);
+  return supercel;
 }
 
 
@@ -1242,7 +1087,7 @@ Pt DecorDetCel (Pt pos)
 		icon = DecorGetCel(c);
 		if ( icon >= ICO_BLOQUE || icon == ICO_DEPART )	/* cellule contenant un dcor en hauteur ? */
 		{
-			GetCelMask(&pmmask, c);
+			// FIXME GetCelMask(&pmmask, c);
 
 			posfront = CelToGra(c);
 			posfront.x += PLXICO*ovisu.x;
@@ -1281,7 +1126,7 @@ void InvCel (Pt cel, short outil)
 
 	if ( IfCelValide(cel, outil) )
 	{
-		GetCelMask(&pmmask, cel);
+		//FIXME GetCelMask(&pmmask, cel);
 		give = 1;
 	}
 	else
@@ -1484,14 +1329,14 @@ short SuperCelClip (Pt *ppos, Pt *pdim)
 	Allume la super cellule dans le pixmap du dcor (si ncessaire).
  */
 
-void SuperCelSet (void)
+void SuperCelSet ()
 {
 	Pt		p, src, dst, dim;
 	Reg		rg;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
-	if ( superinv == 1 )  return;
-	superinv = 1;
+	/*if ( superinv == 1 )  return;
+	superinv = 1;*/
 
 	src = superpos;
 	dst.x = 0;
@@ -1512,17 +1357,18 @@ void SuperCelSet (void)
         p.x = 0;
 	dim.x = LXICO;
 	dim.y = LYICO;
-	CopyPixel								/* allume dans pmdecor */
-	(
+	/*CopyPixel								/* allume dans pmdecor */
+	/*(
 		&pmsuper, p,
 		&pmdecor, superpos,
 		dim, MODEOR
-	);
+	);*/
 
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
 	rg.r.p2.x = superpos.x + LXICO;
 	rg.r.p2.y = superpos.y + LYICO;
+	IconDrawPut(DecorGetCel(supercel), 0, superpos, 0, supercel, rg);
 	IconDrawUpdate(rg);						/* faudra redessiner cette partie */
 }
 
@@ -1540,8 +1386,8 @@ void SuperCelClear (void)
 	Reg		rg;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
-	if ( superinv == 0 )  return;
-	superinv = 0;
+	/*if ( superinv == 0 )  return;
+	superinv = 0;*/
 
 	src.x = 0;
 	src.y = 0;
@@ -1550,18 +1396,19 @@ void SuperCelClear (void)
 	dim.y = LYICO;
 	if ( SuperCelClip(&dst, &dim) )
 	{
-		CopyPixel							/* restitue la zone dans pmsback */
-		(
+		/*CopyPixel							/* restitue la zone dans pmsback */
+		/*(
 			&pmsback, src,
 			&pmdecor, dst,
 			dim, MODELOAD
-		);
+		);*/
 	}
 
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
 	rg.r.p2.x = superpos.x + LXICO;
 	rg.r.p2.y = superpos.y + LYICO;
+        IconDrawPut(DecorGetCel(supercel), 0, superpos, 0, supercel, rg);
 	IconDrawUpdate(rg);						/* faudra redessiner cette partie */
 }
 
@@ -1578,9 +1425,6 @@ void DecorSuperCel (Pt pmouse)
 {
 	Pt			cel;
 
-	if ( pmouse.x == lastpmouse.x &&
-		 pmouse.y == lastpmouse.y )  return;
-
 	lastpmouse = pmouse;
 
 	cel = DecorDetCel(pmouse);					/* calcule la cellule montre par la souris */
@@ -1590,9 +1434,6 @@ void DecorSuperCel (Pt pmouse)
 		cel.x = -1;
 		cel.y = -1;
 	}
-
-	if ( cel.x == supercel.x &&
-		 cel.y == supercel.y )    return;
 
 	SuperCelClear();							/* efface l'ancienne super cellule */
 
@@ -1604,7 +1445,7 @@ void DecorSuperCel (Pt pmouse)
 	}
 	else
 	{
-		GetCelMask(&pmsuper, cel);				/* calcule la masque pour inverser */
+		// FIXME GetCelMask(&pmsuper, cel);				/* calcule la masque pour inverser */
 
 		superpos = CelToGra(cel);
 		superpos.x += PLXICO*ovisu.x;
@@ -2042,7 +1883,7 @@ void DecorModif (Pt cel, short newicon)
 		en redessinant toutes les cellules placées derrière. */
 
 	GetPixmap(&pmnewdecor, dim, 1, 1);	/* noirci le pixmap du dcor */
-	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
+	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
 
         int k = 0;
 	for ( int i=cel.y - 3 ; i<=MAXCELY ; i++, k++ )
@@ -2064,14 +1905,14 @@ void DecorModif (Pt cel, short newicon)
 			if ( icon != ICO_BORDG && icon != ICO_BORDD )
 			{
 #ifdef __MSDOS__
-				GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
+				//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
 #endif
-				CopyPixel						/* efface la surface au sol */
-				(
+				/*CopyPixel						/* efface la surface au sol */
+				/*(
 					&pmisol, zero,
 					&pmnewdecor, dst,
 					dim, MODEAND
-				);
+				);*/
 			}
 
 			if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
@@ -2094,13 +1935,13 @@ void DecorModif (Pt cel, short newicon)
 				);
 			}
 
-			GetIcon(&pm, icon+ICOMOFF, 1);
-			CopyPixel							/* efface le volume en hauteur */
-			(
+			//GetIcon(&pm, icon+ICOMOFF, 1);
+			/*CopyPixel							/* efface le volume en hauteur */
+			/*(
 				&pm, zero,
 				&pmnewdecor, dst,
 				dim, MODEAND
-			);
+			);*/
 
 			GetIcon(&pm, icon, 1);
 			CopyPixel							/* dessine la cellule */
