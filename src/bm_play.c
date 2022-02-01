@@ -4931,7 +4931,7 @@ PushUserEvent (Sint32 code, void * data)
 static Uint32 MainLoop (Uint32 interval, void * param)
 {
   static int skip;
-  if (!(skip % g_timerSkip))
+  //if (!(skip % g_timerSkip))
       PushUserEvent (1548 /*EV_UPDATE*/, NULL);
   ++skip;
   return interval;
@@ -4964,6 +4964,7 @@ int main (int argc, char *argv[])
         SDL_Event event;
         SDL_bool next = SDL_FALSE;
         int nextKeys[4] = {0};
+        int skip = 0;
         while (SDL_WaitEvent (&event))
         {
           next = SDL_FALSE;
@@ -4976,7 +4977,7 @@ int main (int argc, char *argv[])
             continue;
           }
 
-          if (event.user.code == 1548)
+          if (event.user.code == 1548 && !(skip++ % g_timerSkip))
           {
             next = SDL_TRUE;
             key = nextKeys[0];
