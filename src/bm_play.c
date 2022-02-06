@@ -250,6 +250,9 @@ Sint32	g_timerInterval = 25;
 Sint32  g_timerSkip = 4;
 Pt g_lastmouse = {0};
 SDL_bool g_clearKeyEvents = SDL_FALSE;
+SDL_bool g_ignoreKeyClicUp = SDL_FALSE;
+Pt g_keyMousePos = {0};
+int g_lastmouseEv = 0;
 
 
 /* --------------------------- */
@@ -259,7 +262,6 @@ SDL_bool g_clearKeyEvents = SDL_FALSE;
 static Pixmap	pmimage = {0,0,0,0,0,0,0};	/* pixmap pour image */
 static Pixmap	pmtemp  = {0,0,0,0,0,0,0};	/* pixmap temporaire */
 static Phase	phase;						/* phase du jeu */
-static SDL_bool    ignoreKeyClicUp = SDL_FALSE;                      /* Previous step */
 static char		banque;						/* banque utilise */
 static short	mondeinit;					/* numro du monde initial */
 static short	maxmonde;					/* nb max de mondes */
@@ -2321,7 +2323,7 @@ short StopClicToEvent (Pt pos)
 
 short StopPartie (void)
 {
-	Pixmap		pmsave = {0,0,0,0,0,0,0};
+	Pixmap		pmsave = {0};
 	short		key;
 	Pt			pos;
 	Pt			spos, sdim;
@@ -2610,7 +2612,7 @@ short ChangePhase (Phase newphase)
 
 	/*	Change la phase de jeu. */
 
-        ignoreKeyClicUp = SDL_TRUE;
+        g_ignoreKeyClicUp = SDL_TRUE;
 	phase = newphase;					/* change la phase */
 	ShowImage();						/* affiche l'image de base */
 
@@ -4504,6 +4506,8 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 	if ( phase != PHASE_PLAY )
 	{
+          g_timerSkip = 4; /* Use the normal speed in the menus */
+
 		if ( phase == PHASE_INIT && GetDemo() == 0 &&
 			 ((key >= 'a' && key <= 'z') || (key >= '0' && key <= '9')) )
 		{
@@ -4607,23 +4611,23 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 	}
 	else
 	{
-                if (ignoreKeyClicUp == SDL_TRUE)
+                if (g_ignoreKeyClicUp == SDL_TRUE)
                 {
                       /* Prevent key up just when entering in the play phase */
                       if (key == KEYCLICREL) {
-                        ignoreKeyClicUp = SDL_FALSE;
+                        g_ignoreKeyClicUp = SDL_FALSE;
                         key = 0;
                       }
                 }
 		if ( key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1) )
 		{
-			ev = PaletteEvent(key, pos);
+			ev = PaletteEvent(key, g_keyMousePos);
 			if ( g_typejeu == 0 || g_typeedit )
 			{
 				if ( ev < 0 )  key = ev;
 				if ( ev == 1 )
 				{
-					DecorEvent(pos, 0, PaletteGetPress(), key);
+					DecorEvent(g_keyMousePos, 0, PaletteGetPress(), key);
 				}
 			}
 			else
@@ -4635,7 +4639,8 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				}
 			}
 
-                        lastkey = key;
+                        if (key == KEYGOLEFT || key == KEYGORIGHT || key == KEYGOFRONT || key == KEYGOBACK)
+                          lastkey = key;
                         fromClic = SDL_TRUE;
 		}
 
@@ -4731,7 +4736,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
                 if ( g_typejeu == 1 && g_pause == 0 )
 		{
-                  if (lastkey)
+                  if (lastkey)// && (key == KEYGOLEFT || key == KEYGORIGHT || key == KEYGOFRONT || key == KEYGOBACK))
                     key = lastkey;
                 }
 
@@ -4820,7 +4825,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		{
 			OpenTime();
 			IconDrawOpen();
-			DecorSuperCel(pos);				/* indique la cellule vise par la souris */
+			DecorSuperCel(pos);				/* indique la cellule visée par la souris */
 			term = MoveNext(key, pos);		/* anime jusqu'au pas suivant */
 			IconDrawClose(1);
 			CloseTime(delai);

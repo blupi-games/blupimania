@@ -780,16 +780,6 @@ short PaletteEvent (short event, Pt pos)
 		}
 	}
 
-	if ( event != KEYCLIC )  return 1;
-
-	rang = SpecButton(pos);
-	if ( rang != 0 )  return rang;
-
-	rang = GetButtonRang(pos);
-	if ( rang == -1 )  return 1;
-
-	PlaySound(SOUND_CLIC);
-
 	if ( typepress )
 	{
 		typep = 1;		/* bouton press */
@@ -801,6 +791,19 @@ short PaletteEvent (short event, Pt pos)
 		typer = 3;		/* bouton relch */
 	}
 
+	if (event == KEYCLICREL)
+          goto end;
+
+	if ( event != KEYCLIC )  return 1;
+
+	rang = SpecButton(pos);
+	if ( rang != 0 )  return rang;
+
+	rang = GetButtonRang(pos);
+	if ( rang == -1 )  return 1;
+
+	PlaySound(SOUND_CLIC);
+
 	init = press;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
 	DrawF1toF4(rang);
@@ -810,10 +813,10 @@ short PaletteEvent (short event, Pt pos)
 	pb = GetButtonPos(0);
 	xlimit = pb.x + LXICO/2;
 
-	while ( 1 )
+	//while ( 1 )
 	{
-		key = GetEvent(&pos);
-		if ( key == KEYCLICREL )  break;
+		//key = GetEvent(&pos);
+		//if ( key == KEYCLICREL )  break;
 
 		if ( pos.x > xlimit &&
 			 rang != -1 &&
@@ -826,8 +829,6 @@ short PaletteEvent (short event, Pt pos)
 				if ( typepress )  return 0;
 				return 1;
 			}
-			key = GetEvent(&pos);
-			if ( key == KEYCLICREL )  break;
 		}
 
 		rang = GetButtonRang(pos);
@@ -837,14 +838,18 @@ short PaletteEvent (short event, Pt pos)
 			press = rang;
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 		}
+
+                g_ignoreKeyClicUp = SDL_TRUE;
+		return 0;
 	}
 
+end:
 	if ( typepress == 0 )
 	{
 		DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
 		DrawF1toF4(rang);
 	}
-	return 0;
+	return event == KEYCLICREL ? 1 : 0;
 }
 
 

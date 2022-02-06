@@ -259,11 +259,6 @@ typedef struct
 {
   short		dy;				/* hauteur */
   short		dx;				/* largeur */
-  short		dxb;			/* largeur en bytes */
-  unsigned short	nbp;			/* nb de bits/pixel */
-  short		ccolor;			/* couleur pour effacer  */
-  short		scolor;			/* couleur pour dessiner */
-  char		*data;			/* pointeur aux donnes */
   Pt orig;
   SDL_Texture *texture;
 }
@@ -320,6 +315,8 @@ extern Sint32         g_timerInterval;
 extern Sint32         g_timerSkip;
 extern Pt g_lastmouse;			/* dernière position de la souris */
 extern SDL_bool g_clearKeyEvents;
+extern SDL_bool g_ignoreKeyClicUp;
+extern Pt g_keyMousePos;
 
 
 
@@ -385,7 +382,7 @@ short	DecorGetInitCel	(Pt cel);
 void	DecorPutInitCel	(Pt cel, short icon);
 short	DecorGetCel		(Pt cel);
 void	DecorPutCel		(Pt cel, short icon);
-const ImageStack *	DecorIconMask	(Pixmap *ppm, Pt pos, short posz, Pt cel);
+const ImageStack *	DecorIconMask	(Pt pos, short posz, Pt cel);
 Pt GetSuperCel();
 Pt		DecorDetCel		(Pt pmouse);
 void	DecorSuperCel	(Pt pmouse);

@@ -65,9 +65,9 @@ bbox;
 #define MAXICONDRAW	20						/* nb max d'icnes dans une image */
 #define MAXREGION	40						/* nb max de rgions dans une image */
 
-static Pixmap		pmwork  = {0,0,0,0,0,0,0};		/* pixmap temporaire de travail */
-static Pixmap		pmmask  = {0,0,0,0,0,0,0};		/* pixmap du masque selon le dcor devant */
-static Pixmap		pmcopy  = {0,0,0,0,0,0,0};		/* copie modifiable d'une icne */
+static Pixmap		pmwork  = {0};		/* pixmap temporaire de travail */
+static Pixmap		pmmask  = {0};		/* pixmap du masque selon le dcor devant */
+static Pixmap		pmcopy  = {0};		/* copie modifiable d'une icne */
 
 static icondraw		ListIconDrawNew[MAXICONDRAW];	/* liste des icnes  dessnier */
 static icondraw		ListIconDrawOld[MAXICONDRAW];	/* liste des icnes  dessnier */
@@ -271,7 +271,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 	use = AndRegion(clip, IconRegion(i, pos) );
 	if ( IfNilRegion(use) ) return hover;			/* retour si rien  dessiner */
 
-	const ImageStack * list = DecorIconMask(ppm, pos, posz, cel);	/* fabrique le masque */
+	const ImageStack * list = DecorIconMask(pos, posz, cel);	/* fabrique le masque */
 
 	GetIcon(&pmicon, i, 1);					/* cherche le pixmap de la chair */
         p1.y = use.r.p1.y - pos.y;
@@ -288,11 +288,11 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 		MODEOR								/* mode */
 	);
 
-        for (int j = 0; j < 400; ++j)
+        for (int j = 0; j < 21*22; ++j)
         {
           if (!list[j].icon) continue;
 
-          GetIcon(&pmicon, /*256+29*/ list[j].icon, 1);
+          GetIcon(&pmicon, list[j].icon, 1);
 
           if (list[j].super)
           {
@@ -305,8 +305,12 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
               hover.dim = list[j].dim;
               hover.icon = list[j].icon;
 
-              /* In case of arrows (type 1), we need the original icon image */
-              if (g_typejeu != 1)
+              /* Special case where a "toto" is on the ground */
+              SDL_bool isGround = hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE;
+              /* We need the original image (no redraw) */
+              if (isGround)
+                continue;
+              if (g_typejeu == 0)
                 continue;
           }
 

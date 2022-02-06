@@ -580,8 +580,8 @@ short GetRotation (Action action)
 /* -------- */
 
 /*
-	Initialise un toto anim sur une cellule, prt  partir avec une action.
-	Retourne le rang du toto initialis (-1 si erreur).
+	Initialise un toto animé sur une cellule, prêt à partir avec une action.
+	Retourne le rang du toto initialisé (-1 si erreur).
  */
 
 short MoveInit (Pt poscel, short action, short posz)
@@ -594,7 +594,7 @@ short MoveInit (Pt poscel, short action, short posz)
 		if ( toto[i].status == STVIDE )  break;
 	}
 
-	nbtoto ++;						/* un objet anim de plus */
+	nbtoto ++;						/* un objet animé de plus */
 
 	toto[i].poscel       = poscel;
 	toto[i].poscela.x    = -1;
@@ -621,7 +621,7 @@ short MoveInit (Pt poscel, short action, short posz)
 	toto[i].sequence     = 0;
 	toto[i].energie      = 0;
 
-	NewAction(i, action, posz);		/* dmarre une action */
+	NewAction(i, action, posz);		/* démarre une action */
 
 	return i;
 }
@@ -632,7 +632,7 @@ short MoveInit (Pt poscel, short action, short posz)
 /* ---------- */
 
 /*
-	Fait ventuellement partir les ascenseurs.
+	Fait éventuellement partir les ascenseurs.
  */
 
 void DepartNext (void)
@@ -644,11 +644,11 @@ void DepartNext (void)
 
 	for ( d=0 ; d<MAXDEPART ; d++ )
 	{
-		if ( depart[d].cel.x < 0 )  continue;			/* continue si ascenseur inutilis */
+		if ( depart[d].cel.x < 0 )  continue;			/* continue si ascenseur inutilisé */
 
 		cel = depart[d].cel;
 		cel.x ++;
-		if ( GetObstacle(cel, 1) != 0 )  continue;		/* continue si cellule occupe */
+		if ( GetObstacle(cel, 1) != 0 )  continue;		/* continue si cellule occupée */
 
 		depart[d].count --;
 		if ( depart[d].count == 0 )
@@ -656,7 +656,7 @@ void DepartNext (void)
 			depart[d].count = depart[d].freq;
 			ObjetPut(depart[d].cel, OB_DEPART);					/* ouverture-fermeture */
 			MoveInit(depart[d].cel, AC_BALLON_E, 150-LYICO);	/* un ballon s'envole .. */
-			MoveInit(depart[d].cel, AC_DEPART_E, 150);			/* .. avec toto accroch */
+			MoveInit(depart[d].cel, AC_DEPART_E, 150);			/* .. avec toto accroché */
 			nbout --;
 			if ( nbout == 0 || nbtoto > MAXTOTO-2 )  return;
 		}
@@ -720,7 +720,7 @@ void ObjetNext (void)
 /* -------- */
 
 /*
-	Met un objet anim dans la liste.
+	Met un objet animé dans la liste.
 	Retourne 0 (false) si la liste est pleine.
  */
 
@@ -739,7 +739,7 @@ short ObjetPut (Pt cel, Objet obj)
 			if ( obj >= OB_SENSUNIO &&
 				 obj <= OB_SENSUNIS )
 			{
-				ObjetNextOne(i);	/* modifie le dcor immdiatement */
+				ObjetNextOne(i);	/* modifie le décor immédiatement */
 			}
 
 			return 1;
@@ -856,7 +856,7 @@ short GetTypeMarche (short i)
 /* --------- */
 
 /*
-	Dmarre une nouvelle action pour un toto.
+	Démarre une nouvelle action pour un toto.
  */
 
 void NewAction(short i, Action action, short posz)
@@ -3761,18 +3761,18 @@ short MoveNext (char event, Pt pmouse)
 
 	if ( event == KEYCLICREL )
 	{
-		lasttelecom = 0;					/* stoppe si bouton souris relch */
+		lasttelecom = 0;					/* stoppe si bouton souris relâché */
 	}
 
 	if ( (event == KEYCLIC || event == KEYCLICR) && g_typejeu == 1 )
 	{
-		JoueurCap(event, pmouse);			/* assigne v. un nouveau cap  atteindre */
+		JoueurCap(event, pmouse);			/* assigne év. un nouveau cap à atteindre */
 	}
 
-	DepartNext();							/* gre les ascenseurs */
-	ObjetNext();							/* gre les objets du dcor */
+	DepartNext();							/* gère les ascenseurs */
+	ObjetNext();							/* gère les objets du décor */
 
-	TrieToto(ordre);						/* gnre la table ordre[] */
+	TrieToto(ordre);						/* génère la table ordre[] */
 
 	ovisu = DecorGetOrigine();
 

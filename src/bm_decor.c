@@ -23,9 +23,9 @@
 static Monde	*pmonde;						/* pointe la description du monde */
 
 static short	imonde[MAXCELY][MAXCELX];		/* cellules du monde initial */
-static Pixmap	pmdecor = {0,0,0,0,0,0,0};		/* pixmap du dcor de fond */
-static Pixmap	pmsuper = {0,0,0,0,0,0,0};		/* pixmap de la super cellule */
-static Pixmap	pmsback = {0,0,0,0,0,0,0};		/* pixmap de la super cellule sauve */
+static Pixmap	pmdecor = {0};		/* pixmap du dcor de fond */
+static Pixmap	pmsuper = {0};		/* pixmap de la super cellule */
+static Pixmap	pmsback = {0};		/* pixmap de la super cellule sauve */
 static short	superinv;						/* 1 -> super cellule allume  */
 static Pt		supercel;						/* super cellule vise par la souris */
 static Pt		superpos;						/* position graphique super cellule */
@@ -301,9 +301,9 @@ void DecorPutInitCel (Pt cel, short icon)
 		cel ->	coordonnées de la cellule charnière [monde]
  */
 
-const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
+const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
 {
-        static ImageStack list[20*20]; //[sizeof(table)/sizeof(*table)/2];
+        static ImageStack list[21*22]; //[sizeof(table)/sizeof(*table)/2];
         memset(list, 0 , sizeof(list));
 
 	short		icon;
@@ -322,10 +322,13 @@ const ImageStack * DecorIconMask(Pixmap *ppm, Pt pos, short posz, Pt cel)
         Pt pv = pos;
         Pt superCel = GetSuperCel();
 
-	for ( int i=cel.y - 1 ; i<=MAXCELY ; i++, k++ )
+        int i0 = cel.y > 0 ? cel.y - 1 : 0;
+        int j0 = cel.x > 0 ? cel.x - 1 : 0;
+
+	for ( int i= i0 ; i<=MAXCELY ; i++, k++ )
 	{
 		Pt ph = pv;
-		for ( int j=cel.x - 1 ; j<=MAXCELX ; j++, k++ )
+		for ( int j = j0 ; j<=MAXCELX ; j++, k++ )
                 {
                   if (i < cel.y && j - cel.x < 1)
                     continue;
@@ -1037,7 +1040,7 @@ Pt GetSuperCel()
 
 Pt DecorDetCel (Pt pos)
 {
-	Pixmap		pmmask  = {0,0,0,0,0,0,0};
+	Pixmap		pmmask  = {0};
 	Pt			cel, c;
 	Pt			p;
 	Pt			posbase, posfront;
@@ -1060,11 +1063,11 @@ Pt DecorDetCel (Pt pos)
 		-100
 	};
 
-	if ( g_typejeu == 1 )
+	//if ( g_typejeu == 1 )
 	{
 		return GraToCel(pos);			/* dtection "transparente" */
 	}
-
+#if 0
 	cel = GraToCel(pos);				/* calcule la cellule montre par la souris */
 	if ( cel.x < 0 || cel.x >= MAXCELX ||
 		 cel.y < 0 || cel.y >= MAXCELY )
@@ -1107,6 +1110,7 @@ Pt DecorDetCel (Pt pos)
 	}
 	GivePixmap(&pmmask);
 	return cel;
+#endif
 }
 
 
@@ -1120,7 +1124,7 @@ Pt DecorDetCel (Pt pos)
 
 void InvCel (Pt cel, short outil)
 {
-	Pixmap		pmmask  = {0,0,0,0,0,0,0};
+	Pixmap		pmmask  = {0};
 	Pt			src, dst, dim;
 	short		give;
 
@@ -1475,10 +1479,11 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil < 0 )  return 1;
 
 	if ( poscel )  cel = pos;
-	else           cel = DecorDetCel(pos);	/* calcule la cellule montre par la souris */
+	else           cel = DecorDetCel(pos);	/* calcule la cellule montrée par la souris */
 
-	if ( poscel == 0 && key != KEYCLICREL )		/* si l'on a pas relch tout de suite */
+	if ( poscel == 0 && key != KEYCLICREL )		/* si l'on a pas relàché tout de suite */
 	{
+#if 0
 		IconDrawOpen();
 		SuperCelClear();					/* teint la super cellule */
 		MoveRedraw();						/* redessine tous les toto */
@@ -1497,6 +1502,8 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 			}
 			return 0;
 		}
+#endif
+          return 0;
 	}
 	else if (poscel == 0 && key == KEYCLICREL)
         {
@@ -1865,8 +1872,8 @@ short GetIconCaisseSSol (Pt cel)
 void DecorModif (Pt cel, short newicon)
 {
 	short		icon;
-	Pixmap		pmnewdecor = {0,0,0,0,0,0,0};
-	Pixmap		pmmask     = {0,0,0,0,0,0,0};
+	Pixmap		pmnewdecor = {0};
+	Pixmap		pmmask     = {0};
 	Pixmap		pmisol, pmissol;
 	Pixmap		pm;
 	Pt			dst, zero = {0, 0}, dim = {LYICO, LXICO};
@@ -1875,8 +1882,8 @@ void DecorModif (Pt cel, short newicon)
 	if ( newicon == pmonde->tmonde[cel.y][cel.x] )  return;
 	pmonde->tmonde[cel.y][cel.x] = newicon;			/* modifie une cellule du monde */
 
-	SuperCelClear();								/* teint la super cellule */
-	SuperCelFlush();								/* super cellule plus valable */
+	//SuperCelClear();								/* teint la super cellule */
+	//SuperCelFlush();								/* super cellule plus valable */
 	MoveModifCel(cel);								/* indique cellule modifie  move */
 
 	/*	Génère dans pmnewdecor l'image de la nouvelle partie du décor,
@@ -1962,7 +1969,7 @@ void DecorModif (Pt cel, short newicon)
 	dst.y += PRYICO*ovisu.y;
 
 	pmonde->tmonde[cel.y][cel.x] = ICO_SOL;
-	DecorIconMask(&pmmask, dst, 0, cel);			/* calcule le masque de devant */
+	// FIXME DecorIconMask(dst, 0, cel);			/* calcule le masque de devant */
 	pmonde->tmonde[cel.y][cel.x] = newicon;
 
 	CopyPixel
@@ -2427,14 +2434,12 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 	zone.p1.y = 0;
 	zone.p2.x = DIMXDRAW;
 	zone.p2.y = DIMYDRAW;
-int ss=0;
+
 	if ( oldpos.x < 10000 )
 	{
 		shift.x = oldpos.x - newpos.x;
 		shift.y = oldpos.y - newpos.y;
 		ScrollPixel(&pmdecor, shift, COLORNOIR, &zone);
-	ss=1;
-
         }
 
 	/*	Met à jour le décor dans pmdecor correspondant à la zone découverte. */
@@ -2527,12 +2532,6 @@ int ss=0;
 		dim.y = zone.p2.y - zone.p1.y;
 		CopyPixel(&pmdecor, src, 0, dst, dim, MODELOAD);
 	}
-
-	if(ss){
-        /*  SDL_SetRenderTarget(g_renderer, NULL);
-          SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-          SDL_RenderPresent(g_renderer);*/
-        }
 }
 
 /* ========= */

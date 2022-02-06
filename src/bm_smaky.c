@@ -8,6 +8,7 @@
 #include <malloc.h>
 #include <sys/file.h>
 #include <errno.h>
+#include <math.h>
 
 #include "bm.h"
 
@@ -830,14 +831,25 @@ SDLEventToSmakyKey (const SDL_Event * event)
         }
         break;
       case SDL_MOUSEBUTTONDOWN:
-        if (event->button.button == SDL_BUTTON_LEFT)
-          key = KEYCLIC;
-        else if (event->button.button == SDL_BUTTON_RIGHT)
-          key = KEYCLICR;
-        break;
       case SDL_MOUSEBUTTONUP:
-        key = KEYCLICREL;
+      {
+        SDL_MouseButtonEvent * _event = (SDL_MouseButtonEvent *) event;
+        if (_event->state == SDL_PRESSED)
+        {
+          if (_event->button == SDL_BUTTON_LEFT)
+            key = KEYCLIC;
+          else if (_event->button == SDL_BUTTON_RIGHT)
+            key = KEYCLICR;
+          g_keyMousePos.x = _event->x;
+          g_keyMousePos.y = _event->y;
+        } else if (_event->state == SDL_RELEASED)
+        {
+          key = KEYCLICREL;
+          if (abs(g_keyMousePos.x - g_lastmouse.x) > 40 || abs(g_keyMousePos.y - g_lastmouse.y) > 20)
+            g_keyMousePos = g_lastmouse;
+        }
         break;
+      }
       default:
         key = 0;
     }
@@ -1193,8 +1205,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	{
                 os.x += ppms->orig.x;
                 os.y += ppms->orig.y;
-		ps = ppms->data;
-		is = ppms->dxb;
 	}
 
 	if ( ppmd == 0 )				/* destination dans l'cran ? */
@@ -1208,8 +1218,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 	{
                 od.x += ppmd->orig.x;
                 od.y += ppmd->orig.y;
-		pd = ppmd->data;
-		id = ppmd->dxb;
 	}
 
 	  SDL_Rect srcRect, dstRect;
@@ -1693,6 +1701,7 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 
 char GetPixel (Pixmap *ppm, Pt pos)
 {
+#if 0
 	char		*pt;
 
 	if ( pos.x < 0 || pos.x >= ppm->dx ||
@@ -1710,6 +1719,7 @@ char GetPixel (Pixmap *ppm, Pt pos)
 	{
 		return -1;		/*  faire ! */
 	}
+#endif
 }
 
 
@@ -1765,6 +1775,7 @@ short RestorePixmap (Pixmap *ppm)
 
 short TestHLine (Pixmap *ppm, short y)
 {
+#if 0
 	char		*pt;
 	short		i;
 
@@ -1774,6 +1785,7 @@ short TestHLine (Pixmap *ppm, short y)
 		if ( *pt++ )  return 0;
 	}
 	return 1;
+#endif
 }
 
 
@@ -1789,6 +1801,7 @@ short TestHLine (Pixmap *ppm, short y)
 
 short TestVLine (Pixmap *ppm, short x)
 {
+#if 0
 	char		*pt;
 	short		i;
 	short		mask;
@@ -1801,6 +1814,7 @@ short TestVLine (Pixmap *ppm, short x)
 		pt += ppm->dxb;
 	}
 	return 1;
+#endif
 }
 
 
@@ -1941,8 +1955,6 @@ static int LoadImage(int numero, Pixmap *pim)
 	int			err = 1;
 	char		name[4096];				/* nom de l'image BLUPIXnn.IMAGE */
 
-	pim->data = NULL;
-
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
 		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
@@ -1999,10 +2011,12 @@ static int LoadImage(int numero, Pixmap *pim)
 	err = 0;												/* chargement image ok */
 
 	error:
+#if 0
 	if ( err )
 	{
 		if ( pim->data != NULL )  free(pim->data);			/* libre le data */
 	}
+#endif
 										/* ferme le fichier */
 	return err;
 }
@@ -2206,18 +2220,6 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 
 	ppm->dx     = LXICO;
 	ppm->dy     = LYICO;
-	if ( colormode && (numero&ICONMASK) < ICOMOFF )
-	{
-		ppm->nbp = 8; //pgradesc->dfcnp;		/* 4 bit/pixel car couleur */
-	}
-	else
-	{
-		ppm->nbp = 1;					/* 1 bit/pixel car noir-blanc */
-	}
-	ppm->dxb    = (LXICO*16/8)*ppm->nbp;
-
-	ppm->scolor = COLORNOIR;			/* initialise la couleur chair */
-	ppm->ccolor = COLORBLANC;			/* initialise la couleur fond */
 
 	if ( (numero&ICONMASK) < ICOMOFF )
 	{
