@@ -842,9 +842,12 @@ SDLEventToSmakyKey (const SDL_Event * event)
             key = KEYCLICR;
           g_keyMousePos.x = _event->x;
           g_keyMousePos.y = _event->y;
-        } else if (_event->state == SDL_RELEASED)
+          g_keyMousePressed = SDL_TRUE;
+        }
+        else if (_event->state == SDL_RELEASED)
         {
           key = KEYCLICREL;
+          g_keyMousePressed = SDL_FALSE;
           if (abs(g_keyMousePos.x - g_lastmouse.x) > 40 || abs(g_keyMousePos.y - g_lastmouse.y) > 20)
             g_keyMousePos = g_lastmouse;
         }

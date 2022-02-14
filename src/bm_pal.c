@@ -439,6 +439,20 @@ void SPaletteGetPosDim (short rang, Pt *ppos, Pt *pdim)
 	(*pdim).y = 4+LYICO/2+4;
 }
 
+void SPaletteRedraw(rang)
+{
+  	short		i, state;
+
+  	for ( i=0 ; i<MAXICONX ; i++ )
+	{
+		if ( ticon[rang][i] == 0 )  break;
+
+		state = 0;
+		if ( i == tspal[rang] )  state = 1;
+		DrawButton(GetSButtonPos(rang, i), ticon[rang][i], state);
+	}
+}
+
 
 /* ------------ */
 /* SPaletteOpen */
@@ -453,33 +467,36 @@ short SPaletteOpen (short rang, Pixmap *ppm)
 	Pt			pos, dim;
 	Pt			p;
 	Rectangle	r;
-	short		i, state;
 
 	SPaletteGetPosDim(rang, &pos, &dim);
 
 	if ( GetPixmap(ppm, dim, 0, 2) != 0 )  return 1;
 
-	CopyPixel(0, pos, ppm, (p.y=0, p.x=0, p), dim, MODELOAD);	/* sauve l'cran */
+        p.y = 0;
+        p.x = 0;
+	CopyPixel(0, pos, ppm, p, dim, MODELOAD);	/* sauve l'cran */
 
+        r.p1.x=pos.x;
+        r.p1.y=pos.y;
+        r.p2.x=pos.x+dim.x;
+        r.p2.y=pos.y+dim.y;
 	DrawFillRect
 	(
-		0, (r.p1.x=pos.x, r.p1.y=pos.y, r.p2.x=pos.x+dim.x, r.p2.y=pos.y+dim.y, r),
+		0, r,
 		MODELOAD, COLORBLANC
 	);
+
+        r.p1.x=pos.x;
+        r.p1.y=pos.y;
+        r.p2.x=pos.x+dim.x-1;
+        r.p2.y=pos.y+dim.y-1;
 	DrawRect
 	(
-		0, (r.p1.x=pos.x, r.p1.y=pos.y, r.p2.x=pos.x+dim.x-1, r.p2.y=pos.y+dim.y-1, r),
+		0, r,
 		MODELOAD, COLORNOIR
 	);
 
-	for ( i=0 ; i<MAXICONX ; i++ )
-	{
-		if ( ticon[rang][i] == 0 )  break;
-
-		state = 0;
-		if ( i == tspal[rang] )  state = 1;
-		DrawButton(GetSButtonPos(rang, i), ticon[rang][i], state);
-	}
+        SPaletteRedraw(rang);
 	return 0;
 }
 
@@ -514,15 +531,22 @@ void SPaletteClose (short rang, Pixmap *ppm)
 	Retourne 0 si la souris s'est dplace vers la gauche.
  */
 
-short SPaletteTracking (short rang)
+short SPaletteTracking (short rang, Pt pos, int key)
 {
-	Pixmap		pmsave = {0,0,0,0,0,0,0};
-	Pt			pos, limit;
+	static Pixmap		pmsave = {0};
+        static SDL_bool open = SDL_FALSE;
+	Pt		limit;
 	short		old, new;
-	short		key;
 	short		type;
 
-	if ( SPaletteOpen(rang, &pmsave) != 0 )  return 0;
+        if (open == SDL_FALSE)
+        {
+          if ( SPaletteOpen(rang, &pmsave) != 0 )  return 0;
+          open = SDL_TRUE;
+          g_subMenu = SDL_TRUE;
+        }
+        else
+          SPaletteRedraw(rang);
 
 	if ( typepress )  type = 2;
 	else              type = 5;
@@ -532,18 +556,17 @@ short SPaletteTracking (short rang)
 	limit.x += LXICO/2 + 12;
 
 	old = tspal[rang];
-	while ( 1 )
+	//while ( 1 )
 	{
-		key = GetEvent(&pos);
-		if ( key == KEYCLICREL )  break;
-
+fprintf(stderr, "%d %d:%d\n", key, pos.x, pos.y);
+		//key = GetEvent(&pos);
 		if ( pos.y >= limit.y && pos.y <= limit.y+LYICO/2 )
 		{
-			if ( pos.x < limit.x - 12 )  break;
+			if ( pos.x < limit.x - 12 )  goto next;
 		}
 		else
 		{
-			if ( pos.x < limit.x )  break;
+			if ( pos.x < limit.x )  goto next;
 		}
 
 		new = GetSButtonRang(rang, pos);
@@ -553,10 +576,15 @@ short SPaletteTracking (short rang)
 			old = new;
 			DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 1);
 		}
+		if ( key == KEYCLICREL )  goto next;
+		return 0;
 	}
+next:
 	if ( old >= 0 )  tspal[rang] = old;
 
 	SPaletteClose(rang, &pmsave);
+        open = SDL_FALSE;
+        g_subMenu = SDL_FALSE;
 
 	if ( typepress )  type = 1;
 	else              type = 3;
@@ -769,6 +797,7 @@ short PaletteEvent (short event, Pt pos)
 	Pt			pb;
 	short		key;
 	short		typep, typer;
+        static int _rang = -1;
 
 	if ( typepress == 0 && event >= KEYF4 && event <= KEYF1 )
 	{
@@ -791,27 +820,41 @@ short PaletteEvent (short event, Pt pos)
 		typer = 3;		/* bouton relch */
 	}
 
-	if (event == KEYCLICREL)
-          goto end;
+	//if (event == KEYCLICREL)
+        //  goto end;
 
-	if ( event != KEYCLIC )  return 1;
+	//if ( event != KEYCLIC && !g_keyMousePressed )  return 1;
 
 	rang = SpecButton(pos);
-	if ( rang != 0 )  return rang;
+	if ( rang != 0 )
+        {
+          if (event == KEYCLICREL)
+            goto end;
+          return rang;
+        }
 
 	rang = GetButtonRang(pos);
-	if ( rang == -1 )  return 1;
+	//if ( rang == -1 )  return 1;
+        if (rang == -1 && !g_subMenu)
+          return 1;
+
+        if (rang != -1)
+          _rang = rang;
+
+        if (_rang == -1)
+          return 1;
 
 	PlaySound(SOUND_CLIC);
 
 	init = press;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-	DrawF1toF4(rang);
-	press = rang;
+	DrawF1toF4(_rang);
+	press = _rang;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 
 	pb = GetButtonPos(0);
 	xlimit = pb.x + LXICO/2;
+fprintf(stderr, "%d\n", rang);
 
 	//while ( 1 )
 	{
@@ -819,12 +862,12 @@ short PaletteEvent (short event, Pt pos)
 		//if ( key == KEYCLICREL )  break;
 
 		if ( pos.x > xlimit &&
-			 rang != -1 &&
-			 rang < MAXICONY &&
-			 ticon[rang][1] != 0 )
+			 _rang != -1 &&
+			 _rang < MAXICONY &&
+			 ticon[_rang][1] != 0 )
 		{
-			press = rang;
-			if ( SPaletteTracking(rang) )			/* action dans sous-palette ... */
+			press = _rang;
+			if ( SPaletteTracking(_rang, pos, event) )			/* action dans sous-palette ... */
 			{
 				if ( typepress )  return 0;
 				return 1;
@@ -839,7 +882,7 @@ short PaletteEvent (short event, Pt pos)
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 		}
 
-                g_ignoreKeyClicUp = SDL_TRUE;
+                //g_ignoreKeyClicUp = SDL_TRUE;
 		return 0;
 	}
 

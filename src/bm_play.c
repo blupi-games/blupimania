@@ -252,15 +252,16 @@ Pt g_lastmouse = {0};
 SDL_bool g_clearKeyEvents = SDL_FALSE;
 SDL_bool g_ignoreKeyClicUp = SDL_FALSE;
 Pt g_keyMousePos = {0};
-int g_lastmouseEv = 0;
+SDL_bool g_keyMousePressed = SDL_FALSE;
+SDL_bool g_subMenu = SDL_FALSE;
 
 
 /* --------------------------- */
 /* Variables globales internes */
 /* --------------------------- */
 
-static Pixmap	pmimage = {0,0,0,0,0,0,0};	/* pixmap pour image */
-static Pixmap	pmtemp  = {0,0,0,0,0,0,0};	/* pixmap temporaire */
+static Pixmap	pmimage = {0};	/* pixmap pour image */
+static Pixmap	pmtemp  = {0};	/* pixmap temporaire */
 static Phase	phase;						/* phase du jeu */
 static char		banque;						/* banque utilise */
 static short	mondeinit;					/* numro du monde initial */
@@ -4611,6 +4612,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 	}
 	else
 	{
+                SDL_bool forPalette = SDL_FALSE;
                 if (g_ignoreKeyClicUp == SDL_TRUE)
                 {
                       /* Prevent key up just when entering in the play phase */
@@ -4619,9 +4621,15 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                         key = 0;
                       }
                 }
-		if ( key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1) )
+		if ( key == KEYCLIC || key == KEYCLICREL || g_keyMousePressed || (key >= KEYF4 && key <= KEYF1) )
 		{
-			ev = PaletteEvent(key, g_keyMousePos);
+                  fprintf(stderr, "# %d\n", key);
+			ev = PaletteEvent(key, pos);
+                      if (key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1))
+                        forPalette = SDL_TRUE;
+                }
+		if ( forPalette )
+		{
 			if ( g_typejeu == 0 || g_typeedit )
 			{
 				if ( ev < 0 )  key = ev;

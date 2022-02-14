@@ -317,6 +317,8 @@ extern Pt g_lastmouse;			/* dernière position de la souris */
 extern SDL_bool g_clearKeyEvents;
 extern SDL_bool g_ignoreKeyClicUp;
 extern Pt g_keyMousePos;
+extern SDL_bool g_keyMousePressed;
+extern SDL_bool g_subMenu;
 
 
 
