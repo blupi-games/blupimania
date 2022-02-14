@@ -37,6 +37,8 @@ static short	lastaccel;						/* dernier acclrateur pos */
 static short	lastcaisse;						/* dernire caisse pose */
 static short	lasttank;						/* dernier tank pos */
 
+SDL_bool g_superInvalid;
+
 
 typedef struct
 {
@@ -1333,10 +1335,12 @@ short SuperCelClip (Pt *ppos, Pt *pdim)
 	Allume la super cellule dans le pixmap du dcor (si ncessaire).
  */
 
-void SuperCelSet ()
+void SuperCelSet (SDL_bool invalid)
 {
 	Pt		p, src, dst, dim;
 	Reg		rg;
+
+        g_superInvalid = invalid;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
 	/*if ( superinv == 1 )  return;
@@ -1428,6 +1432,7 @@ void SuperCelClear (void)
 void DecorSuperCel (Pt pmouse)
 {
 	Pt			cel;
+        SDL_bool invalid = SDL_FALSE;
 
 	lastpmouse = pmouse;
 
@@ -1435,19 +1440,20 @@ void DecorSuperCel (Pt pmouse)
 
 	if ( !IfCelValide(cel, PaletteGetPress()) )
 	{
-		cel.x = -1;
-		cel.y = -1;
+		//cel.x = -1;
+		//cel.y = -1;
+                invalid = SDL_TRUE;
 	}
 
 	SuperCelClear();							/* efface l'ancienne super cellule */
 
 	supercel = cel;
-	if ( cel.x == -1 )
+	/*if ( cel.x == -1 )
 	{
 		superpos.x = -1;
 		superpos.y = -1;
 	}
-	else
+	else*/
 	{
 		// FIXME GetCelMask(&pmsuper, cel);				/* calcule la masque pour inverser */
 
@@ -1456,7 +1462,7 @@ void DecorSuperCel (Pt pmouse)
 		superpos.y += PRYICO*ovisu.y;
 	}
 
-	SuperCelSet();								/* allume la nouvelle super cellule */
+	SuperCelSet(invalid);								/* allume la nouvelle super cellule */
 }
 
 
@@ -1507,7 +1513,7 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	}
 	else if (poscel == 0 && key == KEYCLICREL)
         {
-          InvCel(cel, outil);					/* teint la dernire cellule montre */
+          //InvCel(cel, outil);					/* teint la dernire cellule montre */
         }
 
 	if ( !IfCelValide(cel, outil) )  return 1;

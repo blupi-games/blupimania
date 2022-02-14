@@ -305,12 +305,13 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
               hover.dim = list[j].dim;
               hover.icon = list[j].icon;
 
+              if (g_typejeu == 0 && !g_superInvalid)
+                continue;
+
               /* Special case where a "toto" is on the ground */
-              SDL_bool isGround = hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE;
+              SDL_bool isGround = (hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX) || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE;
               /* We need the original image (no redraw) */
               if (isGround)
-                continue;
-              if (g_typejeu == 0)
                 continue;
           }
 
@@ -629,7 +630,7 @@ void IconDrawClose (short bdraw)
                         else
                         {
                           GetPixmap(&tmp, hover.dim, 2, 0);
-                          GetIcon(&pmicon, hover.icon, 1);
+                          GetIcon(&pmicon, g_superInvalid ? ICO_CROIX : hover.icon, 1);
                           DuplPixel(&pmicon, &tmp);
                           SDL_SetTextureAlphaMod(tmp.texture, 128);
                           SDL_SetTextureColorMod(tmp.texture, 32, 32, 32);

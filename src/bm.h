@@ -319,6 +319,7 @@ extern SDL_bool g_ignoreKeyClicUp;
 extern Pt g_keyMousePos;
 extern SDL_bool g_keyMousePressed;
 extern SDL_bool g_subMenu;
+extern SDL_bool g_superInvalid;
 
 
 
