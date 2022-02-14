@@ -593,7 +593,7 @@ void IconDrawClose (short bdraw)
 
 		for ( j=0 ; j<MAXICONDRAW ; j++ )
 		{
-			if ( ListIconDrawNew[j].icon != 0 )
+			if ( ListIconDrawNew[j].icon > 0 )
 			{
 				if ( IfSectRegion(ListRegOld[i].reg, ListIconDrawNew[j].bbox) )
 				{
