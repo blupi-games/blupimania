@@ -2448,7 +2448,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 	/*	Met à jour le décor dans pmdecor correspondant à la zone découverte. */
 
-	GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
+	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
 
 	pv = newpos;
 	for ( i=0 ; i<=MAXCELY ; i++ )
@@ -2463,24 +2463,24 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 			if ( !IfHideIcon(ph, zone) )
 			{
-				if ( icon != ICO_BORDG && icon != ICO_BORDD )
+				/*if ( icon != ICO_BORDG && icon != ICO_BORDD )
 				{
 #ifdef __MSDOS__
 					GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
-#endif
+/*#endif
 					CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
-				}
+/*				}*/
 #ifndef __MSDOS__
 				if ( icon != lasti )
 #endif
 				{
 					lasti = icon;
-					if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
+					/*if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
 						 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 						 icon == ICO_GLISSE )
 					{
 						GetIcon(&pmimask, icon+ICOMOFF, 1);
-					}
+					}*/
 					GetIcon(&pmichair, icon, 1);
 				}
 				if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
@@ -2499,12 +2499,12 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					GetIcon(&pmissol, GetIconCaisseSSol(cel), 1);
 					CopyIconDecor(&pmissol, ph, MODEOR, zone);	/* dessine le sol sous la boule */
 				}
-				if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
+				/*if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
 					 icon == ICO_BORDG  || icon == ICO_BORDD  ||
 					 icon == ICO_GLISSE )
 				{
 					CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
-				}
+				/*}*/
 				CopyIconDecor(&pmichair, ph, MODEOR, zone);		/* dessine la cellule */
 			}
 			ph.x += PLXICO;
