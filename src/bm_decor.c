@@ -373,16 +373,14 @@ const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
                     continue;
                   if (icon >= ICO_ACCEL_S   && icon <= ICO_ACCEL_O)
                     continue;
-                  if (icon == ICO_ARRIVEEVIDE)
-                    continue;
-                  if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM)
+                  if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM || icon == ICO_ARRIVEEVIDE)
                   {
                     /* Consider to redraw only the ballon part (not the ground) */
                     dim.y = 53;
                   }
 
                   if ( c.x < MAXCELX && c.y < MAXCELY &&
-                          (icon >= ICO_BLOQUE || icon == ICO_DEPART ) )	/* icône en hauteur ? */
+                          (icon >= ICO_BLOQUE || icon == ICO_DEPART || icon == ICO_ARRIVEEVIDE ) )	/* icône en hauteur ? */
                   {
                     list[k].icon = icon;
                     list[k].cel= c;
