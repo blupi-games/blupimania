@@ -349,7 +349,7 @@ const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
                   }
                   else
                   {
-                          icon = ICO_SOL;
+                          icon = 0;
                   }
 
                   if (superCel.x > -1 && c.x == superCel.x && c.y == superCel.y)
