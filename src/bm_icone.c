@@ -294,7 +294,9 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 
           GetIcon(&pmicon, list[j].icon, 1);
 
-          if (list[j].super)
+          SDL_bool blupiBaloonStart = (((i == 63 || i == 47) && posz < 20) || (i != 63 && i != 47));
+
+          if (list[j].super && blupiBaloonStart)
           {
               dim.y = pmicon.dy;
               dim.x = pmicon.dx;
