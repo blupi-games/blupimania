@@ -274,6 +274,11 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 	const ImageStack * list = DecorIconMask(pos, posz, cel);	/* fabrique le masque */
 
 	GetIcon(&pmicon, i, 1);					/* cherche le pixmap de la chair */
+        if (m == 1)
+        {
+          SDL_SetTextureAlphaMod(pmicon.texture, 128);
+        }
+
         p1.y = use.r.p1.y - pos.y;
         p1.x = use.r.p1.x - pos.x;
         dim.y = use.r.p2.y - use.r.p1.y;
@@ -287,6 +292,11 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 		dim,
 		MODEOR								/* mode */
 	);
+
+        if (m == 1)
+        {
+          SDL_SetTextureAlphaMod(pmicon.texture, 255);
+        }
 
         for (int j = 0; j < 21*22; ++j)
         {
