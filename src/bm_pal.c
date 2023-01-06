@@ -591,6 +591,8 @@ next:
 	SPaletteClose(rang, &pmsave);
         open = SDL_FALSE;
         g_subMenu = SDL_FALSE;
+
+        DrawButton(GetButtonPos(currentRank), ticon[currentRank][tspal[currentRank]], 0);
         currentRank = -1;
 
 	if ( typepress )  type = 1;
