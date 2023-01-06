@@ -465,16 +465,17 @@ void SPaletteRedraw(rang)
 short SPaletteOpen (short rang, Pixmap *ppm)
 {
 	Pt			pos, dim;
-	Pt			p;
+	Pt			p = {0, 0};
 	Rectangle	r;
 
 	SPaletteGetPosDim(rang, &pos, &dim);
 
-	if ( GetPixmap(ppm, dim, 0, 2) != 0 )  return 1;
+        Pt game;
+        game.x = LXIMAGE();
+        game.y = LYIMAGE();
+	if ( GetPixmap(ppm, game, 0, 2) != 0 )  return 1;
 
-        p.y = 0;
-        p.x = 0;
-	CopyPixel(0, pos, ppm, p, dim, MODELOAD);	/* sauve l'cran */
+	CopyPixel(0, p, ppm, p, game, MODELOAD);	/* sauve l'cran */
 
         r.p1.x=pos.x;
         r.p1.y=pos.y;
@@ -514,9 +515,9 @@ void SPaletteClose (short rang, Pixmap *ppm)
 	Pt		pos, dim;
 	Pt		p = {0, 0};
 
-	SPaletteGetPosDim(rang, &pos, &dim);
-
-	CopyPixel(ppm, p, 0, pos, dim, MODELOAD);	/* restitue l'cran */
+        dim.x = LXIMAGE();
+        dim.y = LYIMAGE();
+	CopyPixel(ppm, p, 0, p, dim, MODELOAD);	/* restitue l'cran */
 	GivePixmap(ppm);
 }
 
@@ -536,14 +537,19 @@ short SPaletteTracking (short rang, Pt pos, int key)
 	static Pixmap		pmsave = {0};
         static SDL_bool open = SDL_FALSE;
 	Pt		limit;
-	short		old, new;
+	short		old = -1, new;
 	short		type;
+        static int currentRank = -1;
+
+        if (currentRank >= 0 && currentRank != rang)
+          goto next;
 
         if (open == SDL_FALSE)
         {
           if ( SPaletteOpen(rang, &pmsave) != 0 )  return 0;
           open = SDL_TRUE;
           g_subMenu = SDL_TRUE;
+          currentRank = rang;
         }
         else
           SPaletteRedraw(rang);
@@ -558,7 +564,7 @@ short SPaletteTracking (short rang, Pt pos, int key)
 	old = tspal[rang];
 	//while ( 1 )
 	{
-fprintf(stderr, "%d %d:%d\n", key, pos.x, pos.y);
+fprintf(stderr, "%d %d %d:%d\n", rang, key, pos.x, pos.y);
 		//key = GetEvent(&pos);
 		if ( pos.y >= limit.y && pos.y <= limit.y+LYICO/2 )
 		{
@@ -585,6 +591,7 @@ next:
 	SPaletteClose(rang, &pmsave);
         open = SDL_FALSE;
         g_subMenu = SDL_FALSE;
+        currentRank = -1;
 
 	if ( typepress )  type = 1;
 	else              type = 3;
@@ -861,7 +868,7 @@ fprintf(stderr, "%d\n", rang);
 		//key = GetEvent(&pos);
 		//if ( key == KEYCLICREL )  break;
 
-		if ( pos.x > xlimit &&
+		if ( /*pos.x > xlimit &&*/
 			 _rang != -1 &&
 			 _rang < MAXICONY &&
 			 ticon[_rang][1] != 0 )
