@@ -2322,10 +2322,9 @@ short StopClicToEvent (Pt pos)
 	Demande s'il faut stopper la partie en cours.
  */
 
-short StopPartie (void)
+short StopPartie (short key)
 {
 	Pixmap		pmsave = {0};
-	short		key;
 	Pt			pos;
 	Pt			spos, sdim;
 	Pt			p;
@@ -2337,30 +2336,33 @@ short StopPartie (void)
 	sdim.x = LXICO+20+LXICO;
 	sdim.y = LYICO;
 
-	if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
+	//if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
 
         p.y = 0;
         p.x = 0;
-	CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
+	//CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
 
-	StopDrawIcon();									/* dessine les icnes */
+	//StopDrawIcon();									/* dessine les icnes */
 
-	while (1)
+	//while (1)
 	{
-		key = GetEvent(&pos);
+		//key = GetEvent(&pos);
 		if ( key == KEYCLIC || key == KEYCLICR )
 		{
 			key = StopClicToEvent(pos);
 		}
 
-		if ( key != 0 && key != KEYCLICREL )  break;
+		if ( key != 0 && key != KEYCLICREL )  goto next;
+                return 0;
 	}
+
+next:
 	PlayEvSound(SOUND_CLIC);
 
         p.y = 0;
         p.x = 0;
-	CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
-	GivePixmap(&pmsave);
+	//CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
+	//GivePixmap(&pmsave);
 
 	return key;
 }
@@ -4570,7 +4572,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		}
 
 		if ( phase == PHASE_INIT && key == KEYQUIT &&
-			 StopPartie() == KEYHOME )
+			 StopPartie(key) == KEYHOME )
 		{
 			return 2;
 		}
@@ -4595,7 +4597,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		term = ExecuteAction(key, pos);
 
 		if ( term == 2 &&
-			 StopPartie() == KEYHOME )  return 2;
+			 StopPartie(key) == KEYHOME )  return 2;
 
 		if ( term != 0 )
 		{
@@ -4752,7 +4754,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
 			if ( g_typeedit == 1 ||
-				 StopPartie() == KEYHOME )
+				 StopPartie(key) == KEYHOME )
 			{
 				if ( g_typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
