@@ -4762,13 +4762,16 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 		if ( g_stopMenu || key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
+                  int stop = 0;
 			if ( g_typeedit == 1 ||
-				 StopPartie(key, pos) == KEYHOME )
+				 (stop = StopPartie(key, pos)) == KEYHOME )
 			{
 				if ( g_typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
 				return 1;
 			}
+			if (stop == KEYUNDO)
+                          return 1;
 		}
 
 		if ( g_typejeu == 0 || g_typeedit || g_pause )
