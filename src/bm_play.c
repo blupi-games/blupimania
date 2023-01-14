@@ -4774,6 +4774,9 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                           return 1;
 		}
 
+		if (g_subMenu || g_stopMenu)
+                  return 1;
+
 		if ( g_typejeu == 0 || g_typeedit || g_pause )
 		{
 			ovisu = DecorGetOrigine();
@@ -4844,7 +4847,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                           break;
 		}
 
-		if ( !g_subMenu && !g_stopMenu && g_pause == 0 && next )
+		if ( g_pause == 0 && next )
 		{
 			OpenTime();
 			IconDrawOpen();
@@ -4886,7 +4889,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				return 1;
 			}
 		}
-		if (!g_subMenu && !g_stopMenu && (g_pause != 0 || (g_pause == 0 && !next)))
+		if (g_pause != 0 || (g_pause == 0 && !next))
 		{
 			OpenTime();
 			IconDrawOpen();
