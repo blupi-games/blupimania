@@ -254,6 +254,7 @@ SDL_bool g_ignoreKeyClicUp = SDL_FALSE;
 Pt g_keyMousePos = {0};
 SDL_bool g_keyMousePressed = SDL_FALSE;
 SDL_bool g_subMenu = SDL_FALSE;
+SDL_bool g_stopMenu = SDL_FALSE;
 
 
 /* --------------------------- */
@@ -2322,12 +2323,12 @@ short StopClicToEvent (Pt pos)
 	Demande s'il faut stopper la partie en cours.
  */
 
-short StopPartie (short key)
+short StopPartie (short key, Pt pos)
 {
-	Pixmap		pmsave = {0};
-	Pt			pos;
+	static Pixmap		pmsave = {0};
 	Pt			spos, sdim;
 	Pt			p;
+        static SDL_bool open = SDL_FALSE;
 
 	PlayEvSound(SOUND_CLIC);
 
@@ -2336,23 +2337,28 @@ short StopPartie (short key)
 	sdim.x = LXICO+20+LXICO;
 	sdim.y = LYICO;
 
-	//if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
 
-        p.y = 0;
-        p.x = 0;
-	//CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
+        if (open == SDL_FALSE)
+        {
+	  if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
+          p.y = 0;
+          p.x = 0;
+          CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
+          open = SDL_TRUE;
+          g_stopMenu = SDL_TRUE;
+        }
 
-	//StopDrawIcon();									/* dessine les icnes */
+	StopDrawIcon();									/* dessine les icnes */
 
 	//while (1)
 	{
 		//key = GetEvent(&pos);
-		if ( key == KEYCLIC || key == KEYCLICR )
+		if ( key == KEYCLIC )
 		{
 			key = StopClicToEvent(pos);
+                  if ( (key == KEYUNDO || key == KEYHOME) )  goto next;
 		}
 
-		if ( key != 0 && key != KEYCLICREL )  goto next;
                 return 0;
 	}
 
@@ -2361,8 +2367,11 @@ next:
 
         p.y = 0;
         p.x = 0;
-	//CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
-	//GivePixmap(&pmsave);
+	CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
+	GivePixmap(&pmsave);
+        //SDL_RenderPresent(g_renderer);
+        open = SDL_FALSE;
+        g_stopMenu = SDL_FALSE;
 
 	return key;
 }
@@ -4572,7 +4581,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		}
 
 		if ( phase == PHASE_INIT && key == KEYQUIT &&
-			 StopPartie(key) == KEYHOME )
+			 StopPartie(key, pos) == KEYHOME )
 		{
 			return 2;
 		}
@@ -4597,7 +4606,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		term = ExecuteAction(key, pos);
 
 		if ( term == 2 &&
-			 StopPartie(key) == KEYHOME )  return 2;
+			 StopPartie(key, pos) == KEYHOME )  return 2;
 
 		if ( term != 0 )
 		{
@@ -4751,10 +4760,10 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                     key = lastkey;
                 }
 
-		if ( key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
+		if ( g_stopMenu || key == KEYQUIT || key == KEYHOME || key == KEYUNDO )
 		{
 			if ( g_typeedit == 1 ||
-				 StopPartie(key) == KEYHOME )
+				 StopPartie(key, pos) == KEYHOME )
 			{
 				if ( g_typeedit )  ChangePhase(PHASE_PRIVE);
 				else             ChangePhase(PHASE_RECOMMENCE);
@@ -4832,7 +4841,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                           break;
 		}
 
-		if ( !g_subMenu && g_pause == 0 && next )
+		if ( !g_subMenu && !g_stopMenu && g_pause == 0 && next )
 		{
 			OpenTime();
 			IconDrawOpen();
@@ -4874,7 +4883,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				return 1;
 			}
 		}
-		if (!g_subMenu && (g_pause != 0 || (g_pause == 0 && !next)))
+		if (!g_subMenu && !g_stopMenu && (g_pause != 0 || (g_pause == 0 && !next)))
 		{
 			OpenTime();
 			IconDrawOpen();
