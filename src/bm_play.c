@@ -255,6 +255,7 @@ Pt g_keyMousePos = {0};
 SDL_bool g_keyMousePressed = SDL_FALSE;
 SDL_bool g_subMenu = SDL_FALSE;
 SDL_bool g_stopMenu = SDL_FALSE;
+SDL_bool g_saveMenu = SDL_FALSE;
 
 
 /* --------------------------- */
@@ -2198,17 +2199,22 @@ short PartieClicToEvent (Pt pos)
 	Prend ou sauve la partie en cours.
  */
 
-void PartieDisque (short mode)
+void PartieDisque (short key, Pt pos)
 {
-	short		key;
-	Pt			pos;
+	short mode = key;
+        static SDL_bool open = SDL_FALSE;
 
-	if ( mode != KEYLOAD )  PartieDrawIcon(KEYSAVE);	/* dessine l'icne */
-	if ( mode != KEYSAVE )  PartieDrawIcon(KEYLOAD);	/* dessine l'icne */
+        if (open == SDL_FALSE)
+        {
+          if ( mode != KEYLOAD )  PartieDrawIcon(KEYSAVE);	/* dessine l'icne */
+          if ( mode != KEYSAVE )  PartieDrawIcon(KEYLOAD);	/* dessine l'icne */
+          open = SDL_TRUE;
+          g_saveMenu = SDL_TRUE;
+        }
 
-	while (1)
+	//while (1)
 	{
-		key = GetEvent(&pos);
+		//key = GetEvent(&pos);
 		if ( key == KEYCLIC || key == KEYCLICR )
 		{
 			key = PartieClicToEvent(pos);
@@ -2216,9 +2222,14 @@ void PartieDisque (short mode)
 
 		if ( key == KEYUNDO || key == KEYQUIT || key == KEYHOME ||
 			 key == KEYF1 || key == KEYF2 || key == KEYF3 || key == KEYF4 ||
-			 key == '1'   || key == '2'   || key == '3'   || key == '4'   )  break;
+			 key == '1'   || key == '2'   || key == '3'   || key == '4'   )  goto next;
+                return;
 	}
+
+next:
 	PlayEvSound(SOUND_CLIC);
+        open = SDL_FALSE;
+        g_saveMenu = SDL_FALSE;
 
 	if ( mode != KEYLOAD && key <= KEYF1 && key >= KEYF4 )
 	{
@@ -4664,11 +4675,11 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                         fromClic = SDL_TRUE;
 		}
 
-		if ( g_typeedit == 0 &&
-			 (key == KEYSAVE || key == KEYLOAD || key == KEYIO) )
+		if ( g_saveMenu || (g_typeedit == 0 &&
+			 (key == KEYSAVE || key == KEYLOAD || key == KEYIO)) )
 		{
 			PlayEvSound(SOUND_CLIC);
-			PartieDisque(key);						/* prend/sauve la partie en cours ... */
+			PartieDisque(key, pos);						/* prend/sauve la partie en cours ... */
 			return 1;
 		}
 
@@ -4774,7 +4785,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                           return 1;
 		}
 
-		if (g_subMenu || g_stopMenu)
+		if (g_subMenu || g_stopMenu || g_saveMenu)
                   return 1;
 
 		if ( g_typejeu == 0 || g_typeedit || g_pause )
