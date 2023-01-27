@@ -10,6 +10,7 @@
 #define ICO_STOPNON				(128+77)
 #define ICO_POTMUSIQUE			(128+78)
 
+#define ICO_SOLMASK                     (128+124)
 #define ICO_SOLDALLE3			(128+125)
 #define ICO_SOLDALLE4			(128+126)
 #define ICO_SOLDALLE5			(128+127)

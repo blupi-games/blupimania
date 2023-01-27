@@ -111,6 +111,22 @@ Pt CelToGra (Pt cel)
 	return gra;
 }
 
+Pt CelToGra2 (Pt cel, SDL_bool shift)
+{
+	Pt		gra;
+
+	gra.x = PLXICO*cel.x - PRXICO*cel.y;
+	gra.y = PRYICO*cel.y + PLYICO*cel.x;
+
+        if (shift)
+        {
+          gra.x += /*POSXDRAW +*/ PLXICO*ovisu.x /*+ LXICO/2 -5*/;
+          gra.y += /*POSYDRAW +*/ PRYICO*ovisu.y /*+ LYICO/2 +11*/;
+        }
+
+	return gra;
+}
+
 
 
 /* =========== */
@@ -372,6 +388,8 @@ const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
                   if (icon >= ICO_SENSUNI_S && icon <= ICO_SENSUNI_O)
                     continue;
                   if (icon >= ICO_ACCEL_S   && icon <= ICO_ACCEL_O)
+                    continue;
+                  if (icon == ICO_UNSEUL)
                     continue;
                   if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM || icon == ICO_ARRIVEEVIDE)
                   {

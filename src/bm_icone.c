@@ -271,6 +271,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 	use = AndRegion(clip, IconRegion(i, pos) );
 	if ( IfNilRegion(use) ) return hover;			/* retour si rien  dessiner */
 
+        /* Récupère la liste des élément de décor à redessiner */
 	const ImageStack * list = DecorIconMask(pos, posz, cel);	/* fabrique le masque */
 
 	GetIcon(&pmicon, i, 1);					/* cherche le pixmap de la chair */
@@ -279,10 +280,76 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           SDL_SetTextureAlphaMod(pmicon.texture, 128);
         }
 
+
         p1.y = use.r.p1.y - pos.y;
         p1.x = use.r.p1.x - pos.x;
         dim.y = use.r.p2.y - use.r.p1.y;
         dim.x = use.r.p2.x - use.r.p1.x;
+
+        /* crop blupi (or tank, etc) when it falls */
+        if ((i == 30 || i == ICO_CAISSEV) && posz > 0)
+        {
+          //dim.y -= posz;
+          Pixmap mask;
+          Pt p = {0, 0};
+          Pt p2 = {use.r.p1.y - posz, use.r.p1.x}; //{use.r.p1.y + POSYDRAW, use.r.p1.x + POSXDRAW};
+          Pt p3;
+
+          Pixmap pmtemp;
+          pmtemp.texture = SDL_CreateTexture (
+          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
+          SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
+          pmtemp.dx = LXICO;
+          pmtemp.dy = LYICO;
+          pmtemp.orig.x = 0;
+          pmtemp.orig.y = 0;
+
+          GetIcon(&mask, ICO_SOLMASK, 1);
+          CopyPixel(&mask, p, &pmtemp, p, dim, 0);
+
+          //cel.x--;
+          /* Calcul la position du "toto" sans la chute */
+          Pt posAbs = {pos.y + POSYDRAW + LYICO - posz, pos.x + POSXDRAW + LXICO};
+          /* Calcul la cellule où se situe le trou */
+          Pt posCel = GraToCel(posAbs);
+          // Récupère les coordonnées du trou
+          Pt _cel = CelToGra2(posCel, SDL_TRUE);
+          _cel.y -= PRYICO - 7; // -7 ??
+          _cel.x -= PLXICO + 1; // +1 ??
+          p2 = _cel;
+
+
+          /* copie le fond dans le "masque" */
+          SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_MOD);
+          p3 = p1;
+          CopyPixel(ppm, p2, &pmtemp, p3, dim, 0);
+          SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
+
+          /* Evite de dessiner en dessus du masque */
+          Pt dim2 = dim;
+          dim2.y -= use.r.p1.y - p2.y;
+
+          /* Dessine le "toto" */
+          CopyPixel								/* dessine la chair */
+          (
+                  &pmicon,							/* source */
+                  p1,
+                  ppm,								/* destination */
+                  use.r.p1,
+                  dim2,
+                  MODEOR								/* mode */
+          );
+
+          /* Utilise le "masque" par dessus */
+          //p2.x = use.r.p1.x;
+          //p2.y = use.r.p1.y - posz;
+          CopyPixel(&pmtemp, p, ppm, p2, dim, 0);
+
+          SDL_DestroyTexture(pmtemp.texture);
+          //return hover; // XXX: for debug
+        }
+        else {
+        /* Dessine le "toto" */
 	CopyPixel								/* dessine la chair */
 	(
 		&pmicon,							/* source */
@@ -291,25 +358,27 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 		use.r.p1,
 		dim,
 		MODEOR								/* mode */
-	);
+	);}
 
         if (m == 1)
         {
           SDL_SetTextureAlphaMod(pmicon.texture, 255);
         }
 
+        /* Redessine des éléments de décors qui doivent apparaître devant les "toto" */
         for (int j = 0; j < 21*22; ++j)
         {
           if (!list[j].icon) continue;
 
-          GetIcon(&pmicon, list[j].icon, 1);
+          Pixmap		pmicon2;
+          GetIcon(&pmicon2, list[j].icon, 1);
 
           SDL_bool blupiBaloonStart = (((i == 63 || i == 47) && posz < 20) || (i != 63 && i != 47));
 
           if (list[j].super && blupiBaloonStart)
           {
-              dim.y = pmicon.dy;
-              dim.x = pmicon.dx;
+              dim.y = pmicon2.dy;
+              dim.x = pmicon2.dx;
 
               hover.p1.y = 0;
               hover.p1.x = 0;
@@ -322,6 +391,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 
               /* Special case where a "toto" is on the ground */
               SDL_bool isGround = (hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX) || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE || hover.icon == ICO_SENSUNI_E || hover.icon == ICO_SENSUNI_O || hover.icon == ICO_SENSUNI_N || hover.icon == ICO_SENSUNI_S /*|| hover.icon == ICO_ARRIVEEVIDE || hover.icon == ICO_ARRIVEEPRIS*/;
+              // FIXME: ajouter la trappe fermée
               /* We need the original image (no redraw) */
               if (isGround)
                 continue;
@@ -332,7 +402,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           dim = list[j].dim;
           CopyPixel								/* dessine la chair */
           (
-                  &pmicon,							/* source */
+                  &pmicon2,							/* source */
                   p1,
                   ppm,								/* destination */
                   p2,
@@ -340,6 +410,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
                   MODEOR								/* mode */
           );
         }
+
         return hover;
 }
 
