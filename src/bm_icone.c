@@ -292,8 +292,6 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           //dim.y -= posz;
           Pixmap mask;
           Pt p = {0, 0};
-          Pt p2 = {use.r.p1.y - posz, use.r.p1.x}; //{use.r.p1.y + POSYDRAW, use.r.p1.x + POSXDRAW};
-          Pt p3;
 
           Pixmap pmtemp;
           pmtemp.texture = SDL_CreateTexture (
@@ -316,18 +314,16 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           Pt _cel = CelToGra2(posCel, SDL_TRUE);
           _cel.y -= PRYICO - 7; // -7 ??
           _cel.x -= PLXICO + 1; // +1 ??
-          p2 = _cel;
 
 
           /* copie le fond dans le "masque" */
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_MOD);
-          p3 = p1;
-          CopyPixel(ppm, p2, &pmtemp, p3, dim, 0);
+          CopyPixel(ppm, _cel, &pmtemp, p1, dim, 0);
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
 
           /* Evite de dessiner en dessus du masque */
           Pt dim2 = dim;
-          dim2.y -= use.r.p1.y - p2.y;
+          dim2.y -= use.r.p1.y - _cel.y;
 
           /* Dessine le "toto" */
           CopyPixel								/* dessine la chair */
@@ -341,12 +337,9 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           );
 
           /* Utilise le "masque" par dessus */
-          //p2.x = use.r.p1.x;
-          //p2.y = use.r.p1.y - posz;
-          CopyPixel(&pmtemp, p, ppm, p2, dim, 0);
+          CopyPixel(&pmtemp, p, ppm, _cel, dim, 0);
 
           SDL_DestroyTexture(pmtemp.texture);
-          //return hover; // XXX: for debug
         }
         else {
         /* Dessine le "toto" */
