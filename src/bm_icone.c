@@ -383,7 +383,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
               //  continue;
 
               /* Special case where a "toto" is on the ground */
-              SDL_bool isGround = (hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX) || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE || hover.icon == ICO_SENSUNI_E || hover.icon == ICO_SENSUNI_O || hover.icon == ICO_SENSUNI_N || hover.icon == ICO_SENSUNI_S /*|| hover.icon == ICO_ARRIVEEVIDE || hover.icon == ICO_ARRIVEEPRIS*/;
+              SDL_bool isGround = (hover.icon >= ICO_SOL && hover.icon < ICO_SOLMAX) || hover.icon == ICO_SOLDALLE3 || hover.icon == ICO_SOLDALLE4 || hover.icon == ICO_SOLDALLE5 || hover.icon == ICO_TROU || hover.icon == ICO_TROUBOUCHE || hover.icon == ICO_SENSUNI_E || hover.icon == ICO_SENSUNI_O || hover.icon == ICO_SENSUNI_N || hover.icon == ICO_SENSUNI_S || hover.icon == ICO_UNSEUL /*|| hover.icon == ICO_ARRIVEEVIDE || hover.icon == ICO_ARRIVEEPRIS*/;
               // FIXME: ajouter la trappe fermée
               /* We need the original image (no redraw) */
               if (isGround)
