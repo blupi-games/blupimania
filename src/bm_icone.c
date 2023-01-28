@@ -291,7 +291,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
         {
           //dim.y -= posz;
           Pixmap mask;
-          Pt p = {0, 0};
+          Pt p0 = {0, 0};
 
           Pixmap pmtemp;
           pmtemp.texture = SDL_CreateTexture (
@@ -303,27 +303,25 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           pmtemp.orig.y = 0;
 
           GetIcon(&mask, ICO_SOLMASK, 1);
-          CopyPixel(&mask, p, &pmtemp, p, dim, 0);
+          CopyPixel(&mask, p0, &pmtemp, p0, dim, 0);
 
-          //cel.x--;
           /* Calcul la position du "toto" sans la chute */
-          Pt posAbs = {pos.y + POSYDRAW + LYICO - posz, pos.x + POSXDRAW + LXICO};
+          Pt absPos = {pos.y + POSYDRAW + LYICO - posz, pos.x + POSXDRAW + LXICO};
           /* Calcul la cellule où se situe le trou */
-          Pt posCel = GraToCel(posAbs);
+          Pt holeCel = GraToCel(absPos);
           // Récupère les coordonnées du trou
-          Pt _cel = CelToGra2(posCel, SDL_TRUE);
-          _cel.y -= PRYICO - 7; // -7 ??
-          _cel.x -= PLXICO + 1; // +1 ??
-
+          Pt holeCoords = CelToGra2(holeCel, SDL_TRUE);
+          holeCoords.y -= PRYICO - 7; // -7 ??
+          holeCoords.x -= PLXICO + 1; // +1 ??
 
           /* copie le fond dans le "masque" */
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_MOD);
-          CopyPixel(ppm, _cel, &pmtemp, p1, dim, 0);
+          CopyPixel(ppm, holeCoords, &pmtemp, p1, dim, 0);
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
 
           /* Evite de dessiner en dessus du masque */
-          Pt dim2 = dim;
-          dim2.y -= use.r.p1.y - _cel.y;
+          Pt cropDim = dim;
+          cropDim.y -= use.r.p1.y - holeCoords.y;
 
           /* Dessine le "toto" */
           CopyPixel								/* dessine la chair */
@@ -332,12 +330,12 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
                   p1,
                   ppm,								/* destination */
                   use.r.p1,
-                  dim2,
+                  cropDim,
                   MODEOR								/* mode */
           );
 
           /* Utilise le "masque" par dessus */
-          CopyPixel(&pmtemp, p, ppm, _cel, dim, 0);
+          CopyPixel(&pmtemp, p0, ppm, holeCoords, dim, 0);
 
           SDL_DestroyTexture(pmtemp.texture);
         }
