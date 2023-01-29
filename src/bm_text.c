@@ -501,16 +501,19 @@ void EditAff (void)
 
 	DrawFillRect(0, chrect, MODELOAD, COLORBLANC);	/* efface la ligne */
 
-        if ( begin > 0 )
-	{
-		pos.x = chrect.p1.x;
-		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
-	}
-
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
 		if ( pos.x >= chrect.p2.x-10 )  break;
 		DrawAccent(0, &pos, pchaine[i], MODELOAD);		/* affiche un caractre */
+	}
+
+        if ( begin > 0 )
+	{
+		pos.x = chrect.p1.x;
+                rect = chrect;
+                rect.p2.x = rect.p1.x + LgChar(127);
+                DrawFillRect(0, rect, 0, COLORBLANC);
+		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
 	}
 #if 0
 	if ( pos.x < chrect.p2.x )
