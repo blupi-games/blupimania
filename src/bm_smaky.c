@@ -1399,6 +1399,48 @@ void CloseGraDesc (Pixmap *ppm)
 
 void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 {
+  if (!ppm)				/* source dans l'cran ? */
+  {
+    p1.x += origine.x;
+    p1.y += origine.y;
+    p2.x += origine.x;
+    p2.y += origine.y;
+  }
+  else
+  {
+    p1.x += ppm->orig.x;
+    p1.y += ppm->orig.y;
+    p2.x += ppm->orig.x;
+    p2.y += ppm->orig.y;
+  }
+
+  static const SDL_Color colors[] = {
+    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
+    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
+    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
+    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
+    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
+    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
+    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
+    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
+    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
+    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
+    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
+    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
+    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
+    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
+    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
+    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
+  };
+
+  SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
+  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
+  SDL_RenderDrawLine(g_renderer, p1.x, p1.y, p2.x, p2.y);
+  SDL_SetRenderTarget(g_renderer, target);
+
+
 #if 0
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;

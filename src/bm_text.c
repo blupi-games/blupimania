@@ -675,7 +675,7 @@ char AccentUnder (char key, char accent)
 	Inverse le curseur "|".
  */
 
-void InvCurs (void)
+void InvCurs (short color)
 {
 	Pt		p1, p2;
 
@@ -686,7 +686,7 @@ void InvCurs (void)
 	p2.x = cx - 1;
 	p2.y = chrect.p2.y;
 
-	DrawLine(0, p1, p2, MODEXOR, COLORNOIR);	/* inverse la droite verticale */
+	DrawLine(0, p1, p2, MODEXOR, color);	/* inverse la droite verticale */
 }
 
 /* ------- */
@@ -701,7 +701,7 @@ void ClrCurs (void)
 {
 	if ( ifcx == 0 )  return;
 
-	InvCurs();					/* efface le curseur */
+	InvCurs(COLORBLANC);					/* efface le curseur */
 	ifcx = 0;
 }
 
@@ -717,7 +717,7 @@ void SetCurs (void)
 {
 	if ( ifcx != 0 )  return;
 
-	InvCurs();					/* allume le curseur */
+	InvCurs(COLORNOIR);					/* allume le curseur */
 	ifcx = 1;
 }
 

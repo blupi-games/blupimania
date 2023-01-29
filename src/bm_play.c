@@ -2405,7 +2405,7 @@ void JoueurEditOpen (void)
 	rect.p1.x = 299;
 	rect.p1.y = LYIMAGE()-297+fj.joueur*40;
 	rect.p2.x = 299+180;
-	rect.p2.y = rect.p1.y+23;
+	rect.p2.y = rect.p1.y+22;
 	EditOpen(fj.nom[fj.joueur], MAXNOMJ, rect);
 
 	   g_typetext = 1;
