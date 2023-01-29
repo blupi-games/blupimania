@@ -730,7 +730,11 @@ SDLEventToSmakyKey (const SDL_Event * event)
         if ((event->key.keysym.sym >= SDLK_a && event->key.keysym.sym <= SDLK_z)
             || (event->key.keysym.sym >= SDLK_0 && event->key.keysym.sym <= SDLK_9))
         {
-          key = (char) event->key.keysym.sym;
+          if (event->key.keysym.mod & KMOD_SHIFT){
+              key = (char) toupper(event->key.keysym.sym);
+          } else {
+              key = (char) event->key.keysym.sym;
+          }
           break;
         }
         switch (event->key.keysym.sym)
