@@ -728,7 +728,8 @@ SDLEventToSmakyKey (const SDL_Event * event)
     {
       case SDL_KEYDOWN:
         if ((event->key.keysym.sym >= SDLK_a && event->key.keysym.sym <= SDLK_z)
-            || (event->key.keysym.sym >= SDLK_0 && event->key.keysym.sym <= SDLK_9))
+            || (event->key.keysym.sym >= SDLK_0 && event->key.keysym.sym <= SDLK_9)
+            || event->key.keysym.sym == SDLK_SPACE)
         {
           if (event->key.keysym.mod & KMOD_SHIFT){
               key = (char) toupper(event->key.keysym.sym);
@@ -746,7 +747,7 @@ SDLEventToSmakyKey (const SDL_Event * event)
             key = KEYHOME;
             break;
           case SDLK_BACKSPACE:
-            key = KEYUNDO;
+            key = KEYDEL;
             break;
           case SDLK_RETURN:
             key = KEYRETURN;
