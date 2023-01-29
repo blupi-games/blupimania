@@ -501,6 +501,12 @@ void EditAff (void)
 
 	DrawFillRect(0, chrect, MODELOAD, COLORBLANC);	/* efface la ligne */
 
+        if ( begin > 0 )
+	{
+		pos.x = chrect.p1.x;
+		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
+	}
+
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
 		if ( pos.x >= chrect.p2.x-10 )  break;
@@ -514,11 +520,6 @@ void EditAff (void)
 		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface la fin de la ligne */
 	}
 #endif
-	if ( begin > 0 )
-	{
-		pos.x = chrect.p1.x;
-		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
-	}
 
 	if ( pchaine[i] != 0 )
 	{
