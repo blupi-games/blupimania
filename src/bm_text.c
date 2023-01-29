@@ -499,19 +499,21 @@ void EditAff (void)
 	pos.x = chrect.p1.x;
 	pos.y = chrect.p1.y + (chrect.p2.y-chrect.p1.y)/2 + charsize/2 - 1;
 
+	DrawFillRect(0, chrect, MODELOAD, COLORBLANC);	/* efface la ligne */
+
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
 		if ( pos.x >= chrect.p2.x-10 )  break;
 		DrawAccent(0, &pos, pchaine[i], MODELOAD);		/* affiche un caractre */
 	}
-
+#if 0
 	if ( pos.x < chrect.p2.x )
 	{
 		rect = chrect;
 		rect.p1.x = pos.x;
 		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface la fin de la ligne */
 	}
-
+#endif
 	if ( begin > 0 )
 	{
 		pos.x = chrect.p1.x;
