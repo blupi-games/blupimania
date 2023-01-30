@@ -576,14 +576,14 @@ fprintf(stderr, "%d %d %d:%d\n", rang, key, pos.x, pos.y);
 		}
 
 		new = GetSButtonRang(rang, pos);
-		if ( new != old && new >= 0 )
+		//if ( new != old && new >= 0 )
 		{
 			DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 0);
 			old = new;
 			DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 1);
 		}
 		if ( key == KEYCLICREL )  goto next;
-		return 0;
+		return 1;
 	}
 next:
 	if ( old >= 0 )  tspal[rang] = old;
