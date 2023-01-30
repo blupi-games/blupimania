@@ -1518,6 +1518,37 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 
 void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 {
+  SDL_Rect _rect;
+  _rect.x = rect.p1.x;
+  _rect.y = rect.p1.y;
+  _rect.w = rect.p2.x - rect.p1.x;
+  _rect.h = rect.p2.y - rect.p1.y;
+
+  static const SDL_Color colors[] = {
+    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
+    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
+    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
+    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
+    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
+    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
+    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
+    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
+    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
+    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
+    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
+    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
+    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
+    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
+    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
+    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
+  };
+
+  SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
+  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_RenderDrawRect(g_renderer, &_rect);
+  SDL_SetRenderTarget(g_renderer, target);
+
 #if 0
 	u_long		csf,ccf;			/* sauvetage des couleurs */
 	Pt			o;
