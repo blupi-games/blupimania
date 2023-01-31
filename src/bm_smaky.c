@@ -2576,7 +2576,7 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 
 	filename[strlen(filename) - 5] = file;
 	//if ( file >= 'a' )  n = 6;
-	channel = fopen(filename+n, "ab");	/* ouvre le fichier */
+	channel = fopen(filename+n, "wb");	/* ouvre le fichier */
 	if ( channel == NULL )  return errno;
 
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
