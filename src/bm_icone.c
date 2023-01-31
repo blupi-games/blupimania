@@ -286,8 +286,12 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
         dim.y = use.r.p2.y - use.r.p1.y;
         dim.x = use.r.p2.x - use.r.p1.x;
 
-        /* crop blupi (or tank, etc) when it falls */
-        if ((i == 30 || i == ICO_CAISSEV) && posz > 0)
+        /* crop blupi (or tank, etc) when it falls
+         * 28..31 blupi is falling
+         * 47 baloon
+         * 63 blupi baloon
+         */
+        if (((i >= 28 && i <= 31) || i == 47 || i == 63 || i == ICO_CAISSEV) && posz > 0)
         {
           //dim.y -= posz;
           Pixmap mask;
