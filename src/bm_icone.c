@@ -287,11 +287,12 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
         dim.x = use.r.p2.x - use.r.p1.x;
 
         /* crop blupi (or tank, etc) when it falls
+         * 15..15 blupi drinks too much
          * 28..31 blupi is falling
          * 47 baloon
          * 63 blupi baloon
          */
-        if (((i >= 28 && i <= 31) || i == 47 || i == 63 || i == ICO_CAISSEV) && posz > 0)
+        if (((i >= 14 && i <= 15) || (i >= 28 && i <= 31) || i == 47 || i == 63 || i == ICO_CAISSE || i == ICO_CAISSEV || i == ICO_CAISSEO || i == ICO_CAISSEV || i == ICO_CAISSEG || (i >= ICO_TANK_E && i <= ICO_TANK_S) || i == ICO_TANK_X || i == ICO_TANK_EO || i == ICO_TANK_NS) && posz > 0)
         {
           //dim.y -= posz;
           Pixmap mask;
