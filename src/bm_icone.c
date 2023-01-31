@@ -726,6 +726,8 @@ void IconDrawClose (short bdraw)
                                 hover.dim,
                                 MODEOR								/* mode */
                         );
+
+                        GivePixmap(&tmp);
                 }
 
 		r.r.p1.y=0;
