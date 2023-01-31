@@ -1869,7 +1869,7 @@ short GetIconCaisseSSol (Pt cel)
 	short		icon;
 
 	icon = imonde[cel.y][cel.x];
-	if ( icon > ICO_SOLMAX &&
+	if ( /*icon > ICO_SOLMAX &&*/
 		 (icon < ICO_SENSUNI_S || icon > ICO_SENSUNI_O) &&
 		 (icon < ICO_PORTEO_EO || icon > ICO_PORTEO_EO+5) &&
 		 (icon < ICO_ACCEL_S || icon > ICO_ACCEL_O) &&
