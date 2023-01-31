@@ -693,7 +693,7 @@ short JoueurWrite (void)
 {
 	short		err;
 
-	err = FileWrite(&fj, 0, sizeof(Joueur), GetDemo()?'X':'Z');
+	err = FileWrite(&fj, 0, sizeof(Joueur), GetDemo()?'x':'z');
 	return err;
 }
 
