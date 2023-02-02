@@ -2357,6 +2357,7 @@ short StopPartie (short key, Pt pos)
           CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
           open = SDL_TRUE;
           g_stopMenu = SDL_TRUE;
+          key = 0;
         }
 
 	StopDrawIcon();									/* dessine les icnes */
@@ -4506,7 +4507,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 {
 	char		ev;
 	Pt			ovisu;
-	short		term, max, delai, last;
+	short		term = 1, max, delai, last;
 	KeyStatus	keystatus;
 	Rectangle	rect;
 
@@ -4614,12 +4615,13 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 			if ( EditEvent(key, pos) >= 0 )  return 1;
 		}
 
-		term = ExecuteAction(key, pos);
+		if (!g_stopMenu)
+                  term = ExecuteAction(key, pos);
 
-		if ( term == 2 &&
+		if ( (term == 2 || g_stopMenu) &&
 			 StopPartie(key, pos) == KEYHOME )  return 2;
 
-		if ( term != 0 )
+		if ( term != 0 && !g_stopMenu )
 		{
 #ifdef __SMAKY__
 			MusicBackground();				/* gre la musique de fond */
