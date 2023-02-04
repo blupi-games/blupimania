@@ -10,7 +10,9 @@
 #include <errno.h>
 #include <math.h>
 
+#include <SDL2/SDL_mixer.h>
 #include "bm.h"
+#include "actions.h"
 
 
 
@@ -107,6 +109,10 @@ static KeyStatus	keystatus;					/* tat des flches du clavier */
 static char			demo = 0;					/* 1 = mode dmo */
 
 static Pixmap		pmsave = {0,0,0,0,0,0,0};	/* pixmap sauv en mmoire tendue (XMS) */
+
+static short g_soundVolume = 0;
+static short g_musicVolume = 0;
+static Mix_Chunk *g_sounds[SOUND_MAX] = {0};
 
 
 /* Sauvetage d'une partie du descripteur de fentre */
@@ -287,6 +293,8 @@ void MusicStart (short song)
 
 void MusicStop (void)
 {
+  for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)
+    Mix_HaltChannel(i);
 }
 
 
@@ -302,6 +310,7 @@ void PlayNoiseVolume (short volume)
 {
 	if ( volume == 0 )  soundon = 0;
 	else                soundon = 1;
+  g_soundVolume = volume * 10;
 }
 
 /* =============== */
@@ -314,6 +323,7 @@ void PlayNoiseVolume (short volume)
 
 void PlayMusicVolume (short volume)
 {
+  g_musicVolume = volume * 10;
 }
 
 
@@ -328,7 +338,7 @@ void PlayMusicVolume (short volume)
 
 short IfPlayReady (void)
 {
-	if ( filsson == 0 )  return 1;
+	/*if ( filsson == 0 )*/  return 1;
 	return 0;
 }
 
@@ -362,9 +372,22 @@ void PlaySound (short sound)
 {
 	if ( soundon == 0 )  return;
 	filsson = sound;			/* donne le numro au processus fils */
+
+  if (sound < 1 || sound >= SOUND_MAX)
+    return;
+
+  if (!g_sounds[sound])
+    return;
+
+  Mix_Volume (sound, g_soundVolume);
+  Mix_PlayChannel(sound, g_sounds[sound], 0);
 }
 
-
+SDL_bool
+SoundPlaying(short sound)
+{
+  return Mix_Playing(sound);
+}
 
 
 /* ======== */
@@ -2441,6 +2464,111 @@ static int LoadIcon(void)
 	return 0;
 }
 
+static int
+InitSoundSystem()
+{
+  if (
+    Mix_OpenAudio (44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1)
+    return -1;
+
+  Mix_AllocateChannels (SOUND_MAX);
+  return 0;
+}
+
+/**
+ * Load sounds
+ */
+static int
+LoadSounds (void)
+{
+  static const char* sounds[] = {
+    NULL,
+
+    /* sounds */
+    "saut1.wav",
+    "saut2.wav",
+    "trop_bu.wav",
+    "tombe.wav",
+    "trouve_b.wav",
+    "trouve_c.wav",
+    "boit.wav",
+    "magie.wav",
+    "electro.wav",
+    "depart.wav",
+    "repos.wav",
+    "dort.wav",
+    "glisse.wav",
+    "tourte.wav",
+    "lunettes.wav",
+    "creve_ba.wav",
+    "livre.wav",
+    "malade.wav",
+    "pousse.wav",
+    "sens_uni.wav",
+    "porte_ou.wav",
+    "porte_bl.wav",
+    "un_seul.wav",
+    "vitre_ca.wav",
+    "bombe.wav",
+    "non-non.wav",
+    "clic.wav",
+    "tombe_ca.wav",
+    "tombe_st.wav",
+    "tombe_bo.wav",
+    "action_d.wav",
+    "mechant.wav",
+    "passe_mu.wav",
+    "aimant.wav",
+    "porte_b2.wav",
+    "machine.wav",
+    "oiseaux.wav",
+    "burp.wav",
+    "tombe_ma.wav",
+
+    /* jingles */
+    "funk_1-1.wav",
+    "funk_1-2.wav",
+    "funk_1-3.wav",
+    "funk_1-b.wav",
+    "funk_2-1.wav",
+    "funk_2-2.wav",
+    "funk_2-3.wav",
+    "funk_2-b.wav",
+    "dixie_1-1.wav",
+    "dixie_1-2.wav",
+    "dixie_1-3.wav",
+    "dixie_1-b.wav",
+    "rock_1-1.wav",
+    "rock_1-2.wav",
+    "rock_1-3.wav",
+    "rock_1-b.wav",
+  };
+
+  for (int i = 1; i < countof(sounds); ++i)
+  {
+    char filename[4096];
+    snprintf(filename, sizeof(filename), "%s../share/blupimania/sound/%s", SDL_GetBasePath (), sounds[i]);
+    Mix_Chunk * chunk = Mix_LoadWAV(filename);
+    if (!chunk)
+      continue;
+
+    g_sounds[i] = chunk;
+  }
+
+  return 0;
+}
+
+void
+UnloadSounds (void)
+{
+  for (int i = 0; i < countof (g_sounds); ++i)
+    if (g_sounds[i])
+    {
+      Mix_FreeChunk(g_sounds[i]);
+      g_sounds[i] = NULL;
+    }
+}
+
 
 /* ------ */
 /* AfMenu */
@@ -2986,6 +3114,9 @@ int OpenMachine(void)
 	err = N_cretask(FilsSound, 200, 10, "BLUPIX_PLAY", 0, 0, &pid, &pino);
 #endif
 	int err = LoadIcon();					/* charge l'image des icnes */
+
+        InitSoundSystem();
+        LoadSounds();
 #if 0
 	if ( err )  FatalLoad("icnes", err);
 
@@ -3014,6 +3145,7 @@ int OpenMachine(void)
 
 void CloseMachine(void)
 {
+  UnloadSounds();
 #if 0
 	short		max;
 

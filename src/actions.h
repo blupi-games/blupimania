@@ -267,22 +267,24 @@ typedef enum
 	SOUND_BURP			= 38,	/* toto a trop bu */
 	SOUND_CAISSEG		= 39,	/* machine qui tombe */
 
-	SOUND_MUSIC11		= 101,	/* musique 1-1 */
-	SOUND_MUSIC12		= 102,	/* musique 1-2 */
-	SOUND_MUSIC13		= 103,	/* musique 1-3 */
-	SOUND_MUSIC14		= 104,	/* musique 1-4 */
-	SOUND_MUSIC21		= 105,	/* musique 2-1 */
-	SOUND_MUSIC22		= 106,	/* musique 2-2 */
-	SOUND_MUSIC23		= 107,	/* musique 2-3 */
-	SOUND_MUSIC24		= 108,	/* musique 2-4 */
-	SOUND_MUSIC31		= 109,	/* musique 3-1 */
-	SOUND_MUSIC32		= 110,	/* musique 3-2 */
-	SOUND_MUSIC33		= 111,	/* musique 3-3 */
-	SOUND_MUSIC34		= 112,	/* musique 3-4 */
-	SOUND_MUSIC41		= 113,	/* musique 4-1 */
-	SOUND_MUSIC42		= 114,	/* musique 4-2 */
-	SOUND_MUSIC43		= 115,	/* musique 4-3 */
-	SOUND_MUSIC44		= 116	/* musique 4-4 */
+	SOUND_MUSIC11		= 40,	/* musique 1-1 */
+	SOUND_MUSIC12		= 41,	/* musique 1-2 */
+	SOUND_MUSIC13		= 42,	/* musique 1-3 */
+	SOUND_MUSIC14		= 43,	/* musique 1-4 */
+	SOUND_MUSIC21		= 44,	/* musique 2-1 */
+	SOUND_MUSIC22		= 45,	/* musique 2-2 */
+	SOUND_MUSIC23		= 46,	/* musique 2-3 */
+	SOUND_MUSIC24		= 47,	/* musique 2-4 */
+	SOUND_MUSIC31		= 48,	/* musique 3-1 */
+	SOUND_MUSIC32		= 49,	/* musique 3-2 */
+	SOUND_MUSIC33		= 50,	/* musique 3-3 */
+	SOUND_MUSIC34		= 51,	/* musique 3-4 */
+	SOUND_MUSIC41		= 52,	/* musique 4-1 */
+	SOUND_MUSIC42		= 53,	/* musique 4-2 */
+	SOUND_MUSIC43		= 54,	/* musique 4-3 */
+	SOUND_MUSIC44		= 55,	/* musique 4-4 */
+
+        SOUND_MAX = 56,
 }
 Sound;
 

@@ -408,9 +408,7 @@ static short tabpalette0[] =
 
 void PlayEvSound (short sound)
 {
-#if __SMAKY__
 	if ( musique != 0 )  return;		/* rien si musique en cours */
-#endif
 	PlaySound(sound);
 }
 
@@ -2341,16 +2339,14 @@ short StopPartie (short key, Pt pos)
 	Pt			p;
         static SDL_bool open = SDL_FALSE;
 
-	PlayEvSound(SOUND_CLIC);
-
 	spos.x = POSXDRAW+20;
 	spos.y = POSYDRAW+DIMYDRAW-LYICO-20;
 	sdim.x = LXICO+20+LXICO;
 	sdim.y = LYICO;
 
-
         if (open == SDL_FALSE)
         {
+          PlayEvSound(SOUND_CLIC);
 	  if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
           p.y = 0;
           p.x = 0;
@@ -4365,9 +4361,6 @@ short ExecuteAction (char event, Pt pos)
 }
 
 
-
-
-#if __SMAKY__
 /* Table pour les musiques de fond */
 /* ------------------------------- */
 
@@ -4395,6 +4388,10 @@ void MusicBackground (void)
 	short	n, sound;
 
 	if ( musique == 0 || !IfPlayReady() )  return;
+
+        for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)
+          if (SoundPlaying(i))
+            return;
 
 	while ( ptable[0] != 0 )
 	{
@@ -4427,8 +4424,6 @@ void MusicBackground (void)
 		ptable += 2;
 	}
 }
-#endif
-
 
 /* ======== */
 /* PlayInit */
@@ -4516,9 +4511,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 	if ( phase == PHASE_GENERIC )
 	{
-#if __SMAKY__
 		MusicBackground();						/* gère la musique de fond */
-#endif
                 if (next)
                   GenericNext();							/* anime le générique */
 		if ( key != 0 )
@@ -4623,9 +4616,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 		if ( term != 0 && !g_stopMenu )
 		{
-#ifdef __SMAKY__
 			MusicBackground();				/* gre la musique de fond */
-#endif
                         if (next)
                           AnimTracking(pos);				/* tracking de l'animation */
 		}

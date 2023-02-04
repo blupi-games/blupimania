@@ -458,6 +458,7 @@ void	PlayMusicVolume	(short volume);
 short	IfPlayReady		(void);
 void	PlaySoundLoop	(short mode);
 void	PlaySound		(short sound);
+SDL_bool SoundPlaying(short sound);
 
 void	OpenTime		(void);
 void	CloseTime		(short t);
@@ -511,3 +512,9 @@ short	MachinePartieRead	(long pos, char file);
 
 void	SetDemo			(char bDemo);
 char	GetDemo			(void);
+
+#ifdef _WIN32
+#define countof(a) _countof (a)
+#else /* _WIN32 */
+#define countof(a) (sizeof (a) / sizeof (*a))
+#endif /* !_WIN32 */
