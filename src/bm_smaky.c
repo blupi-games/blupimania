@@ -9,6 +9,7 @@
 #include <sys/file.h>
 #include <errno.h>
 #include <math.h>
+#include <time.h>
 
 #include <SDL2/SDL_mixer.h>
 #include "bm.h"
@@ -221,14 +222,14 @@ void StartRandom (short g, short mode)
 {
 	long		datebcd;
 
-	//if ( mode == 0 )
+	if ( mode == 0 )
 	{
 		nextrand[g] = 33554393;		/* grand nombre premier */
 	}
-	/*else
+	else
 	{
-		L_rdclock(&datebcd, &nextrand[g]);
-	}*/
+		nextrand[g] = time(NULL);
+	}
 }
 
 
