@@ -408,7 +408,7 @@ static short tabpalette0[] =
 
 void PlayEvSound (short sound)
 {
-	if ( musique != 0 )  return;		/* rien si musique en cours */
+	//if ( musique != 0 )  return;		/* rien si musique en cours */
 	PlaySound(sound);
 }
 
