@@ -1541,7 +1541,7 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 		 outil == ICO_OUTIL_TRACKSBAR )
 	{
 		DecorModif(cel, GetSol(cel, 1));
-		if ( !g_typeedit )  PlaySound(SOUND_ACTION);
+		if ( !g_typeedit )  PlaySound(SOUND_ACTION, &cel);
 		goto termine;
 	}
 
@@ -1634,42 +1634,42 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil == ICO_OUTIL_UNSEUL )		/* un seul toto ? */
 	{
 		DecorModif(cel, ICO_UNSEUL);
-		if ( !g_typeedit )  PlaySound(SOUND_UNSEUL);
+		if ( !g_typeedit )  PlaySound(SOUND_UNSEUL, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_AIMANT )		/* aimant ? */
 	{
 		DecorModif(cel, ICO_AIMANT);
-		if ( !g_typeedit )  PlaySound(SOUND_AIMANT);
+		if ( !g_typeedit )  PlaySound(SOUND_AIMANT, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_TROU )			/* trou ? */
 	{
 		DecorModif(cel, ICO_TROU);
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_GLISSE )		/* peau de banane ? */
 	{
 		DecorModif(cel, ICO_GLISSE);
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_MUR )			/* brique ? */
 	{
 		MurBuild(cel, 0);					/* met un mur */
-		if ( !g_typeedit )  PlaySound(SOUND_CAISSE);
+		if ( !g_typeedit )  PlaySound(SOUND_CAISSE, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_BARRIERE )		/* barrire ? */
 	{
 		MurBuild(cel, 1);					/* met une barrire */
-		if ( !g_typeedit )  PlaySound(SOUND_SAUT2);
+		if ( !g_typeedit )  PlaySound(SOUND_SAUT2, &cel);
 		goto termine;
 	}
 
@@ -1688,14 +1688,14 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil == ICO_OUTIL_PLANTEBAS )		/* fleur basse ? */
 	{
 		PutNewDecor(cel, ICO_PLANTEBAS, ICO_PLANTEBAS_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_PLANTE )		/* fleur haute ? */
 	{
 		PutNewDecor(cel, ICO_PLANTEHAUT, ICO_PLANTEHAUT_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 
@@ -1721,35 +1721,35 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil == ICO_OUTIL_ELECTROBAS )	/* lectronique basse ? */
 	{
 		PutNewDecor(cel, ICO_ELECTROBAS, ICO_ELECTROBAS_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_CAISSEO);
+		if ( !g_typeedit )  PlaySound(SOUND_CAISSEO, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_ELECTRO )		/* lectronique haute ? */
 	{
 		PutNewDecor(cel, ICO_ELECTROHAUT, ICO_ELECTROHAUT_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_CAISSEO);
+		if ( !g_typeedit )  PlaySound(SOUND_CAISSEO, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_TECHNO )		/* techno ? */
 	{
 		PutNewDecor(cel, ICO_TECHNO1, ICO_TECHNO1+10, 0, ICO_TECHNO1+5, 16-5);
-		if ( !g_typeedit )  PlaySound(SOUND_CAISSEV);
+		if ( !g_typeedit )  PlaySound(SOUND_CAISSEV, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_OBSTACLE )		/* obstacle ? */
 	{
 		PutNewDecor(cel, ICO_OBSTACLE, ICO_OBSTACLE_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_SAUT2);
+		if ( !g_typeedit )  PlaySound(SOUND_SAUT2, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_MEUBLE )		/* meuble ? */
 	{
 		PutNewDecor(cel, ICO_MEUBLE, ICO_MEUBLE_D+1, 0, 0, 0);
-		if ( !g_typeedit )  PlaySound(SOUND_SAUT2);
+		if ( !g_typeedit )  PlaySound(SOUND_SAUT2, &cel);
 		goto termine;
 	}
 
@@ -1768,7 +1768,7 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil == ICO_OUTIL_VISION )		/* lunettes ? */
 	{
 		DecorModif(cel, ICO_LUNETTES);		/* met des lunettes */
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 
@@ -1779,14 +1779,14 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 		else                          init = ICO_TABLEBOIT;
 		if ( !g_typeedit )              init = ICO_TABLEBOIT;
 		DecorModif(cel, init);				/* met une table avec bouteille */
-		if ( !g_typeedit )  PlaySound(SOUND_SAUT2);
+		if ( !g_typeedit )  PlaySound(SOUND_SAUT2, &cel);
 		goto termine;
 	}
 
 	if ( outil == ICO_OUTIL_LIVRE )			/* livre ? */
 	{
 		DecorModif(cel, ICO_LIVRE);			/* met un livre */
-		if ( !g_typeedit )  PlaySound(SOUND_SAUT2);
+		if ( !g_typeedit )  PlaySound(SOUND_SAUT2, &cel);
 		goto termine;
 	}
 
@@ -1839,7 +1839,7 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	if ( outil == ICO_OUTIL_MAGIC )			/* baguette magique ? */
 	{
 		DecorModif(cel, ICO_MAGIC);			/* met un chapeau de magicien */
-		if ( !g_typeedit )  PlaySound(SOUND_CLIC);
+		if ( !g_typeedit )  PlaySound(SOUND_CLIC, &cel);
 		goto termine;
 	}
 

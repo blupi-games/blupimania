@@ -853,7 +853,8 @@ short PaletteEvent (short event, Pt pos)
         if (_rang == -1)
           return 1;
 
-	PlaySound(SOUND_CLIC);
+        if (event == KEYCLIC)
+          PlaySound(SOUND_CLIC, NULL);
 
 	init = press;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
@@ -1231,7 +1232,7 @@ short PaletteEditEvent (short palette[], short event, Pt pos)
 
 	if ( type == 0 )							/* clic dans l'icne ? */
 	{
-		PlaySound(SOUND_CLIC);
+		PlaySound(SOUND_CLIC, NULL);
 
 		teditetat[y][x] ^= 1;					/* inverse l'tat du bouton */
 		DrawButton(pb, tediticon[y][x], teditetat[y][x]);

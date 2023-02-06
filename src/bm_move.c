@@ -201,7 +201,7 @@ void AutoInit (Auto *p, short idata, short *pdata, short size)
 	Retourne 1 (true) si c'est fini.
  */
 
-short AutoNext (Auto *p, short result[])
+short AutoNext (Auto *p, short result[], const Pt * cel)
 {
 	short		c;
 	short		i;
@@ -213,7 +213,7 @@ short AutoNext (Auto *p, short result[])
 		if ( c == OPSOUND )
 		{
 			p->offset ++;
-			PlaySound(p->pdata[p->offset++]);
+			PlaySound(p->pdata[p->offset++], cel);
 			c = p->pdata[p->offset];
 		}
 
@@ -679,7 +679,7 @@ void ObjetNextOne (short i)
 
 	if ( objet[i].status == STVIDE )  return;
 
-	if ( AutoNext(&objet[i].autoicon, result) )
+	if ( AutoNext(&objet[i].autoicon, result, &objet[i].cel) )
 	{
 		objet[i].status = STVIDE;
 	}
@@ -802,7 +802,7 @@ short CalcMovie(short i, short result[])
 
 	if ( toto[i].movemax == 0 )							/* mouvement selon table ? */
 	{
-		return AutoNext(&toto[i].automove, result);		/* oui -> mouvement selon automate */
+		return AutoNext(&toto[i].automove, result, &toto[i].poscel);		/* oui -> mouvement selon automate */
 	}
 
 	if ( toto[i].moverang >= toto[i].movemax )  return 1;
@@ -1751,7 +1751,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 	if ( obstacle == ICO_AIMANT )					/* arrive  un aimant ? */
 	{
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve l'aimant du dcor */
-		PlaySound(SOUND_AIMANT);
+		PlaySound(SOUND_AIMANT, &toto[i].poscel);
 		NewAction(i, orientation, 0);
 		return 1;
 	}
@@ -1982,12 +1982,12 @@ short SpecAction(short i, short obstacle, Pt testcel)
 						toto[rang].icon = ICO_CAISSEV;
 						redraw = 1;								/* faudra tout redessiner */
 					}
-					if ( GetRandom(1,0,5) == 0 )  PlaySound(SOUND_POUSSE);
+					if ( GetRandom(1,0,5) == 0 )  PlaySound(SOUND_POUSSE, &toto[i].poscel);
 				}
 				else
 				{
 					if ( obstacle == ICO_CAISSE &&
-						 GetRandom(1,0,5) == 0 )  PlaySound(SOUND_POUSSE);
+						 GetRandom(1,0,5) == 0 )  PlaySound(SOUND_POUSSE, &toto[i].poscel);
 				}
 
 				if ( caisseocel.x == testcel.x && caisseocel.y == testcel.y )
@@ -2038,7 +2038,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		if ( toto[i].joueur )
 		{
 			NewAction(i, orientation+AC_NPOUSSE_E-AC_MARCHE_E, 0);
-			PlaySound(SOUND_POUSSE);
+			PlaySound(SOUND_POUSSE, &toto[i].poscel);
 			return 1;
 		}
 		nonpousse:
@@ -2100,7 +2100,7 @@ short SpecAction(short i, short obstacle, Pt testcel)
 		 ((obstacle >= ICO_MURHAUT && obstacle <= ICO_MURHAUT_D) ||
 		  (obstacle >= ICO_MURBAS  && obstacle <= ICO_MURBAS_D)) )
 	{
-		PlaySound(SOUND_PASSEMUR);
+		PlaySound(SOUND_PASSEMUR, &toto[i].poscel);
 		NewAction(i, orientation, 0);				/* toto traverse les murs */
 		return 1;
 	}
@@ -2480,18 +2480,18 @@ short VisionAction (short i, Action *pnextaction)
 	un obstacle rencontr.
  */
 
-void SoundAmbiance (short obstacle)
+void SoundAmbiance (short obstacle, const Pt * cel)
 {
 	if ( obstacle == ICO_TECHNO1+1 || obstacle == ICO_TECHNO1+2 ||
 		 obstacle == ICO_TECHNO1+3 ||
 		 obstacle == ICO_TECHNO2+1 || obstacle == ICO_TECHNO2+2 )
 	{
-		PlaySound(SOUND_MACHINE);
+		PlaySound(SOUND_MACHINE, cel);
 	}
 
 	if ( obstacle >= ICO_PLANTEHAUT && obstacle <= ICO_PLANTEHAUT_D )
 	{
-		PlaySound(SOUND_OISEAUX);
+		PlaySound(SOUND_OISEAUX, cel);
 	}
 }
 
@@ -2543,7 +2543,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			NewAction(i, orientation, 0);	/* continue d'avancer */
 			return;
 		}
-		SoundAmbiance(obstacle);
+		SoundAmbiance(obstacle, &toto[i].poscel);
 		NewAction(i, orientation + AC_STOP_E-AC_MARCHE_E, 0);
 		return;
 	}
@@ -2638,7 +2638,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			NewAction(i, AC_TOURNE_ON, 0);
 			return;
 		}
-		SoundAmbiance(obstacle);
+		SoundAmbiance(obstacle, &toto[i].poscel);
 	}
 
 	if ( keystatus == STDOWN )				/* va en bas */
@@ -2663,7 +2663,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			NewAction(i, AC_TOURNE_NE, 0);
 			return;
 		}
-		SoundAmbiance(obstacle);
+		SoundAmbiance(obstacle, &toto[i].poscel);
 	}
 
 	if ( keystatus == STLEFT )				/* va  gauche */
@@ -2688,7 +2688,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			NewAction(i, AC_TOURNE_ES, 0);
 			return;
 		}
-		SoundAmbiance(obstacle);
+		SoundAmbiance(obstacle, &toto[i].poscel);
 	}
 
 	if ( keystatus == STUP )				/* va en haut */
@@ -2713,7 +2713,7 @@ void JoueurAction (short i, char event, Action orientation, Pt testcel)
 			NewAction(i, AC_TOURNE_SO, 0);
 			return;
 		}
-		SoundAmbiance(obstacle);
+		SoundAmbiance(obstacle, &toto[i].poscel);
 	}
 
 	if ( obstacle == 0 && keystatus != 0 )
@@ -3121,7 +3121,7 @@ void NextAction(char event, short i)
 		testcel.x = 2*toto[i].poscela.x - toto[i].poscel.x;
 		testcel.y = 2*toto[i].poscela.y - toto[i].poscel.y;
 		obstacle = GetObstacle(testcel, 0);
-		SoundAmbiance(obstacle);				/* v. son d'ambiance */
+		SoundAmbiance(obstacle, &toto[i].poscel);				/* v. son d'ambiance */
 	}
 
 	if ( (toto[i].poscela.x != toto[i].poscel.x ||
@@ -3287,7 +3287,7 @@ void NextAction(char event, short i)
 					return;								/* la machine continue */
 				}
 			}
-			PlaySound(SOUND_CAISSEV);
+			PlaySound(SOUND_CAISSEV, &toto[i].poscel);
 			DecorModif(toto[i].poscel, ICO_CAISSEG);	/* remet la caisse fixe */
 			toto[i].status = STVIDE;					/* ce toto n'existe plus */
 			nbtoto --;
@@ -3336,7 +3336,7 @@ void NextAction(char event, short i)
 		 DecorGetCel(toto[i].poscel) == ICO_AIMANT )
 	{
 		DecorModif(testcel, DecorGetInitCel(testcel));	/* enlve l'aimant du dcor */
-		PlaySound(SOUND_AIMANT);
+		PlaySound(SOUND_AIMANT, &toto[i].poscel);
 	}
 
 	switch( GetOrientation(toto[i].action) )
@@ -3428,7 +3428,7 @@ void NextAction(char event, short i)
 			if ( toto[i].mechant == 0 &&
 				 toto[i].tank == 0 )
 			{
-				SoundAmbiance(obstacle);			/* v. son d'ambiance */
+				SoundAmbiance(obstacle, &toto[i].poscel);			/* v. son d'ambiance */
 			}
 			TourneAction(i);						/* tourne si y'a rien d'autre  faire */
 		}
@@ -3816,7 +3816,7 @@ short MoveNext (char event, Pt pmouse)
 			toto[i].invincible --;					/* l'invincibilit diminue un peu */
 		}
 
-		AutoNext(&toto[i].autoicon, result);		/* cherche l'icne suivante */
+		AutoNext(&toto[i].autoicon, result, &toto[i].poscel);		/* cherche l'icne suivante */
 		if ( toto[i].mechant == 0 ||
 			 result[0] < 16 || result[0] > 19 )
 		{

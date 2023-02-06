@@ -369,7 +369,7 @@ void PlaySoundLoop (short mode)
 	Fait entendre un bruit quelconque.
  */
 
-void PlaySound (short sound)
+void PlaySound (short sound, const Pt * cel)
 {
 	if ( soundon == 0 )  return;
 	filsson = sound;			/* donne le numro au processus fils */
@@ -380,7 +380,60 @@ void PlaySound (short sound)
   if (!g_sounds[sound])
     return;
 
-  Mix_Volume (sound, g_soundVolume);
+  Sint32 volume = g_soundVolume;
+
+  if (cel)
+  {
+    Pt pos = CelToGra2(*cel, SDL_TRUE);
+    pos.x += LXICO / 2;
+    pos.y += LYICO * 2;
+    fprintf(stderr, "@@@ %d:%d @@@\n", pos.x, pos.y);
+    Sint32 volumex, volumey;
+    Uint8 panRight, panLeft;
+    volumex = g_soundVolume;
+    volumey = g_soundVolume;
+
+    if (pos.x < 0)
+    {
+      panRight = 64;
+      panLeft  = 255;
+      volumex += pos.x;
+      if (volumex < 0)
+        volumex = 25;
+    }
+    else if (pos.x > DIMXDRAW)
+    {
+      panRight = 255;
+      panLeft  = 64;
+      volumex -= pos.x - DIMXDRAW;
+      if (volumex < 0)
+        volumex = 25;
+    }
+    else
+    {
+      panRight = 255 * (Uint16) (pos.x) / DIMXDRAW;
+      panLeft  = 255 - panRight;
+    }
+
+    if (pos.y < 0)
+    {
+      volumey += pos.y;
+      if (volumey < 0)
+        volumey = 25;
+    }
+    else if (pos.y > DIMYDRAW)
+    {
+      volumey -= pos.y - DIMYDRAW;
+      if (volumey < 0)
+        volumey = 25;
+    }
+
+    volume = volumex < volumey ? volumex : volumey;
+
+    Mix_SetPanning (sound, panLeft, panRight);
+  }
+
+  Mix_Volume (sound, volume);
   Mix_PlayChannel(sound, g_sounds[sound], 0);
 }
 

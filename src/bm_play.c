@@ -409,7 +409,7 @@ static short tabpalette0[] =
 void PlayEvSound (short sound)
 {
 	//if ( musique != 0 )  return;		/* rien si musique en cours */
-	PlaySound(sound);
+	PlaySound(sound, NULL);
 }
 
 
@@ -2204,6 +2204,7 @@ void PartieDisque (short key, Pt pos)
 
         if (open == SDL_FALSE)
         {
+          PlayEvSound(SOUND_CLIC);
           if ( mode != KEYLOAD )  PartieDrawIcon(KEYSAVE);	/* dessine l'icne */
           if ( mode != KEYSAVE )  PartieDrawIcon(KEYLOAD);	/* dessine l'icne */
           open = SDL_TRUE;
@@ -2225,24 +2226,26 @@ void PartieDisque (short key, Pt pos)
 	}
 
 next:
-	PlayEvSound(SOUND_CLIC);
         open = SDL_FALSE;
         g_saveMenu = SDL_FALSE;
 
 	if ( mode != KEYLOAD && key <= KEYF1 && key >= KEYF4 )
 	{
+          PlayEvSound(SOUND_CLIC);
 		PartieDrawIcon(-KEYSAVE);					/* dessine l'icne d'attente */
 		PartieSauve(-key+KEYF1);					/* sauve la partie */
 	}
 
 	if ( mode == KEYSAVE && key >= '1' && key <= '4' )
 	{
+          PlayEvSound(SOUND_CLIC);
 		PartieDrawIcon(-KEYSAVE);					/* dessine l'icne d'attente */
 		PartieSauve(key-'1');						/* sauve la partie */
 	}
 
 	if ( mode != KEYSAVE && key >= '1' && key <= '4' )
 	{
+          PlayEvSound(SOUND_CLIC);
 		PartieDrawIcon(-KEYLOAD);					/* dessine l'icne d'attente */
 		PartiePrend(key-'1');						/* reprend une partie */
 	}
@@ -4303,7 +4306,7 @@ short ExecuteAction (char event, Pt pos)
 		fj.noisevolume ++;
 		PlayNoiseVolume(fj.noisevolume);
 		DrawBruitage();
-		PlaySound(SOUND_MAGIE);
+		PlaySound(SOUND_MAGIE, NULL);
 		return 0;
 	}
 
@@ -4313,7 +4316,7 @@ short ExecuteAction (char event, Pt pos)
 		fj.noisevolume --;
 		PlayNoiseVolume(fj.noisevolume);
 		DrawBruitage();
-		PlaySound(SOUND_MAGIE);
+		PlaySound(SOUND_MAGIE, NULL);
 		return 0;
 	}
 
@@ -4418,7 +4421,7 @@ void MusicBackground (void)
 			lastaccord = sound;
 			if ( sound != 0 )  sound --;					/* accord de base plus souvent */
 
-			PlaySound(ptable[1]+sound);
+			PlaySound(ptable[1]+sound, NULL);
 			return;
 		}
 		ptable += 2;
@@ -4567,7 +4570,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 							                 g_passnice   = 0;
 							                 g_passhole   = 0;
 					}
-					PlaySound(SOUND_MAGIE);
+					PlaySound(SOUND_MAGIE, NULL);
 					for ( max=0 ; max<10 ; max++ )
 					{
 						rect.p1.x = 0;
@@ -4671,7 +4674,6 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		if ( g_saveMenu || (g_typeedit == 0 &&
 			 (key == KEYSAVE || key == KEYLOAD || key == KEYIO)) )
 		{
-			PlayEvSound(SOUND_CLIC);
 			PartieDisque(key, pos);						/* prend/sauve la partie en cours ... */
 			return 1;
 		}
@@ -4934,7 +4936,7 @@ void FatalBreak (short err)
 static void PlayRelease (void)
 {
 	StartRandom(0, 1);
-	PlaySound(GetRandom(0, SOUND_SAUT1, SOUND_CAISSEG+1));
+	PlaySound(GetRandom(0, SOUND_SAUT1, SOUND_CAISSEG+1), NULL);
 	HideMouse();
 	OpenTime();
 	CloseTime(130);

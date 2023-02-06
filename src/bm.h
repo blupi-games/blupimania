@@ -457,7 +457,7 @@ void	PlayNoiseVolume	(short volume);
 void	PlayMusicVolume	(short volume);
 short	IfPlayReady		(void);
 void	PlaySoundLoop	(short mode);
-void	PlaySound		(short sound);
+void	PlaySound		(short sound, const Pt * cel);
 SDL_bool SoundPlaying(short sound);
 
 void	OpenTime		(void);
