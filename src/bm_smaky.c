@@ -3193,10 +3193,10 @@ int OpenMachine(void)
 
 	origine.x = ((pgradesc->dfd.x)-LXIMAGE())/2;
 	origine.y = ((pgradesc->dfd.y)-LYIMAGE())/2;
-
+#endif
 	StartRandom(0, 0);					/* coup de sac du gnrateur alatoire toto */
 	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
-
+#if 0
 	L_repkey(-1, 0);					/* pas de repeat automatique */
 #endif
 	keystatus = 0;
