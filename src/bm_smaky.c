@@ -2705,8 +2705,20 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 
 	filename[strlen(filename) - 5] = file;
 	//if ( file >= 'a' )  n = 6;
-	channel = fopen(filename+n, "wb");	/* ouvre le fichier */
-	if ( channel == NULL )  return errno;
+
+        channel = fopen(filename, "r+b");
+        if (!channel)
+        {
+          channel = fopen(filename, "wb");
+          if (!channel)
+            return errno;
+          fclose(channel);
+
+          channel = fopen(filename, "r+b");
+        }
+
+	if (!channel)
+          return errno;
 
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
 	{
@@ -2768,9 +2780,11 @@ long FileGetLength (char file)
 
 short FileDelete (char file)
 {
-	char		filename[] = ":BLUPIXA.DAT";
+	char		filename[4096];
 
-	filename[7] = file;
+        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+
+	filename[strlen(filename) - 5] = file;
 	return remove(filename);
 }
 
@@ -2786,11 +2800,14 @@ short FileDelete (char file)
 
 short FileRename (char oldfile, char newfile)
 {
-	char		oldfilename[] = ":BLUPIXA.DAT";
-	char		newfilename[] = "BLUPIXA.DAT";
+        char		oldfilename[4096];
+        char		newfilename[4096];
 
-	oldfilename[7] = oldfile;
-	newfilename[6] = newfile;
+        snprintf(oldfilename, sizeof(oldfilename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        snprintf(newfilename, sizeof(newfilename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+
+	oldfilename[strlen(oldfilename) - 5] = oldfile;
+	newfilename[strlen(newfilename) - 5] = newfile;
 	return rename(oldfilename, newfilename);
 }
 

@@ -2022,23 +2022,23 @@ short PartieSauve (short rang)
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
 
-	err = PlayPartieWrite(pos, GetDemo()?'W':'Y');
+	err = PlayPartieWrite(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
 
-	err = MovePartieWrite(pos, GetDemo()?'W':'Y');
+	err = MovePartieWrite(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += MovePartieLg();
 
-	err = DecorPartieWrite(pos, GetDemo()?'W':'Y');
+	err = DecorPartieWrite(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
 
-	err = PalPartieWrite(pos, GetDemo()?'W':'Y');
+	err = PalPartieWrite(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += PalPartieLg();
 
-	err = MachinePartieWrite(pos, GetDemo()?'W':'Y');
+	err = MachinePartieWrite(pos, GetDemo()?'w':'y');
 	return err;
 }
 
@@ -2066,23 +2066,23 @@ short PartiePrend (short rang)
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
 
-	err = PlayPartieRead(pos, GetDemo()?'W':'Y');
+	err = PlayPartieRead(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
 
-	err = MovePartieRead(pos, GetDemo()?'W':'Y');
+	err = MovePartieRead(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += MovePartieLg();
 
-	err = DecorPartieRead(pos, GetDemo()?'W':'Y');
+	err = DecorPartieRead(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
 
-	err = PalPartieRead(pos, GetDemo()?'W':'Y');
+	err = PalPartieRead(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 	pos += PalPartieLg();
 
-	err = MachinePartieRead(pos, GetDemo()?'W':'Y');
+	err = MachinePartieRead(pos, GetDemo()?'w':'y');
 	if ( err )  return err;
 
 	IconDrawOpen();
