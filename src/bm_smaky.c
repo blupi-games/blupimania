@@ -113,7 +113,8 @@ static Pixmap		pmsave = {0,0,0,0,0,0,0};	/* pixmap sauv en mmoire tendue (XMS
 
 static short g_soundVolume = 0;
 static short g_musicVolume = 0;
-static Mix_Chunk *g_sounds[SOUND_MAX] = {0};
+static Mix_Chunk *g_sounds[SOUND_MAX] = {NULL};
+static Mix_Music *g_music = NULL;
 
 
 /* Sauvetage d'une partie du descripteur de fentre */
@@ -282,6 +283,46 @@ static void FilsSound (void)
 
 void MusicStart (short song)
 {
+  if (song < 4)
+    return;
+
+  static const char* musics[] = {
+    "bmx000.ogg",
+    "bmx001.ogg",
+    "bmx002.ogg",
+    "bmx003.ogg",
+    "bmx004.ogg",
+    "bmx005.ogg",
+    "bmx006.ogg",
+    "bmx007.ogg",
+    "bmx008.ogg",
+    "bmx009.ogg",
+    "bmx010.ogg",
+    "bmx011.ogg",
+  };
+
+  const int idx = GetRandom(1, 0, countof(musics));
+
+  char filename[4096];
+  snprintf(filename, sizeof(filename), "%s../share/blupimania/music/%s", SDL_GetBasePath (), musics[idx]);
+
+  if (g_music)
+    Mix_FreeMusic (g_music);
+
+  g_music = Mix_LoadMUS(filename);
+  if (!g_music)
+  {
+    printf ("%s\n", Mix_GetError ());
+    return;
+  }
+
+  Mix_VolumeMusic (g_musicVolume);
+
+  if (Mix_PlayMusic (g_music, 0) == -1)
+  {
+    printf ("%s\n", Mix_GetError ());
+    return;
+  }
 }
 
 /* ========= */
@@ -296,6 +337,8 @@ void MusicStop (void)
 {
   for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)
     Mix_HaltChannel(i);
+
+  Mix_HaltMusic ();
 }
 
 
@@ -2621,6 +2664,14 @@ UnloadSounds (void)
       Mix_FreeChunk(g_sounds[i]);
       g_sounds[i] = NULL;
     }
+
+  if (g_music)
+  {
+    Mix_FreeMusic(g_music);
+    g_music = NULL;
+  }
+
+  Mix_CloseAudio ();
 }
 
 
@@ -3084,6 +3135,20 @@ static void FatalLoad(char *name, int err)
 
 int OpenMachine(void)
 {
+#ifdef __LINUX__
+  if (!getenv ("ALSA_CONFIG_DIR"))
+  {
+    static char env[256];
+    snprintf (env, sizeof (env), "ALSA_CONFIG_DIR=/usr/share/alsa");
+    putenv (env);
+  }
+#endif /* __LINUX__ */
+
+#ifdef _WIN32
+  /* Fix laggy sounds on Windows by not using winmm driver. */
+  SDL_setenv ("SDL_AUDIODRIVER", "directsound", true);
+#endif /* _WIN32 */
+
   int res = SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
   if (res < 0)
   {
