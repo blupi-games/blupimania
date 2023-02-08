@@ -2647,7 +2647,7 @@ short ChangePhase (Phase newphase)
 	{
 		case PHASE_GENERIC:
 			PlayNoiseVolume(10-3);
-			PlayMusicVolume(10-3);
+			PlayMusicVolume(10-6);
 			MusicStart(0);
 			musique = 1;
 			lastaccord = -1;
