@@ -124,6 +124,10 @@ typedef unsigned short u_short;
 
 
 
+typedef enum {
+  FRAME_TICK = 1,
+  MUSIC_STOP = 2
+} UserEvent;
 
 /* --------- */
 /* KeyStatus */
@@ -453,6 +457,7 @@ short	PrintScreen		(Pt p1, Pt p2);
 
 void	MusicStart		(short song);
 void	MusicStop		(void);
+SDL_bool MusicStoppedOnDemand(void);
 void	PlayNoiseVolume	(short volume);
 void	PlayMusicVolume	(short volume);
 short	IfPlayReady		(void);
@@ -512,6 +517,8 @@ short	MachinePartieRead	(long pos, char file);
 
 void	SetDemo			(char bDemo);
 char	GetDemo			(void);
+
+void PushUserEvent (Sint32 code, void * data);
 
 #ifdef _WIN32
 #define countof(a) _countof (a)

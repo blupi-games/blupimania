@@ -115,6 +115,7 @@ static short g_soundVolume = 0;
 static short g_musicVolume = 0;
 static Mix_Chunk *g_sounds[SOUND_MAX] = {NULL};
 static Mix_Music *g_music = NULL;
+static SDL_bool g_musicStopped = SDL_FALSE;
 
 
 /* Sauvetage d'une partie du descripteur de fentre */
@@ -323,6 +324,8 @@ void MusicStart (short song)
     printf ("%s\n", Mix_GetError ());
     return;
   }
+
+  g_musicStopped = SDL_FALSE;
 }
 
 /* ========= */
@@ -339,6 +342,13 @@ void MusicStop (void)
     Mix_HaltChannel(i);
 
   Mix_HaltMusic ();
+  g_musicStopped = SDL_TRUE;
+}
+
+SDL_bool
+MusicStoppedOnDemand (void)
+{
+  return g_musicStopped;
 }
 
 
@@ -2561,6 +2571,12 @@ static int LoadIcon(void)
 	return 0;
 }
 
+static void
+MusicStopped(void)
+{
+  PushUserEvent (MUSIC_STOP, NULL);
+}
+
 static int
 InitSoundSystem()
 {
@@ -2569,6 +2585,9 @@ InitSoundSystem()
     return -1;
 
   Mix_AllocateChannels (SOUND_MAX);
+
+  Mix_HookMusicFinished (MusicStopped);
+
   return 0;
 }
 

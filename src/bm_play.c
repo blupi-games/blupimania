@@ -4952,7 +4952,7 @@ static void PlayRelease (void)
 	CloseMachine();			/* fermeture générale */
 }
 
-static void
+void
 PushUserEvent (Sint32 code, void * data)
 {
   SDL_Event event;
@@ -4968,8 +4968,7 @@ PushUserEvent (Sint32 code, void * data)
 static Uint32 MainLoop (Uint32 interval, void * param)
 {
   static int skip;
-  //if (!(skip % g_timerSkip))
-      PushUserEvent (1548 /*EV_UPDATE*/, NULL);
+  PushUserEvent (FRAME_TICK, NULL);
   ++skip;
   return interval;
 }
@@ -5014,7 +5013,7 @@ int main (int argc, char *argv[])
             continue;
           }
 
-          if (event.user.code == 1548 && !(skip++ % g_timerSkip))
+          if (event.type == SDL_USEREVENT && event.user.code == FRAME_TICK && !(skip++ % g_timerSkip))
           {
             next = SDL_TRUE;
             key = nextKeys[0];
@@ -5022,6 +5021,12 @@ int main (int argc, char *argv[])
             nextKeys[1] = nextKeys[2];
             nextKeys[2] = nextKeys[3];
             nextKeys[3] = 0;
+          }
+          else if (event.type == SDL_USEREVENT && event.user.code == MUSIC_STOP)
+          {
+            if (!MusicStoppedOnDemand())
+              MusicStart(4);
+            continue;
           }
           else
           {
