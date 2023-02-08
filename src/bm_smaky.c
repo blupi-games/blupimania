@@ -284,7 +284,7 @@ static void FilsSound (void)
 
 void MusicStart (short song)
 {
-  if (song < 4)
+  if (song < 3)
     return;
 
   static const char* musics[] = {
@@ -302,7 +302,7 @@ void MusicStart (short song)
     "bmx011.ogg",
   };
 
-  const int idx = GetRandom(1, 0, countof(musics));
+  int idx = song == 3 ? 0 : GetRandom(1, 0, countof(musics));
 
   char filename[4096];
   snprintf(filename, sizeof(filename), "%s../share/blupimania/music/%s", SDL_GetBasePath (), musics[idx]);
@@ -378,6 +378,7 @@ void PlayNoiseVolume (short volume)
 void PlayMusicVolume (short volume)
 {
   g_musicVolume = volume * 10;
+  Mix_VolumeMusic (g_musicVolume);
 }
 
 
