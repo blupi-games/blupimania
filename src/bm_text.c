@@ -688,9 +688,9 @@ void InvCurs (short color)
 	if ( cx == 0 )  return;
 
 	p1.x = cx - 1;
-	p1.y = chrect.p1.y;
+	p1.y = chrect.p1.y + 2;
 	p2.x = cx - 1;
-	p2.y = chrect.p2.y;
+	p2.y = chrect.p2.y - 2;
 
 	DrawLine(0, p1, p2, MODEXOR, color);	/* inverse la droite verticale */
 }
