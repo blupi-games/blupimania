@@ -2166,16 +2166,20 @@ static int LoadImage(int numero, Pixmap *pim)
 {
 	int			err = 1;
 	char		name[4096];				/* nom de l'image BLUPIXnn.IMAGE */
+	char *lang = "fr/";
+
+        if (numero < 22 || numero == 33)
+          lang = "";
 
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
 		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
-		/*else*/                 snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.color.png", SDL_GetBasePath (), numero);
+		/*else*/                 snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.color.png", SDL_GetBasePath (), lang, numero);
 	}
 	else
 	{
 		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.image.png", SDL_GetBasePath ());
-		/*else  */               snprintf(name, sizeof(name), "%s../share/blupimania/image/blupix%02d.image.png", SDL_GetBasePath (), numero);
+		/*else  */               snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.image.png", SDL_GetBasePath (), lang, numero);
 	}
 
 	SDL_Surface * surface = IMG_Load (name);
