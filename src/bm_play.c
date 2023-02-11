@@ -18,10 +18,6 @@
 
 
 
-#if 1
-#define VOLUME	1			/* version avec potentiomtres pour le volume */
-#endif
-
 #if 0
 #define DEMONC	1			/* si version demo -> pas de construction */
 #endif
@@ -732,8 +728,8 @@ short ConvPhaseToNumImage (Phase ph)
 		case PHASE_FINI7:       return 33;
 		case PHASE_FINI8:       return 33;
 		case PHASE_AIDE23:      return 34;
-		case PHASE_REGLAGE:     return 35;
 		case PHASE_GENERIC:     return 36;
+		case PHASE_REGLAGE:     return 37;
 		case PHASE_AIDE31:      return 40;
 		case PHASE_AIDE32:      return 41;
 		case PHASE_AIDE33:      return 42;
@@ -884,16 +880,6 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	}
 
 	image = ConvPhaseToNumImage(phase);
-
-#ifdef VOLUME
-	if ( image == 35 )  image = 37;				/* image avec potentiomtres pour le volume */
-#endif
-
-	if ( image == 33 &&
-		 GetDemo() == 1 )  image = 38;			/* image avec avertissement "demo" */
-
-	if ( image == 25 &&
-		 GetDemo() == 1 )  image = 39;			/* image sans choix de l'nigme */
 
 	err = GetImage(&pmimage, image);
 	if ( err )  FatalBreak(err);				/* erreur fatale */
@@ -1183,7 +1169,6 @@ void DrawScroll (void)
 }
 
 
-#ifdef VOLUME
 /* ---------- */
 /* DrawVolume */
 /* ---------- */
@@ -1217,7 +1202,6 @@ void DrawVolume (short pot, short volume)
 
 	DrawFillRect(0, rect, MODELOAD, COLORROUGE);
 }
-#endif
 
 /* ------------ */
 /* DrawBruitage */
@@ -1229,19 +1213,8 @@ void DrawVolume (short pot, short volume)
 
 void DrawBruitage ()
 {
-#ifdef VOLUME
 	DrawVolume(0, fj.noisevolume);
 	DrawVolume(1, fj.musicvolume);
-#else
-	Pt			pos;
-
-	pos.x = 31;
-	pos.y = LYIMAGE-140-1;
-
-	DrawRadioButton(pos, fj.noisevolume==0 ? 0:1);
-	pos.y += 32;
-	DrawRadioButton(pos, fj.noisevolume==0 ? 1:0);
-#endif
 }
 
 
@@ -2907,22 +2880,17 @@ static short timage34[] =				/* aide 2.3 */
 	0
 };
 
-static short timage35[] =				/* rglages */
+static short timage37[] =				/* rglages */
 {
 	31,292,160,32,		'S',		ACTION_VITESSE0,
 	31,260,160,32,		'N',		ACTION_VITESSE1,
 	31,228,160,32,		'Q',		ACTION_VITESSE2,
 	272,292,270,32,		0,			ACTION_SCROLL0,
 	272,260,270,32,		0,			ACTION_SCROLL1,
-#ifdef VOLUME
 	19,137,21,21,		0,			ACTION_NOISEVOLP,
 	19,99,21,21,		0,			ACTION_NOISEVOLM,
 	97,137,21,21,		0,			ACTION_MUSICVOLP,
 	97,99,21,21,		0,			ACTION_MUSICVOLM,
-#else
-	31,140,85,32,		'1',		ACTION_BRUIT0,
-	31,108,85,32,		'0',		ACTION_BRUIT1,
-#endif
 	272,172,270,32,		0,			ACTION_TELECOM0,
 	272,140,270,32,		0,			ACTION_TELECOM1,
 	40,72,260,56,		KEYRETURN,	ACTION_DEBUT,
@@ -3069,7 +3037,7 @@ short* GetTimage (void)
 		case 32:  return timage32;
 		case 33:  return timage33;
 		case 34:  return timage34;
-		case 35:  return timage35;
+		case 37:  return timage37;
 		case 36:  return timage36;
 		case 40:  return timage40;
 		case 41:  return timage41;
@@ -3248,7 +3216,7 @@ static short tanim33[] =				/* fini niveau */
 	-1
 };
 
-static short tanim35[] =				/* rglages */
+static short tanim37[] =				/* rglages */
 {
 	ACTION_VITESSE0,	158,298,	3,12,		2,2,2,1,1,1,3,3,3,1,1,1,
 	ACTION_VITESSE1,	158,298,	2,8,		2,2,1,1,3,3,1,1,
@@ -3299,7 +3267,7 @@ short* AnimGetTable (void)
 		case 30:  return tanim30;
 		case 31:  return tanim31;
 		case 33:  return tanim33;
-		case 35:  return tanim35;
+		case 37:  return tanim37;
 	}
 	return 0;
 }
