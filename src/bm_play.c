@@ -84,7 +84,8 @@ typedef enum
 	PHASE_FINI8,
 	PHASE_OPER,
 	PHASE_DEPLACE,
-	PHASE_ATTENTE
+	PHASE_ATTENTE,
+        PHASE_REGLAGE2
 }
 Phase;
 
@@ -169,7 +170,14 @@ typedef enum
 	ACTION_COULEUR3,
 	ACTION_COULEUR4,
 	ACTION_IDENT,
-	ACTION_QUITTE
+	ACTION_QUITTE,
+        ACTION_REGLAGE2,
+        ACTION_SCREEN_1,
+        ACTION_SCREEN_2,
+        ACTION_SCREEN_FULL,
+        ACTION_LANG_EN,
+        ACTION_LANG_FR,
+        ACTION_LANG_DE
 }
 PhAction;
 
@@ -213,7 +221,9 @@ typedef struct
 	short	modetelecom;					/* mode de la tlcommande (0..1) */
 	short	noisevolume;					/* volume bruitages */
 	short	musicvolume;					/* volume musique */
-	short	reserve2[93];					/* rserve */
+	short   language; /* language (en, fr, de) */
+        short   screen; /* zoom (normal, double, fullscreen) */
+	short	reserve2[91];					/* rserve */
 }
 Joueur;
 
@@ -391,6 +401,34 @@ static short tabpalette0[] =
 
 
 
+
+void
+ChangeLanguage(short language)
+{
+
+}
+
+void
+ChangeScreen(short zoom)
+{
+  ++zoom;
+  SDL_bool fullscreen = zoom == 3;
+
+  SDL_SetWindowFullscreen(g_window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  SDL_SetWindowBordered (g_window, fullscreen ? SDL_FALSE : SDL_TRUE);
+
+  if (!fullscreen)
+    SDL_SetWindowSize (g_window, LXIMAGE () * zoom, LYIMAGE () * zoom);
+
+  SDL_RenderClear (g_renderer);
+  SDL_RenderPresent (g_renderer);
+
+  int displayIndex = SDL_GetWindowDisplayIndex (g_window);
+  SDL_SetWindowPosition (
+    g_window, SDL_WINDOWPOS_CENTERED_DISPLAY (displayIndex),
+    SDL_WINDOWPOS_CENTERED_DISPLAY (displayIndex));
+  SDL_Delay (100);
+}
 
 
 
@@ -663,10 +701,13 @@ short JoueurRead (void)
 	if ( err )
 	{
 		fj.noisevolume = 10-3;
-		fj.musicvolume = 10-3;
+		fj.musicvolume = 10-6;
 	}
 
 	   g_modetelecom = fj.modetelecom;
+
+        ChangeLanguage(fj.language);
+        ChangeScreen(fj.screen);
 
 	PlayNoiseVolume(fj.noisevolume);
 	PlayMusicVolume(fj.musicvolume);
@@ -743,6 +784,7 @@ short ConvPhaseToNumImage (Phase ph)
 		case PHASE_AIDE11:      return 50;
 		case PHASE_AIDE12:      return 51;
 		case PHASE_AIDE13:      return 52;
+		case PHASE_REGLAGE2:    return 53;
 	}
 	return -1;
 }
@@ -1238,6 +1280,54 @@ void DrawTelecom (void)
 	{
 		if ( fj.modetelecom == i )  DrawRadioButton(pos, 1);
 		else                        DrawRadioButton(pos, 0);
+		pos.y += 32;
+	}
+}
+
+/* ------------ */
+/* DrawLanguage */
+/* ------------ */
+
+/*
+	Draw the language selector
+ */
+
+void DrawLanguage (void)
+{
+	short		i;
+	Pt			pos;
+
+	pos.x = 31;
+	pos.y = LYIMAGE()-292-1;
+
+	for ( i=0 ; i<3 ; i++ )
+	{
+		if ( fj.language == i )  DrawRadioButton(pos, 1);
+		else                     DrawRadioButton(pos, 0);
+		pos.y += 32;
+	}
+}
+
+/* ---------- */
+/* DrawScreen */
+/* ---------- */
+
+/*
+	Draw the screen settings
+ */
+
+void DrawScreen (void)
+{
+	short		i;
+	Pt			pos;
+
+	pos.x = 272;
+	pos.y = LYIMAGE()-292-1;
+
+	for ( i=0 ; i<3 ; i++ )
+	{
+		if ( fj.screen == i )  DrawRadioButton(pos, 1);
+		else                     DrawRadioButton(pos, 0);
 		pos.y += 32;
 	}
 }
@@ -2539,8 +2629,9 @@ short ChangePhase (Phase newphase)
 			break;
 
 		case PHASE_REGLAGE:
+		case PHASE_REGLAGE2:
 			BlackScreen();
-			JoueurWrite();				/* crit le fichier des joueurs */
+			JoueurWrite();				/* Ecrit le fichier des joueurs */
 			break;
 
 		case PHASE_PARAM:
@@ -2619,8 +2710,7 @@ short ChangePhase (Phase newphase)
 	switch ( phase )
 	{
 		case PHASE_GENERIC:
-			PlayNoiseVolume(10-3);
-			PlayMusicVolume(10-6);
+			JoueurRead();				/* lit le fichier des joueurs sur disque */
 			MusicStart(0);
 			musique = 1;
 			lastaccord = -1;
@@ -2657,6 +2747,11 @@ short ChangePhase (Phase newphase)
 			DrawBruitage();				/* affiche le mode de bruitages */
 			DrawTelecom();				/* affiche le mode de tlcommande */
 			MusicStart(3);
+			break;
+
+		case PHASE_REGLAGE2:
+                        DrawLanguage();
+                        DrawScreen();
 			break;
 
 		case PHASE_PARAM:
@@ -2852,9 +2947,10 @@ static short timage31[] =				/* identification */
 	230,259,250,34,		KEYF2,		ACTION_JOUEUR1,
 	230,219,250,34,		KEYF3,		ACTION_JOUEUR2,
 	230,179,250,34,		KEYF4,		ACTION_JOUEUR3,
-	20,73,195,57,		KEYRETURN,	ACTION_DEBUT,
-	222,73,183,57,		'H',		ACTION_AIDE,
-	461,73,160,57,		KEYUNDO,	ACTION_QUITTE,
+	24,340-269,153,51,		KEYRETURN,	ACTION_DEBUT,
+	191,340-269,153,51,		'H',		ACTION_AIDE,
+	466,340-269,151,51,		KEYUNDO,	ACTION_QUITTE,
+        355,90,LXICO,LYICO,     0,              ACTION_REGLAGE2,
 	0
 };
 
@@ -2880,7 +2976,7 @@ static short timage34[] =				/* aide 2.3 */
 	0
 };
 
-static short timage37[] =				/* rglages */
+static short timage37[] =				/* réglages 1 */
 {
 	31,292,160,32,		'S',		ACTION_VITESSE0,
 	31,260,160,32,		'N',		ACTION_VITESSE1,
@@ -2893,8 +2989,9 @@ static short timage37[] =				/* rglages */
 	97,99,21,21,		0,			ACTION_MUSICVOLM,
 	272,172,270,32,		0,			ACTION_TELECOM0,
 	272,140,270,32,		0,			ACTION_TELECOM1,
-	40,72,260,56,		KEYRETURN,	ACTION_DEBUT,
-	311,72,384,56,		KEYDEF,		ACTION_IDENT,
+	43,340-281,166,51,		KEYRETURN,	ACTION_DEBUT,
+	225,340-281,279,51,		KEYDEF,		ACTION_IDENT,
+        520,340-281,73,51,  0,  ACTION_REGLAGE2,
 	0
 };
 
@@ -3003,6 +3100,20 @@ static short timage52[] =				/* aide 1.3 */
 	0
 };
 
+static short timage53[] =				/* réglages 2 */
+{
+	31,340-49,160,29,		'E',		ACTION_LANG_EN,
+	31,340-81,160,29,		'F',		ACTION_LANG_FR,
+	31,340-113,160,29,		'D',		ACTION_LANG_DE,
+	272,340-49,210,29,		0,		ACTION_SCREEN_1,
+	272,340-81,210,29,		0,		ACTION_SCREEN_2,
+	272,340-113,210,29,		0,		ACTION_SCREEN_FULL,
+        43,340-281,73,51,  0,  ACTION_REGLAGE,
+	132,340-281,166,51,		KEYRETURN,	ACTION_DEBUT,
+	314,340-281,279,51,		KEYDEF,		ACTION_IDENT,
+	0
+};
+
 
 /* --------- */
 /* GetTimage */
@@ -3052,6 +3163,7 @@ short* GetTimage (void)
 		case 50:  return timage50;
 		case 51:  return timage51;
 		case 52:  return timage52;
+                case 53:  return timage53;
 	}
 	return 0;
 }
@@ -3204,9 +3316,10 @@ static short tanim30[] =				/* opration */
 
 static short tanim31[] =				/* identification */
 {
-	ACTION_DEBUT,		79,136,		DELNORM,4,	2,1,3,1,
-	ACTION_AIDE,		281,139,	DELNORM,8,	105,106,106,107,107,104,104,105,
+	ACTION_DEBUT,		62,136,		DELNORM,4,	2,1,3,1,
+	ACTION_AIDE,		236,139,	DELNORM,8,	105,106,106,107,107,104,104,105,
 	ACTION_QUITTE,		503,138,	DELNORM,4,	50,33,50,36,
+        ACTION_REGLAGE2,        355,90,         DELNORM,2,      128+104,256+76,
 	-1
 };
 
@@ -3216,7 +3329,7 @@ static short tanim33[] =				/* fini niveau */
 	-1
 };
 
-static short tanim37[] =				/* rglages */
+static short tanim37[] =				/* réglages */
 {
 	ACTION_VITESSE0,	158,298,	3,12,		2,2,2,1,1,1,3,3,3,1,1,1,
 	ACTION_VITESSE1,	158,298,	2,8,		2,2,1,1,3,3,1,1,
@@ -3233,6 +3346,14 @@ static short tanim37[] =				/* rglages */
 	ACTION_MUSICVOLP,	140,141,	2,4,		77,77,78,78,
 	ACTION_NOISEVOLM,	140,147,	2,4,		93,93,94,94,
 	ACTION_MUSICVOLM,	140,147,	2,4,		93,93,94,94,
+	-1
+};
+
+static short tanim53[] =				/* réglages 2 */
+{
+	ACTION_SCREEN_1,	480,298,	DELNORM,2,	256+128+93,256+128+94,
+	ACTION_SCREEN_2,	480,298,	DELNORM,2,	256+128+93,256+128+94,
+	ACTION_SCREEN_FULL,	480,298,	DELNORM,2,	256+128+93,256+128+94,
 	-1
 };
 
@@ -3268,6 +3389,7 @@ short* AnimGetTable (void)
 		case 31:  return tanim31;
 		case 33:  return tanim33;
 		case 37:  return tanim37;
+                case 53:  return tanim53;
 	}
 	return 0;
 }
@@ -3967,6 +4089,12 @@ short ExecuteAction (char event, Pt pos)
 		return 0;
 	}
 
+	if ( action == ACTION_REGLAGE2 )
+	{
+		ChangePhase(PHASE_REGLAGE2);
+		return 0;
+	}
+
 	if ( action == ACTION_DEBUT )
 	{
 		if ( fj.nom[fj.joueur][0] != 0 )		/* nom du joueur existe ? */
@@ -4314,6 +4442,22 @@ short ExecuteAction (char event, Pt pos)
 		DrawTelecom();
 		return 0;
 	}
+
+	if (action >= ACTION_LANG_EN && action <= ACTION_LANG_DE)
+        {
+          fj.language = action - ACTION_LANG_EN;
+          DrawLanguage();
+          ChangeLanguage(fj.language);
+          return 0;
+        }
+
+        if (action >= ACTION_SCREEN_1 && action <= ACTION_SCREEN_FULL)
+        {
+          fj.screen = action - ACTION_SCREEN_1;
+          DrawScreen();
+          ChangeScreen(fj.screen);
+          return 0;
+        }
 
 	if ( action >= ACTION_COULEUR0 &&
 		 action <= ACTION_COULEUR4 )
