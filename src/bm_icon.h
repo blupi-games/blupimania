@@ -4,6 +4,8 @@
 /* ========= */
 
 
+#pragma once
+
 #define ICO_INFO				125
 
 #define ICO_STOPOUI				(128+76)

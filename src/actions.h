@@ -8,6 +8,8 @@
 /* Dfinitions pour les automates */
 /* ------------------------------ */
 
+#pragma once
+
 #define OPTERM		0			/* fin */
 #define OPLIST		1			/* OPLIST i, D(i)..D(i-1) */
 #define OPREPEAT	2			/* OPREPEAT, n, i, D(i)..D(i-1) */
