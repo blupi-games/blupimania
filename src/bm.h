@@ -513,9 +513,6 @@ long	MachinePartieLg		(void);
 short	MachinePartieWrite	(long pos, char file);
 short	MachinePartieRead	(long pos, char file);
 
-void	SetDemo			(char bDemo);
-char	GetDemo			(void);
-
 void PushUserEvent (Sint32 code, void * data);
 
 #ifdef _WIN32

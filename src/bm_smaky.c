@@ -2871,36 +2871,3 @@ short MachinePartieRead (long pos, char file)
 	err = FileRead(&nextrand, pos, sizeof(unsigned long)*10, file);
 	return err;
 }
-
-
-
-/* ======= */
-/* SetDemo */
-/* ======= */
-
-/*
-	Modifie le mode "demo".
- */
-
-void SetDemo (char bDemo)
-{
-	demo = bDemo;
-}
-
-/* ======= */
-/* GetDemo */
-/* ======= */
-
-/*
-	Retourne le mode "demo".
-	0 -> normal
-	1 -> demo
- */
-
-char GetDemo (void)
-{
-#if 1
-	return demo;
-#endif
-return 1;
-}

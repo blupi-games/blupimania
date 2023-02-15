@@ -556,8 +556,7 @@ char BanqueToFile (char banque)
 {
 	if ( banque >= 'a' && banque <= 'h' )
 	{
-		if ( GetDemo() == 0 )  return banque-'a'+'1';	/* 1..8 */
-		else                   return banque-'a'+'i';	/* i..p */
+		return banque-'a'+'1';	/* 1..8 */
 	}
 	if ( banque >= 'i' && banque <= 'l' )  return banque-'i'+'e';	/* e..h */
 
@@ -583,10 +582,7 @@ void MondeMax (char banque)
 		 banque == 'f' ||
 		 banque == 'h' )  max = 3;
 
-	if ( GetDemo() == 1 && maxmonde > max )  maxmonde = max;
-
 	if ( g_construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
-	if ( GetDemo() == 1 && g_construit )  maxmonde = 1;
 }
 
 
@@ -632,7 +628,7 @@ short MondeRead (short monde, char banque)
 	short           err = 0;
 	short           max;
 
-	if ( g_construit && GetDemo() == 0 )  max = maxmonde-1;
+	if ( g_construit )  max = maxmonde-1;
 	else                                max = maxmonde;
 
 	if ( monde >= max )  goto vide;
@@ -697,7 +693,7 @@ short JoueurRead (void)
 	memset(&fj, 0, sizeof(Joueur));			/* met tout  zro */
 	fj.vitesse = 1;							/* vitesse normale */
 
-	err = FileRead(&fj, 0, sizeof(Joueur), GetDemo()?'x':'z');
+	err = FileRead(&fj, 0, sizeof(Joueur), 'z');
 	if ( err )
 	{
 		fj.noisevolume = 10-3;
@@ -728,7 +724,7 @@ short JoueurWrite (void)
 {
 	short		err;
 
-	err = FileWrite(&fj, 0, sizeof(Joueur), GetDemo()?'x':'z');
+	err = FileWrite(&fj, 0, sizeof(Joueur), 'z');
 	return err;
 }
 
@@ -1562,10 +1558,7 @@ void DrawObjectif (void)
 
 	if ( g_construit && g_monde == maxmonde-1 )
 	{
-		if ( GetDemo() == 0 || *ptext == 0 )
-		{
-			ptext = tomake;
-		}
+		ptext = tomake;
 	}
 
 	DrawFillRect(0, rect, COLORBLANC);			/* efface le rectangle */
@@ -1719,8 +1712,6 @@ void DrawNumMonde (void)
 {
 	Pixmap		pm;
 	Pt			pos, src, dim;
-
-	if ( g_construit && GetDemo() == 1 )  return;
 
 	pos.x = 557;
 	pos.y = LYIMAGE()-249;
@@ -2029,7 +2020,7 @@ short PartieCheckFile ()
 	short		err;
 	Header		header;
 
-	err = FileRead(&header, 0, sizeof(Header), GetDemo()?'w':'y');
+	err = FileRead(&header, 0, sizeof(Header), 'y');
 	if ( err == 0 )
 	{
 		if ( header.ident == 1 &&
@@ -2040,7 +2031,7 @@ short PartieCheckFile ()
 			 header.lg[4] == MachinePartieLg() &&
 			 header.lg[5] == 0 )  return 0;		/* fichier ok */
 	}
-	FileDelete(GetDemo()?'w':'y');
+	FileDelete('y');
 
 	memset(&header, 0, sizeof(Header));
 
@@ -2051,7 +2042,7 @@ short PartieCheckFile ()
 	header.lg[3] = PalPartieLg();
 	header.lg[4] = MachinePartieLg();
 
-	FileWrite(&header, 0, sizeof(Header), GetDemo()?'w':'y');
+	FileWrite(&header, 0, sizeof(Header), 'y');
 
 	return 1;		/* le fichier n'était pas correct */
 }
@@ -2082,23 +2073,23 @@ short PartieSauve (short rang)
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
 
-	err = PlayPartieWrite(pos, GetDemo()?'w':'y');
+	err = PlayPartieWrite(pos, 'y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
 
-	err = MovePartieWrite(pos, GetDemo()?'w':'y');
+	err = MovePartieWrite(pos, 'y');
 	if ( err )  return err;
 	pos += MovePartieLg();
 
-	err = DecorPartieWrite(pos, GetDemo()?'w':'y');
+	err = DecorPartieWrite(pos, 'y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
 
-	err = PalPartieWrite(pos, GetDemo()?'w':'y');
+	err = PalPartieWrite(pos, 'y');
 	if ( err )  return err;
 	pos += PalPartieLg();
 
-	err = MachinePartieWrite(pos, GetDemo()?'w':'y');
+	err = MachinePartieWrite(pos, 'y');
 	return err;
 }
 
@@ -2126,23 +2117,23 @@ short PartiePrend (short rang)
 		   MachinePartieLg())*
 		  (fj.joueur*MAXPARTIE+rang);
 
-	err = PlayPartieRead(pos, GetDemo()?'w':'y');
+	err = PlayPartieRead(pos, 'y');
 	if ( err )  return err;
 	pos += PlayPartieLg();
 
-	err = MovePartieRead(pos, GetDemo()?'w':'y');
+	err = MovePartieRead(pos, 'y');
 	if ( err )  return err;
 	pos += MovePartieLg();
 
-	err = DecorPartieRead(pos, GetDemo()?'w':'y');
+	err = DecorPartieRead(pos, 'y');
 	if ( err )  return err;
 	pos += DecorPartieLg();
 
-	err = PalPartieRead(pos, GetDemo()?'w':'y');
+	err = PalPartieRead(pos, 'y');
 	if ( err )  return err;
 	pos += PalPartieLg();
 
-	err = MachinePartieRead(pos, GetDemo()?'w':'y');
+	err = MachinePartieRead(pos, 'y');
 	if ( err )  return err;
 
 	IconDrawOpen();
@@ -3128,9 +3119,6 @@ short* GetTimage (void)
 	{
 		case 21:
 			pt = timage21;
-#ifdef DEMONC
-			if ( GetDemo() == 1 )  pt += 6*2;
-#endif
 			return pt;
 
 		case 22:  return timage22;
@@ -3371,9 +3359,6 @@ short* AnimGetTable (void)
 	{
 		case 21:
 			pt = tanim21;
-#ifdef DEMONC
-			if ( GetDemo() == 1 )  pt += 5+pt[4];
-#endif
 			return pt;
 
 		case 22:  return tanim22;
@@ -4186,8 +4171,7 @@ short ExecuteAction (char event, Pt pos)
 		return 0;
 	}
 
-	if ( action == ACTION_MONDEPREC &&
-		 (GetDemo() == 0 || !g_construit) )
+	if ( action == ACTION_MONDEPREC )
 	{
 		if ( g_monde > 0 )
 		{
@@ -4200,8 +4184,7 @@ short ExecuteAction (char event, Pt pos)
 		return 1;
 	}
 
-	if ( action == ACTION_MONDESUIV &&
-		 (GetDemo() == 0 || !g_construit) )
+	if ( action == ACTION_MONDESUIV )
 	{
 		if ( g_monde < maxmonde-1 &&
 			 (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
@@ -4215,8 +4198,7 @@ short ExecuteAction (char event, Pt pos)
 		return 1;
 	}
 
-	if ( action == ACTION_MONDEBAR &&
-		 (GetDemo() == 0 || !g_construit) )
+	if ( action == ACTION_MONDEBAR )
 	{
 		TrackingStatusBar(pos);
 		return 0;
@@ -4229,8 +4211,7 @@ short ExecuteAction (char event, Pt pos)
 		return 0;
 	}
 
-	if ( action == ACTION_OPER &&
-		 GetDemo() == 0 )
+	if ( action == ACTION_OPER )
 	{
 		ChangePhase(PHASE_OPER);
 		return 0;
@@ -4281,10 +4262,6 @@ short ExecuteAction (char event, Pt pos)
 		  action <= ACTION_NIVEAU8) ||
 		 action == ACTION_NIVEAUGO )
 	{
-#ifdef DEMONC
-		if ( action == ACTION_NIVEAU8 && GetDemo() == 1 )  return 0;
-#endif
-
 		if ( action != ACTION_NIVEAUGO )
 		{
 			fj.niveau[fj.joueur] = action - ACTION_NIVEAU0;
@@ -4338,11 +4315,7 @@ short ExecuteAction (char event, Pt pos)
 		AnimDrawInit();
 		return 0;
 	}
-#ifdef DEMONC
-	if ( action == ACTION_NIVEAUK5 && GetDemo() == 0 )
-#else
 	if ( action == ACTION_NIVEAUK5 )
-#endif
 	{
 		fj.niveau[fj.joueur] = 8;
 		AnimDrawInit();
@@ -4626,7 +4599,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 	{
           g_timerSkip = 4; /* Use the normal speed in the menus */
 
-		if ( phase == PHASE_INIT && GetDemo() == 0 &&
+		if ( phase == PHASE_INIT &&
 			 ((key >= 'a' && key <= 'z') || (key >= '0' && key <= '9')) )
 		{
 			if ( passindex == 0 )
@@ -5084,11 +5057,6 @@ int main (int argc, char *argv[])
 	Pt			pos;						/* position de la souris */
 
 	PlayInit();								/* initialise le jeu */
-
-	if ( argc == 2 && strcmp(argv[1], "-d") == 0 )
-	{
-		SetDemo(1);
-	}
 
         SDL_TimerID updateTimer = SDL_AddTimer (
           g_timerInterval,
