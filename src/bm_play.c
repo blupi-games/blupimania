@@ -4426,7 +4426,7 @@ static short tmusic[] =
 void MusicBackground (void)
 {
 	short	*ptable = tmusic;
-	short	n, sound;
+	short	sound;
 
 	if ( musique == 0 || !IfPlayReady() )  return;
 
