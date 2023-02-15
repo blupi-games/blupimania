@@ -4980,7 +4980,6 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 void FatalBreak (short err)
 {
 	PlayRelease();						/* libère tout */
-	FatalError(err);					/* quitte */
 }
 
 

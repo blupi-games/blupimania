@@ -2548,34 +2548,6 @@ short FileRename (char oldfile, char newfile)
 }
 
 
-
-/* ========== */
-/* FatalError */
-/* ========== */
-
-/*
-	Affiche une erreur fatale, puis quitte le jeu.
- */
-
-void FatalError (short err)
-{
-#if 0
-	short		dberr;
-	Point		pos;
-	char		text[] = "Pas assez de mmoire pendant le jeu !\n\n1) Cliquez VU ou appuyez RETURN\n2) Arrtez le SMAKY\n3) Redmarrez ...";
-
-	dberr = dbox_terror(text, 0, pos);		/* dialogue d'erreur ... */
-	if ( dberr )
-	{
-		printf(text);						/* affiche un texte */
-		getchar();
-	}
-
-	exit(err);								/* retour dans MAIN */
-#endif
-}
-
-
 /* ----------- */
 /* IfFileExist */
 /* ----------- */
@@ -2704,72 +2676,15 @@ int OpenMachine(void)
       info.max_texture_height);
   }
 
-#if 0
-	int			err;					/* erreur rendue */
-	long		pid;					/* identificateur du processus cr */
-	u_short		pino;					/* numro du processus cre */
-	u_int		adnombre;				/* nombre de sons audio */
-
-	L_mouse(2);							/* souris par le clavier */
-	HideMouse();						/* enlve la souris */
-
-	printf("%c%c%c",
-		NOCURS,							/* enlve le curseur */
-		MODGRA,1						/* mode GRACLIP */
-		);
-
-	gra2_open(&pgradesc);				/* ouverture du module GRA2 */
-
-	err = res_opelib();					/* ouverture du module RES */
-	if ( err )  FatalLoad("res", err);
-
-	err = dbox_opelib();				/* ouverture du module DBOX */
-	if ( err )  FatalLoad("dbox", err);
-
-	err = audio_opelib();				/* ouverture du module AUDIO */
-	if ( err )  FatalLoad("audio", err);
-
-	err = audio_open(&adcanal, &admode);	/* ouvre la librairie audio */
-	if ( err )  FatalLoad("audio", err);
-
-	err = res_open ("(:,#:)BLUPIX(_%L,).RS", RSOPCACHE, 0x10000*MAJREV+MINREV, &chres);
-	if ( err )  FatalLoad("BLUPIX.RS", err);
-
-	err = DboxMem();					/* demande comment dmarrer ... */
-	if ( err )  exit(err);				/* retour dans MAIN */
-
-	if ( colormode )
-	{
-		err = tcol_opelib();			/* ouverture du module TCOLOR */
-		if ( err )  FatalLoad("tcolor", err);
-		err = tcol_litcanal(&tcolcanal);
-		if ( err )  FatalLoad("tcolor", err);
-	}
-
-	if ( sound1 )  audio_cache(&adcanal, "(:,#:)BLUPIX01.AUDIO", &adcanalson1, &adnombre);
-	if ( sound2 )  audio_cache(&adcanal, "(:,#:)BLUPIX02.AUDIO", &adcanalson2, &adnombre);
-
-	err = N_cretask(FilsSound, 200, 10, "BLUPIX_PLAY", 0, 0, &pid, &pino);
-#endif
 	int err = LoadIcon();					/* charge l'image des icnes */
 
         InitSoundSystem();
         LoadSounds();
-#if 0
-	if ( err )  FatalLoad("icnes", err);
 
-	origine.x = ((pgradesc->dfd.x)-LXIMAGE())/2;
-	origine.y = ((pgradesc->dfd.y)-LYIMAGE())/2;
-#endif
 	StartRandom(0, 0);					/* coup de sac du gnrateur alatoire toto */
 	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
-#if 0
-	L_repkey(-1, 0);					/* pas de repeat automatique */
-#endif
+
 	keystatus = 0;
-#if 0
-	AfMenu();							/* affiche les soft-keys */
-#endif
 }
 
 
@@ -2784,44 +2699,6 @@ int OpenMachine(void)
 void CloseMachine(void)
 {
   UnloadSounds();
-#if 0
-	short		max;
-
-	GivePixmap(&pmicon1c);			/* libre les pixmap des icnes */
-	GivePixmap(&pmicon1m);
-	GivePixmap(&pmicon2c);
-	GivePixmap(&pmicon2m);
-	GivePixmap(&pmicon3c);
-	GivePixmap(&pmicon3m);
-	GivePixmap(&pmicon4c);
-	GivePixmap(&pmicon4m);
-
-	PlaySoundLoop(0);				/* plus de rptition */
-	filsabort = 1;					/* fin du processus fils */
-	max = 10;
-	while ( filsson != 0 && max != 0 )
-	{
-		N_delms(5);					/* attend la fin du fils ... */
-		max --;
-	}
-	N_delms(5);						/* attend la fin du fils ... */
-
-	if ( adcanalson1 != 0 )  audio_uncache(&adcanal, &adcanalson1);
-	if ( adcanalson2 != 0 )  audio_uncache(&adcanal, &adcanalson2);
-	audio_close(&adcanal);			/* ferme la librairie audio */
-	audio_clolib();					/* fermeture du module AUDIO */
-
-	res_close(chres);				/* ferme le fichier de ressources */
-
-	if ( colormode )
-	{
-		tcol_clolib();				/* fermeture du module TCOLOR */
-	}
-	dbox_clolib();					/* fermeture du module DBOX */
-	res_clolib();					/* fermeture du module RES */
-	gra2_close();					/* fermeture du module GRA2 */
-	ShowMouse();					/* remet la souris */
-#endif
 }
 
 
