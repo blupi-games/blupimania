@@ -559,10 +559,7 @@ short SPaletteTracking (short rang, Pt pos, int key)
 	limit.x += LXICO/2 + 12;
 
 	old = tspal[rang];
-	//while ( 1 )
-	{
-fprintf(stderr, "%d %d %d:%d\n", rang, key, pos.x, pos.y);
-		//key = GetEvent(&pos);
+
 		if ( pos.y >= limit.y && pos.y <= limit.y+LYICO/2 )
 		{
 			if ( pos.x < limit.x - 12 )  goto next;
@@ -573,15 +570,14 @@ fprintf(stderr, "%d %d %d:%d\n", rang, key, pos.x, pos.y);
 		}
 
 		new = GetSButtonRang(rang, pos);
-		//if ( new != old && new >= 0 )
-		{
-			DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 0);
-			old = new;
-			DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 1);
-		}
+
+		DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 0);
+		old = new;
+		DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 1);
+
 		if ( key == KEYCLICREL )  goto next;
 		return 1;
-	}
+
 next:
 	if ( old >= 0 )  tspal[rang] = old;
 
@@ -861,14 +857,8 @@ short PaletteEvent (short event, Pt pos)
 
 	pb = GetButtonPos(0);
 	xlimit = pb.x + LXICO/2;
-fprintf(stderr, "%d\n", rang);
 
-	//while ( 1 )
-	{
-		//key = GetEvent(&pos);
-		//if ( key == KEYCLICREL )  break;
-
-		if ( /*pos.x > xlimit &&*/
+		if (
 			 _rang != -1 &&
 			 _rang < MAXICONY &&
 			 ticon[_rang][1] != 0 )
@@ -888,10 +878,7 @@ fprintf(stderr, "%d\n", rang);
 			press = rang;
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 		}
-
-                //g_ignoreKeyClicUp = SDL_TRUE;
 		return 0;
-	}
 
 end:
 	if ( typepress == 0 )

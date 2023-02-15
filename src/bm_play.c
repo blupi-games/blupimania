@@ -4702,11 +4702,9 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                 }
 		if ( key == KEYCLIC || key == KEYCLICREL || g_keyMousePressed || (key >= KEYF4 && key <= KEYF1) )
 		{
-                  fprintf(stderr, "# %d\n", key);
 			ev = PaletteEvent(key, pos);
                       if (key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1))
                         forPalette = SDL_TRUE;
-                  fprintf(stderr, "# %d %d\n", key, forPalette);
                 }
 		if ( forPalette )
 		{

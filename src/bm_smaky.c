@@ -420,7 +420,7 @@ void PlaySound (short sound, const Pt * cel)
     Pt pos = CelToGra2(*cel, SDL_TRUE);
     pos.x += LXICO / 2;
     pos.y += LYICO * 2;
-    fprintf(stderr, "@@@ %d:%d @@@\n", pos.x, pos.y);
+
     Sint32 volumex, volumey;
     Uint8 panRight, panLeft;
     volumex = g_soundVolume;
