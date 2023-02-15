@@ -74,10 +74,6 @@ static icondraw		ListIconDrawOld[MAXICONDRAW];	/* liste des icnes  dessnier */
 static listreg		ListRegNew[MAXREGION];			/* liste des rgions */
 static listreg		ListRegOld[MAXREGION];			/* liste des rgions */
 
-static bbox			IconBBox[128+64];				/* bbox des icnes 0..191 */
-
-
-
 
 /* =========== */
 /* IfNilRegion */
@@ -230,15 +226,6 @@ static Reg IconRegion (short i, Pt pos)
 	rg.r.p1.y = pos.y;				/* coin sup/gauche */
 	rg.r.p2.x = pos.x + pm.dx;
 	rg.r.p2.y = pos.y + pm.dy;		/* coin inf/droite */
-
-	i &= 0x01FF;					/* icne 0..512-1 */
-	/*if ( i < 128+64 )
-	{
-		rg.r.p1.x += IconBBox[i].left;
-		rg.r.p2.x -= IconBBox[i].right;
-		rg.r.p1.y += IconBBox[i].up;
-		rg.r.p2.y -= IconBBox[i].down;
-	}*/
 
 	return rg;						/* retourne la rgion */
 }
@@ -834,101 +821,3 @@ Pixmap* IconGetPixmap (void)
 {
 	return &pmwork;
 }
-
-
-
-#if 0
-/* --------- */
-/* TestHLine */
-/* --------- */
-
-/*
-	Teste si une ligne horizontale est entirement vide.
-	Si oui, retourne 1 (true).
- */
-
-short TestHLine (Pixmap *ppm, short y)
-{
-	Pt		pos;
-
-	pos.y = y;
-	for ( pos.x=0 ; pos.x<LXICO ; pos.x++ )
-	{
-		if ( GetPixel(ppm, pos) != 0 )  return 0;
-	}
-	return 1;
-}
-
-/* --------- */
-/* TestVLine */
-/* --------- */
-
-/*
-	Teste si une ligne verticale est entirement vide.
-	Si oui, retourne 1 (true).
- */
-
-short TestVLine (Pixmap *ppm, short x)
-{
-	Pt		pos;
-
-	pos.x = x;
-	for ( pos.y=0 ; pos.y<LYICO ; pos.y++ )
-	{
-		if ( GetPixel(ppm, pos) != 0 )  return 0;
-	}
-	return 1;
-}
-#endif
-
-/* ======== */
-/* IconInit */
-/* ======== */
-
-/*
-	Calcule les bbox des icnes.
- */
-
-void IconInit (void)
-{
-	Pixmap		pm;
-	short		i;
-	short		x, y;
-
-	for ( i=0 ; i<128+64 ; i++ )
-	{
-          IconBBox[i].left = 0;
-          IconBBox[i].right = LXICO - 1;
-          IconBBox[i].up = 0;
-          IconBBox[i].down = LYICO - 1;
-          continue;
-
-		GetIcon(&pm, i+ICOMOFF, 1);
-
-		for ( x=0 ; x<LXICO/2 ; x++ )
-		{
-			if ( !TestVLine(&pm, x) )  break;
-		}
-		IconBBox[i].left = x;
-
-		for ( x=LXICO-1 ; x>LXICO/2 ; x-- )
-		{
-			if ( !TestVLine(&pm, x) )  break;
-		}
-		IconBBox[i].right = LXICO-1-x;
-
-		for ( y=0 ; y<LYICO/2 ; y++ )
-		{
-			if ( !TestHLine(&pm, y) )  break;
-		}
-		IconBBox[i].up = y;
-
-		for ( y=LYICO-1 ; y>LYICO/2 ; y-- )
-		{
-			if ( !TestHLine(&pm, y) )  break;
-		}
-		IconBBox[i].down = LYICO-1-y;
-	}
-}
-
-

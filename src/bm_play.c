@@ -4556,8 +4556,6 @@ static short PlayInit (void)
 
 	OpenMachine();						/* ouverture générale */
 
-	//IconInit();							/* calcule bbox des icônes */
-
         g_screen.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
         SDL_SetTextureBlendMode(g_screen.texture, SDL_BLENDMODE_BLEND);
         g_screen.dx = LXIMAGE();

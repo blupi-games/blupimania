@@ -426,8 +426,6 @@ void	IconDrawClose	(short bdraw);
 Pixmap*	IconGetPixmap	(void);
 short	IconOpen		(void);
 void	IconClose		(void);
-void	IconInit		(void);
-
 
 /* bm_text.c */
 /* --------- */
