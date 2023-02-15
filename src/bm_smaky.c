@@ -21,23 +21,6 @@
 #define GCTEXT		{'N','E'+0x80,11} /* NEF11 */
 
 
-/* ------- */
-/* En-tte */
-/* ------- */
-#if 0
-u_long	_stksize	= 8000L;				/* longueur du tas et de la pile  */
-u_long	_SMASOVER	= 0L;					/* 0: pas d'entre overlay, 1: ou */
-u_char	_SMAPRIO	= 11;					/* priorit                       */
-u_char	_SMAREV		= MAJREV;				/* rvision                       */
-u_char	_SMAVER		= MINREV;				/* version                        */
-u_long	_SMAUNIT	= 0x7;					/* units                         */
-u_short	_SMADIS[]	= {640,2000,340,2000};	/* largeur+hauteur (min+max)      */
-u_short	_SMASYN		= 2;     				/* niveau du haut-parleur         */
-u_char	_SMAGC[]	= GCTEXT;				/* fonte                          */
-char	_SMAIDE[]	= "(C)  Daniel ROUX et EPSITEC-system sa";
-#endif
-
-
 
 /* ---------------------------- */
 /* Constantes globales internes */
@@ -74,10 +57,6 @@ ImageSmaky;
 /* Variables globales internes */
 /* --------------------------- */
 
-#if 0
-static Windesc		pgradesc;					/* pointeur au descripteur de fentre */
-static u_long		chres;						/* canal des ressources */
-#endif
 static Pixmap		pmicon1c = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (chair) */
 static Pixmap		pmicon1m = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (masque) */
 static Pixmap		pmicon2c = {0,0,0,0,0,0,0};	/* pixmap des icnes2 (chair) */
@@ -1980,49 +1959,7 @@ short GetPixmap(Pixmap *ppm, Pt dim, short fill, short color)
         SDL_RenderClear (g_renderer);
         SDL_SetRenderTarget(g_renderer, target);
         }
-#if 0
-	int		nbp = 1;
 
-	if ( colormode )
-	{
-		if ( color >= 1 )  nbp = pgradesc->dfcnp;
-	}
-	else
-	{
-		if ( color == 2 )  nbp = pgradesc->dfcnp;
-	}
-
-	if ( ppm->data != 0 )				/* pixmap existe dj ? */
-	{
-		if ( ppm->dx == dim.x && ppm->dy == dim.y )
-		{
-			ClearMem( ppm->data, ((u_long)ppm->dxb)*((u_long)ppm->dy), fill);
-			return 0;					/* pixmap existe dj avec la bonne taille */
-		}
-		else
-		{
-			free(ppm->data);			/* libre le pixmap prcdent */
-			ppm->data = 0;
-		}
-	}
-
-	ppm->dx     = dim.x;
-	ppm->dy     = dim.y;
-	ppm->nbp    = nbp;				/* nb de bits/pixel selon noir-blanc/couleur */
-	ppm->dxb    = ((dim.x+15)/16)*2 * ppm->nbp;
-	ppm->ccolor = COLORBLANC;
-	ppm->scolor = COLORNOIR;
-	ppm->data   = malloc( ((u_long)ppm->dxb)*((u_long)ppm->dy) );
-	if (ppm->data == NULL)
-	{
-		ppm->data =0;
-		return 1;
-	}
-	else
-	{
-		ClearMem( ppm->data, ((u_long)ppm->dxb)*((u_long)ppm->dy), fill);
-	}
-#endif
 	return 0;
 }
 
@@ -2064,35 +2001,6 @@ short GetImage(Pixmap *ppm, short numero)
 
 	err = LoadImage(numero, ppm);				/* charge l'image */
 	if ( err )  goto error;
-#if 0
-	if ( ppm->data == 0            ||
-		 ppm->dx != im.head->imdlx ||
-		 ppm->dy != im.head->imdly )
-	{
-		GivePixmap(ppm);						/* libre l'ancien pixmap si ncessaire */
-		ppm->dx     = im.head->imdlx;
-		ppm->dy     = im.head->imdly;
-		ppm->nbp    = im.head->imbip;			/* nb de bits/pixel */
-		ppm->dxb    = ((im.head->imdlx+15)/16)*2 * ppm->nbp;
-		ppm->ccolor = COLORBLANC;
-		ppm->scolor = COLORNOIR;
-		ppm->data   = malloc(ppm->dxb*ppm->dy);
-		err = 1;
-		if ( ppm->data == NULL )  goto error;	/* pas assez de mmoire */
-	}
-
-	im.head->imdlx *= im.head->imbip;
-	im.head->imbip  = 1;
-	err = gra2_decoima(im.data, ppm->data, im.head);
-
-	error:
-	if ( err )
-	{
-		GivePixmap(ppm);						/* libre le pixmap */
-	}
-
-	UnloadImage(&im);							/* libre l'image smaky code */
-#endif
 error:
 	return err;
 }
@@ -2198,8 +2106,6 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 	}
 
 	data:
-	//ppm->data += (LXICO/8L)*((no&ICONMASK)%16)*ppm->nbp;
-	//ppm->data += (160L*LYICO)*((no&ICONMASK)/16)*ppm->nbp;
         ppm->orig.x = LXICO * ((no&ICONMASK)%16);
         ppm->orig.y = LYICO * ((no&ICONMASK)/16);
 
@@ -2931,7 +2837,7 @@ void CloseMachine(void)
 
 long MachinePartieLg (void)
 {
-	return sizeof(u_long)*10;
+	return sizeof(unsigned long)*10;
 }
 
 /* ================== */
@@ -2946,7 +2852,7 @@ short MachinePartieWrite (long pos, char file)
 {
 	short		err;
 
-	err = FileWrite(&nextrand, pos, sizeof(u_long)*10, file);
+	err = FileWrite(&nextrand, pos, sizeof(unsigned long)*10, file);
 	return err;
 }
 
@@ -2962,7 +2868,7 @@ short MachinePartieRead (long pos, char file)
 {
 	short		err;
 
-	err = FileRead(&nextrand, pos, sizeof(u_long)*10, file);
+	err = FileRead(&nextrand, pos, sizeof(unsigned long)*10, file);
 	return err;
 }
 
