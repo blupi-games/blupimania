@@ -421,20 +421,8 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 void IconDrawAll (void)
 {
 	short		i;
-	Reg			r;
-#if 0
-	for ( i=0 ; i<MAXREGION ; i++ )
-	{
-		ListRegNew[i].reg = (r.r.p1.y=0,r.r.p1.x=0,
-                                      r.r.p2.y=0,r.r.p2.x=0,r);	/* libre toute la table */
-		ListRegNew[i].update = 0;
-	}
 
-	ListRegNew[0].reg = (r.r.p1.y=0, r.r.p1.x=0, r.r.p2.y=DIMYDRAW ,r.r.p2.x=DIMXDRAW, r);
-	ListRegNew[0].update = 1;
-#endif
-
-	for ( i=0 ; i<MAXREGION ; i++ )
+        for ( i=0 ; i<MAXREGION ; i++ )
 	{
 		ListRegNew[i].reg.r.p1.y = 0;
                 ListRegNew[i].reg.r.p1.x = 0;
@@ -486,7 +474,6 @@ void IconDrawFlush (void)
 void IconDrawOpen (void)
 {
 	short		i;
-	Reg			r;
 
 	for ( i=0 ; i<MAXICONDRAW ; i++ )
 	{

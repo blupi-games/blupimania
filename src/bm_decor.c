@@ -1946,8 +1946,6 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p1, p2, dim;
 
-	OpenTime();
-
     p1.y=0;
     p1.x=part;
     p2.y=POSYDRAW;
@@ -1974,7 +1972,6 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		dim
 	);
 
-	CloseTime(STEPDEL);
         SDL_Delay(20);
 }
 
@@ -1990,8 +1987,6 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p, p2, zero = {0, 0}, dim;
-
-	OpenTime();
 
         p.y = POSYDRAW;
         p.x = POSXDRAW+part;
@@ -2017,7 +2012,6 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		dim
 	);
 
-	CloseTime(STEPDEL);
         SDL_Delay(20);
 }
 
@@ -2033,8 +2027,6 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p1, p2, dim;
-
-	OpenTime();
 
     p1.x=0;
     p1.y=part;
@@ -2062,7 +2054,6 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		dim
 	);
 
-	CloseTime(STEPDEL);
         SDL_Delay(20);
 }
 
@@ -2078,8 +2069,6 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 {
 	Pt		p1, p2, dim;
-
-	OpenTime();
 
     p1.x=0;
     p1.y=0;
@@ -2107,7 +2096,6 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 		dim
 	);
 
-	CloseTime(STEPDEL);
         SDL_Delay(20);
 }
 

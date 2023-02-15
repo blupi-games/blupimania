@@ -573,15 +573,7 @@ char BanqueToFile (char banque)
 
 void MondeMax (char banque)
 {
-	short	max = 2;
-
 	maxmonde = FileGetLength(BanqueToFile(banque))/sizeof(Monde);
-
-	if ( banque <= 'b' )  max = 5;
-	if ( banque == 'd' ||
-		 banque == 'f' ||
-		 banque == 'h' )  max = 3;
-
 	if ( g_construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
 }
 
@@ -814,7 +806,6 @@ short ConvPhaseToNumImage (Phase ph)
 
 void ShowImage (void)
 {
-	Pt			p;
 	Rectangle	rect;
 	char		*ptx;
 	short		image, err, nbessai, max;
@@ -2149,7 +2140,7 @@ short PartiePrend (short rang)
 void PartieDrawIcon (short key)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
-	Pt			pos, p, zero = {0, 0}, dim = {LYICO, LXICO};
+	Pt			pos, zero = {0, 0}, dim = {LYICO, LXICO};
 
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
@@ -3400,7 +3391,7 @@ short* AnimSearch (PhAction ac)
 void AnimIconAddBack (Pt pos, char bFront)
 {
 	short	*pt = animpb;
-	Pt		ipos, p;
+	Pt		ipos;
 	Pixmap	pmicon;						/* pixmap de l'icne  dessiner */
 	Pt orig = {0, 0};
         Pt dim = {LYICO, LXICO};
@@ -3442,7 +3433,6 @@ void AnimIconAddBack (Pt pos, char bFront)
 void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 {
 	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
-	Pt			p;
 
         Pt orig = {0, 0};
         Pt dim = {LYICO, LXICO};
@@ -3454,16 +3444,6 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 	);
 
 	if ( bOther )  AnimIconAddBack(pos, 0);	/* ajoute les autres icnes derrire */
-
-#if 0
-	GetIcon(&pmicon, icon+ICOMOFF, 1);		/* cherche le pixmap du fond */
-	CopyPixel								/* masque le fond */
-	(
-		&pmicon, orig,
-		&pmtemp, orig,
-		dim, MODEAND
-	);
-#endif
 
 	GetIcon(&pmicon, icon, 1);				/* cherche le pixmap de la chair */
 	CopyPixel								/* dessine la chair */
@@ -3578,7 +3558,6 @@ void AnimDrawInit (void)
 void AnimTracking (Pt pos)
 {
 	short		*pt;
-	short		delai;
 
 	pt = AnimGetTable();
 	if ( pt == 0 )  return;
@@ -3610,9 +3589,7 @@ void AnimTracking (Pt pos)
 	anim:
 	if ( animpt == 0 )  return;
 
-	OpenTime();
-	delai = AnimDraw();
-	CloseTime(delai);
+	AnimDraw();
 
 	animnext ++;
 }
@@ -4002,9 +3979,7 @@ void GenericNext (void)
 	pos.x = tgeneric[generic*4+1];
 	pos.y = LYIMAGE()-tgeneric[generic*4+2];
 
-	OpenTime();
 	AnimDrawIcon(ppm, tgeneric[generic*4+3], pos, 0);
-	CloseTime(DELNORM);
 
 	generic ++;
 }
@@ -4502,9 +4477,6 @@ void MusicBackground (void)
 
 static short PlayInit (void)
 {
-	short		err;
-	Pt			p;
-
 	OpenMachine();						/* ouverture générale */
 
         g_screen.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
@@ -4685,8 +4657,6 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                           AnimTracking(pos);				/* tracking de l'animation */
 		}
 
-		OpenTime();
-		CloseTime(3);						/* pour ne pas trop occuper le CPU ! */
 		return 1;
 	}
 	else
@@ -4914,12 +4884,10 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
 		if ( g_pause == 0 && next )
 		{
-			OpenTime();
 			IconDrawOpen();
 			DecorSuperCel(pos);				/* indique la cellule visée par la souris */
 			term = MoveNext(key, pos);		/* anime jusqu'au pas suivant */
 			IconDrawClose(1);
-			CloseTime(delai);
 
 			if ( term == 1 )				/* termin gagn ? */
 			{
@@ -4940,11 +4908,9 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				max = 0;
 				do
 				{
-					OpenTime();
 					IconDrawOpen();
 					MoveNext(key, pos);		/* anime jusqu'au pas suivant */
 					IconDrawClose(1);
-					CloseTime(delai);
 					max += delai;
 				}
 				while ( max < 100 );		/* attend une seconde ... */
@@ -4956,12 +4922,10 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 		}
 		if (g_pause != 0 || (g_pause == 0 && !next))
 		{
-			OpenTime();
 			IconDrawOpen();
 			DecorSuperCel(pos);				/* indique la cellule visée par la souris */
 			MoveRedraw();					/* redessine sans changement */
 			IconDrawClose(1);
-			CloseTime(delai);
 		}
 	}
 	return 1;
@@ -4996,8 +4960,6 @@ static void PlayRelease (void)
 	StartRandom(0, 1);
 	PlaySound(GetRandom(0, SOUND_SAUT1, SOUND_CAISSEG+1), NULL);
 	HideMouse();
-	OpenTime();
-	CloseTime(130);
 
 	BlackScreen();			/* efface tout l'écran */
 
@@ -5041,7 +5003,6 @@ int main (int argc, char *argv[])
 {
 	int			err;						/* condition de sortie */
 	short		key;						/* touche pressée  */
-	Pt			pos;						/* position de la souris */
 
 	PlayInit();								/* initialise le jeu */
 

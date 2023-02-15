@@ -57,38 +57,27 @@ ImageSmaky;
 /* Variables globales internes */
 /* --------------------------- */
 
-static Pixmap		pmicon1c = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (chair) */
-static Pixmap		pmicon1m = {0,0,0,0,0,0,0};	/* pixmap des icnes1 (masque) */
-static Pixmap		pmicon2c = {0,0,0,0,0,0,0};	/* pixmap des icnes2 (chair) */
-static Pixmap		pmicon2m = {0,0,0,0,0,0,0};	/* pixmap des icnes2 (masque) */
-static Pixmap		pmicon3c = {0,0,0,0,0,0,0};	/* pixmap des icnes3 (chair) */
-static Pixmap		pmicon3m = {0,0,0,0,0,0,0};	/* pixmap des icnes3 (masque) */
-static Pixmap		pmicon4c = {0,0,0,0,0,0,0};	/* pixmap des icnes4 (chair) */
-static Pixmap		pmicon4m = {0,0,0,0,0,0,0};	/* pixmap des icnes4 (masque) */
+static Pixmap		pmicon1c = {0};	/* pixmap des icnes1 (chair) */
+static Pixmap		pmicon1m = {0};	/* pixmap des icnes1 (masque) */
+static Pixmap		pmicon2c = {0};	/* pixmap des icnes2 (chair) */
+static Pixmap		pmicon2m = {0};	/* pixmap des icnes2 (masque) */
+static Pixmap		pmicon3c = {0};	/* pixmap des icnes3 (chair) */
+static Pixmap		pmicon3m = {0};	/* pixmap des icnes3 (masque) */
+static Pixmap		pmicon4c = {0};	/* pixmap des icnes4 (chair) */
+static Pixmap		pmicon4m = {0};	/* pixmap des icnes4 (masque) */
 static Pt			origine;					/* coin sup/gauche de l'origine */
-static long			atime = 0;					/* temps de dbut */
 
 static unsigned int		nextrand[10];				/* valeurs alatoires suivantes */
 
 static short		colormode = 1;				/* 1 = couleur possible */
-static unsigned long tcolcanal;					/* canal TCOLOR */
 
-static unsigned int	adcanal;					/* canal module audio */
-static unsigned int	adcanalson1 = 0;			/* canal du son audio */
-static unsigned int	adcanalson2 = 0;			/* canal du son audio */
-static unsigned int	admode;						/* 0 = sons audio possibles */
 static short		soundon = 1;				/* son on/off */
-static short		sound1 = 0;					/* bruitages */
-static short		sound2 = 0;					/* musiques */
 static int			filsson = 0;				/* son  entendre */
 static int			filsrep = 0;				/* pas de rptition */
-static unsigned short		filsabort = 0;				/* fin du processus fils */
 static unsigned short		visumouse = 1;				/* 1 = souris visible */
-static Pt			lastmouse = {0,0};			/* dernire position de la souris */
 static KeyStatus	keystatus;					/* tat des flches du clavier */
-static char			demo = 0;					/* 1 = mode dmo */
 
-static Pixmap		pmsave = {0,0,0,0,0,0,0};	/* pixmap sauv en mmoire tendue (XMS) */
+static Pixmap		pmsave = {0};	/* pixmap sauv en mmoire tendue (XMS) */
 
 static short g_soundVolume = 0;
 static short g_musicVolume = 0;
@@ -201,8 +190,6 @@ short GetRandomEx (short g, short min, short max, char *pex)
 
 void StartRandom (short g, short mode)
 {
-	long		datebcd;
-
 	if ( mode == 0 )
 	{
 		nextrand[g] = 33554393;		/* grand nombre premier */
@@ -211,40 +198,6 @@ void StartRandom (short g, short mode)
 	{
 		nextrand[g] = time(NULL);
 	}
-}
-
-
-
-
-/* --------- */
-/* FilsSound */
-/* --------- */
-
-/*
-	Processus fils de gestion du son.
- */
-
-static void FilsSound (void)
-{
-#if 0
-	while ( filsabort == 0 )
-	{
-		if ( filsson != 0 )
-		{
-			if ( filsson < 100 && adcanalson1 != 0 )
-			{
-				audio_music(&adcanal, &adcanalson1, filsson-1);
-			}
-			if ( filsson > 100 && adcanalson2 != 0 )
-			{
-				audio_music(&adcanal, &adcanalson2, filsson-101);
-			}
-			if ( filsrep == 0)  filsson = 0;
-			if ( filsrep >  0)  filsrep --;
-		}
-		N_delms(5);			/* attend un poil ... */
-	}
-#endif
 }
 
 
@@ -478,57 +431,6 @@ SoundPlaying(short sound)
 
 
 /* ======== */
-/* OpenTime */
-/* ======== */
-
-/*
-	Indique le dbut d'une opration plus ou moins longue
-	(ne fait rien, enregistre simplement le temps absolu).
- */
-
-void OpenTime (void)
-{
-	long		hightotal,highunused,lowunused;
-
-//	N_getsytime(&hightotal, &atime, &highunused, &lowunused);
-}
-
-
-/* ========= */
-/* CloseTime */
-/* ========= */
-
-/*
-	Indique la fin d'une opration plus on moins longue,
-	avec attente si la dure tait plus petite que le temps total souhait.
- */
-
-void CloseTime (short t)
-{
-#if 0
-	long		hightotal,lowtotal,highunused,lowunused;
-	long		del;
-
-	if ( t == 0 )  return;
-
-	N_getsytime(&hightotal, &lowtotal, &highunused, &lowunused);
-
-	del = t - (lowtotal-atime)/(20000/128);
-	if ( del>0 && del<50 )
-	{
-		N_delms(del);	/* attente... */
-	}
-	else
-	{
-		N_delms(1);		/* attente minimale */
-	}
-#endif
-}
-
-
-
-
-/* ======== */
 /* PosMouse */
 /* ======== */
 
@@ -570,41 +472,6 @@ short IfMouse (void)
 }
 
 
-/* ----------- */
-/* getmousepos */
-/* ----------- */
-
-/*
-	Donne la position de la souris, aprs avoir reu
-	un KEYCLIC depuis GetEvent par exemple.
- */
-
-static Pt getmousepos (void)
-{
-  Pt  pos;
-  Sint32 x, y;
-
-  SDL_GetMouseState (&x, &y);
-  pos.x = x;
-  pos.y = y;
-
-  return pos;
-#if 0
-	int		err;
-	Point	pos;
-	Pt		ret;
-	u_char	boutons;
-
-	err = L_ifmouse(&pos, &boutons);	/* lecture de la souris */
-	if (err)  return (Pt){0,0};
-
-	ret.x = pos.x - origine.x;
-	ret.y = pos.y - origine.y;
-	return ret;
-#endif
-}
-
-
 /* ========= */
 /* HideMouse */
 /* ========= */
@@ -642,31 +509,6 @@ void ShowMouse(void)
 }
 
 
-
-/* ----------- */
-/* IfHideMouse */
-/* ----------- */
-
-/*
-	Cache la souris si elle est dans un rectangle.
- */
-
-static void IfHideMouse (Rectangle r)
-{
-	Pt		mouse;
-
-	mouse = getmousepos();		/* lit la position de la souris */
-
-	if ( mouse.x-10 > r.p2.x )  return;
-	if ( mouse.x+20 < r.p1.x )  return;
-	if ( mouse.y-10 > r.p2.y )  return;
-	if ( mouse.y+20 < r.p1.y )  return;
-
-	HideMouse();				/* cache la souris */
-}
-
-
-
 /* ========= */
 /* ClrEvents */
 /* ========= */
@@ -692,7 +534,7 @@ void ClrEvents (void)
 
 short GetEvent (Pt *ppos)
 {
-	long		key, maj;
+	long		key;
 
 	*ppos = g_lastmouse;					/* rend la dernire position de la souris */
 #if 0
@@ -1259,10 +1101,6 @@ void ScrollPixel (Pixmap *ppm, Pt shift, char color, Rectangle *pzone)
 
 short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim)
 {
-	char		*ps,*pd;			/* ^source,^destination */
-	short		is,id;				/* Iy source, Iy destination */
-	Rectangle	rect;				/* rectangle pour la souris */
-
 	if ( ppmd != 0 )
 	{
 		if ( od.x < 0 )					/* dpasse  gauche ? */
@@ -1296,8 +1134,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim)
 	{
 		os.x += origine.x;
 		os.y += origine.y;
-		ps = 0;
-		is = 0;
 	}
 	else
 	{
@@ -1309,8 +1145,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim)
 	{
 		od.x += origine.x;
 		od.y += origine.y;
-		pd = 0;
-		id = 0;
 	}
 	else
 	{
@@ -1579,43 +1413,6 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, char color)
   SDL_SetRenderTarget(g_renderer, target);
 }
 
-
-
-/* ======== */
-/* GetPixel */
-/* ======== */
-
-/*
-	Retourne la couleur d'un pixel contenu dans un pixmap.
-		0  = blanc
-		15 = noir
-		-1 = en dehors du pixmap
- */
-
-char GetPixel (Pixmap *ppm, Pt pos)
-{
-#if 0
-	char		*pt;
-
-	if ( pos.x < 0 || pos.x >= ppm->dx ||
-		 pos.y < 0 || pos.y >= ppm->dy )  return -1;
-
-	pt = ppm->data;
-	if ( ppm->nbp == 1 )
-	{
-		pt += ppm->dxb * pos.y;
-		pt += pos.x / 8;
-		if ( *pt & 1<<(7-pos.x%8) )  return 15;
-		return 0;
-	}
-	else
-	{
-		return -1;		/*  faire ! */
-	}
-#endif
-}
-
-
 /* ========== */
 /* SavePixmap */
 /* ========== */
@@ -1655,186 +1452,6 @@ short RestorePixmap (Pixmap *ppm)
 }
 
 
-
-/* ========= */
-/* TestHLine */
-/* ========= */
-
-/*
-	Teste si une ligne horizontale est entirement vide.
-	Ne fonctionne que dans un pixmap d'icne noir/blanc !
-	Si oui, retourne 1 (true).
- */
-
-short TestHLine (Pixmap *ppm, short y)
-{
-#if 0
-	char		*pt;
-	short		i;
-
-	pt = ppm->data + ppm->dxb*y;
-	for ( i=0 ; i<LXICO/8 ; i++ )
-	{
-		if ( *pt++ )  return 0;
-	}
-	return 1;
-#endif
-}
-
-
-/* ========= */
-/* TestVLine */
-/* ========= */
-
-/*
-	Teste si une ligne verticale est entirement vide.
-	Ne fonctionne que dans un pixmap d'icne noir/blanc !
-	Si oui, retourne 1 (true).
- */
-
-short TestVLine (Pixmap *ppm, short x)
-{
-#if 0
-	char		*pt;
-	short		i;
-	short		mask;
-
-	pt = ppm->data + x/8;
-	mask = 1<<(7-x%8);
-	for ( i=0 ; i<LYICO ; i++ )
-	{
-		if ( *pt & mask )  return 0;
-		pt += ppm->dxb;
-	}
-	return 1;
-#endif
-}
-
-
-
-
-/* --------- */
-/* lib_pdump */
-/* --------- */
-
-/*
-	Appel LIB,?PDUMP, pour imprimer une copie de l'cran.
- */
-
-static int lib_pdump (int mode)
-{
-#if 0
-	asm("moveml d3/d7,sp@-");			/* PUSH */
-	asm("movel %0,d3" : : "g" (mode));	/* D3 <-- mode */
-	asm(".word 0x4E46");				/* LIB */
-	asm(".word 0x003C");				/* ?PDUMP */
-	asm("moveml sp@+,d3/d7");			/* POP */
-#endif
-	return 0;							/* ? */
-}
-
-
-/* =========== */
-/* PrintScreen */
-/* =========== */
-
-/*
-	Imprime une copie de l'cran.
- */
-
-short PrintScreen (Pt p1, Pt p2)
-{
-#if 0
-	Point		coin, dim;
-	int			nowdo, err;
-
-	coin.x = p1.x;
-	coin.y = p1.y;
-	dim.x  = p2.x - p1.x;
-	dim.y  = p2.y - p1.y;
-	L_crewdo(coin, dim, &nowdo);		/* cre une sous-fentre */
-	L_usewdo(nowdo);					/* utilise la sous-fentre cre */
-
-	HideMouse();						/* cache la souris */
-	err = lib_pdump(0);					/* imprime la sous-fentre */
-	ShowMouse();						/* remet la souris */
-
-	L_usewdo(0);						/* utilise la sous-fentre initiale */
-	L_kilwdo(nowdo);					/* dtruit la sous-fentre cre */
-
-	return err;
-#endif
-}
-
-
-
-
-/* ----------- */
-/* UnloadImage */
-/* ----------- */
-
-/*
-	Libre un fichier image cod, si ncessaire.
- */
-
-static int UnloadImage(ImageSmaky *pim)
-{
-	if ( pim->data != 0 )
-	{
-		free(pim->data);			/* libre l'image code */
-		pim->data = 0;
-	}
-
-	if ( pim->clut != 0 )
-	{
-		free(pim->clut);			/* libre la clut */
-		pim->clut = 0;
-	}
-
-	if ( pim->head != 0 )
-	{
-		free(pim->head);			/* libre l'en-tte */
-		pim->head = 0;
-	}
-	return 0;						/* retour toujours ok */
-}
-
-
-
-/* -------- */
-/* LoadCLUT */
-/* -------- */
-
-/*
-	Modifie la clut en fonction de la table d'une image.
- */
-
-static void LoadCLUT (void *ptable)
-{
-#if 0
-	if ( colormode )
-	{
-		tcol_loadclut(tcolcanal, TCTABLE, 0, ptable, 0);
-	}
-#endif
-}
-
-
-/* -------- */
-/* ClearMem */
-/* -------- */
-
-/*
-	Met une zone mmoire  zro (blanc) ou  un (noir).
- */
-
-static void ClearMem (char *pt, int lg, int fill)
-{
-	if ( fill != 0 )  fill = -1;
-	memset(pt, fill, lg);
-}
-
-
 /* --------- */
 /* LoadImage */
 /* --------- */
@@ -1854,13 +1471,11 @@ static int LoadImage(int numero, Pixmap *pim)
 
 	if ( colormode && (numero < IMAMASK || numero >= 20) )
 	{
-		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.color.png", SDL_GetBasePath ());
-		/*else*/                 snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.color.png", SDL_GetBasePath (), lang, numero);
+		snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.color.png", SDL_GetBasePath (), lang, numero);
 	}
 	else
 	{
-		//if ( numero == 36 )  snprintf(name, sizeof(name), "%s../share/blupimania/image/blupi_x.image.png", SDL_GetBasePath ());
-		/*else  */               snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.image.png", SDL_GetBasePath (), lang, numero);
+		snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.image.png", SDL_GetBasePath (), lang, numero);
 	}
 
 	SDL_Surface * surface = IMG_Load (name);
@@ -1884,37 +1499,7 @@ static int LoadImage(int numero, Pixmap *pim)
         SDL_DestroyTexture(texture);
         SDL_SetRenderTarget (g_renderer, target);
 
-#if 0
-	pim->head = malloc(sizeof(Image));
-	if ( pim->head == NULL )  goto error;
-	fread( pim->head, 1, sizeof(Image), channel );			/* lit l'en-tte */
-
-	if ( pim->head->imlgc != 0 )							/* image couleur avec clut ? */
-	{
-		pim->clut = malloc(pim->head->imlgc);
-		if ( pim->clut == NULL )  goto error;
-		fread( pim->clut, 1, pim->head->imlgc, channel );	/* lit la clut */
-	}
-
-	pim->data = malloc(pim->head->imnbb);
-	if (pim->data == NULL)  goto error;
-	fread( pim->data, 1, pim->head->imnbb, channel );		/* lit l'image code */
-
-	if ( pim->head->imbip > 1 )								/* image couleur ? */
-	{
-		LoadCLUT(pim->clut);								/* change la clut */
-	}
-#endif
-	err = 0;												/* chargement image ok */
-
-	error:
-#if 0
-	if ( err )
-	{
-		if ( pim->data != NULL )  free(pim->data);			/* libre le data */
-	}
-#endif
-										/* ferme le fichier */
+	err = 0;												/* chargement image ok */										/* ferme le fichier */
 	return err;
 }
 
@@ -2307,35 +1892,6 @@ UnloadSounds (void)
 }
 
 
-/* ------ */
-/* AfMenu */
-/* ------ */
-
-/*
-	Affiche les soft-keys.
- */
-
-static void AfMenu (void)
-{
-	char		*menu = "\
-\0\
-Fin\0\
-\0\
-\0\
-       Bruitages \0\
-        Oui  Non \0\
-  Dcalage       \0\
-Prog. Rapide     \0\
-     Vitesse     \0\
-  1     2     3  \0\
-\0\
-Sauve Prend Pause\0";
-
-//	L_afmenu(menu);		/* affiche les soft-keys */
-}
-
-
-
 /* =========== */
 /* BlackScreen */
 /* =========== */
@@ -2348,34 +1904,6 @@ void BlackScreen (void)
 {
     SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear (g_renderer);
-#if 0
-	int		i;
-	u_char	t;
-	Trame88	trame;
-
-	if ( (pgradesc->dfmod)&0x80 )		/* cran  fond blanc ? */
-		t = 0xFF;				/* trame noire */
-	else
-		t = 0x00;				/* trame blanche */
-
-	for ( i=0 ; i<8 ; i++ )
-	{
-		trame[i] = t;			/* construit la trame 8x8 */
-	}
-
-	HideMouse();				/* cache la souris */
-
-	gra2_trame					/* efface toute la fentre */
-	(
-		pgradesc,				/* ^descripteur de fentre */
-		(Point) {0,0},			/* coin sup/gauche         */
-		pgradesc->dfd,			/* dimensions              */
-		LOADDOT,				/* mode                    */
-		trame					/* trame 8x8 noire/blanche */
-	);
-
-	ShowMouse();				/* remet la souris */
-#endif
 }
 
 
@@ -2394,7 +1922,6 @@ short FileRead (void *pdata, long pos, short nb, char file)
 	FILE		*channel;
 	char		filename[4096];
 	short		n = 0;
-	short		err;
 
         snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
 
@@ -2405,13 +1932,11 @@ short FileRead (void *pdata, long pos, short nb, char file)
 
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
 	{
-		err = errno;
 		goto close;
 	}
 
 	if ( fread(pdata, nb, 1, channel) != 1 )
 	{
-		err = errno;
 		goto close;
 	}
 
@@ -2434,8 +1959,6 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 {
 	FILE		*channel;
 	char		filename[4096];
-	short		n = 0;
-	short		err;
 
         snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
 
@@ -2458,13 +1981,11 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 
 	if ( fseek(channel, pos, SEEK_SET) != 0 )
 	{
-		err = errno;
 		goto close;
 	}
 
 	if ( fwrite(pdata, nb, 1, channel) != 1 )
 	{
-		err = errno;
 		goto close;
 	}
 
@@ -2569,36 +2090,6 @@ short IfFileExist (char *pfilename)
 }
 
 
-#define KEYDBOX		0x7E00
-
-/* --------- */
-/* FatalLoad */
-/* --------- */
-
-/*
-	Gestion des erreurs fatales de chargement  l'initialisation.
- */
-
-static void FatalLoad(char *name, int err)
-{
-	char*		errorname;
-
-	errorname = strerror(err);
-	if ( (int)errorname == 0 )
-	{
-		fprintf(stderr, "Erreur fatale numro %d avec %s ", err, name);
-	}
-	else
-	{
-		fprintf(stderr, "Erreur fatale %s avec %s ", errorname, name);
-	}
-	getchar();						/* attend une touche ... */
-
-	CloseMachine();					/* libre les ressources */
-	exit(err);						/* retour dans MAIN */
-}
-
-
 /* =========== */
 /* OpenMachine */
 /* =========== */
@@ -2685,6 +2176,8 @@ int OpenMachine(void)
 	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
 
 	keystatus = 0;
+
+      return 0;
 }
 
 

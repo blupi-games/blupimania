@@ -432,9 +432,6 @@ void	PlaySoundLoop	(short mode);
 void	PlaySound		(short sound, const Pt * cel);
 SDL_bool SoundPlaying(short sound);
 
-void	OpenTime		(void);
-void	CloseTime		(short t);
-
 void	PosMouse		(Pt pos);
 short	IfMouse			(void);
 void	ShowMouse		(void);
@@ -450,8 +447,6 @@ void	GetColor		(short color, short *pred, short *pgreen, short *pblue);
 void	CacheIcon		(short numero);
 short	GetIcon			(Pixmap *ppm, short numero, short mode);
 short	GetPixmap		(Pixmap *ppm, Pt dim, short fill, short colormode);
-short	TestHLine		(Pixmap *ppm, short y);
-short	TestVLine		(Pixmap *ppm, short x);
 short	GetImage		(Pixmap *ppm, short numero);
 short	GivePixmap		(Pixmap *ppm);
 void	DuplPixel		(Pixmap *ppms, Pixmap *ppmd);

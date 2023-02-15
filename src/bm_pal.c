@@ -436,7 +436,7 @@ void SPaletteGetPosDim (short rang, Pt *ppos, Pt *pdim)
 	(*pdim).y = 4+LYICO/2+4;
 }
 
-void SPaletteRedraw(rang)
+void SPaletteRedraw(short rang)
 {
   	short		i, state;
 
@@ -509,7 +509,7 @@ short SPaletteOpen (short rang, Pixmap *ppm)
 
 void SPaletteClose (short rang, Pixmap *ppm)
 {
-	Pt		pos, dim;
+	Pt		dim;
 	Pt		p = {0, 0};
 
         dim.x = LXIMAGE();
@@ -795,9 +795,7 @@ short SpecButton (Pt pos)
 
 short PaletteEvent (short event, Pt pos)
 {
-	short		init, rang, xlimit;
-	Pt			pb;
-	short		key;
+	short		rang;
 	short		typep, typer;
         static int _rang = -1;
 
@@ -822,11 +820,6 @@ short PaletteEvent (short event, Pt pos)
 		typer = 3;		/* bouton relch */
 	}
 
-	//if (event == KEYCLICREL)
-        //  goto end;
-
-	//if ( event != KEYCLIC && !g_keyMousePressed )  return 1;
-
 	rang = SpecButton(pos);
 	if ( rang != 0 )
         {
@@ -836,7 +829,7 @@ short PaletteEvent (short event, Pt pos)
         }
 
 	rang = GetButtonRang(pos);
-	//if ( rang == -1 )  return 1;
+
         if (rang == -1 && !g_subMenu)
           return 1;
 
@@ -849,14 +842,10 @@ short PaletteEvent (short event, Pt pos)
         if (event == KEYCLIC)
           PlaySound(SOUND_CLIC, NULL);
 
-	init = press;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
 	DrawF1toF4(_rang);
 	press = _rang;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
-
-	pb = GetButtonPos(0);
-	xlimit = pb.x + LXICO/2;
 
 		if (
 			 _rang != -1 &&
