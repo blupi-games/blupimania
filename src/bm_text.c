@@ -157,7 +157,7 @@ static char taccent[] =
 	Dessine un caractre et avance la position pour le suivant.
  */
 
-void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
+void DrawChar (Pixmap *ppm, Pt *ppos, char c)
 {
 	Pixmap		*ppmchar;
 	Pixmap		pmchar;
@@ -231,10 +231,9 @@ void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	Dessine un caractre accentu ou autre.
  */
 
-void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
+void DrawAccent (Pixmap *ppm, Pt *ppos, char c)
 {
 	char		*paccent;
-	ShowMode	m;
 	Pt			pnext, pacc;
 
 	if ( c < 0 )				/* lettre accentue ? */
@@ -246,12 +245,10 @@ void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 			{
 				pnext = *ppos;
 				pacc  = *ppos;
-				DrawChar(ppm, &pnext, paccent[1], mode);	/* dessine la lettre sous l'accent */
-				m = mode;
-				if ( mode == MODELOAD )  m = MODEOR;
+				DrawChar(ppm, &pnext, paccent[1]);	/* dessine la lettre sous l'accent */
 				if ( charsize == TEXTSIZELIT )  pacc.x += paccent[3];
 				else                            pacc.x += paccent[4];
-				DrawChar(ppm, &pacc, paccent[2], m);		/* dessine l'accent flottant */
+				DrawChar(ppm, &pacc, paccent[2]);		/* dessine l'accent flottant */
 				*ppos = pnext;
 				break;
 			}
@@ -261,7 +258,7 @@ void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	else
 	{
 		if ( c == '\n' )  c = 127;					/* petit triangle ">" */
-		DrawChar(ppm, ppos, c, mode);				/* dessine le caractre */
+		DrawChar(ppm, ppos, c);				/* dessine le caractre */
 	}
 }
 
@@ -277,10 +274,9 @@ void DrawAccent (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 		pos			->	dpart sur la ligne de base
 		pstring		->	chane termine par zro
 		size		->	taille des caractres
-		ShowMode	->	mode de dessin
  */
 
-Pt DrawText (Pixmap *ppm, Pt pos, char *pstring, short size, ShowMode mode)
+Pt DrawText (Pixmap *ppm, Pt pos, char *pstring, short size)
 {
 	char		c;
 
@@ -294,7 +290,7 @@ Pt DrawText (Pixmap *ppm, Pt pos, char *pstring, short size, ShowMode mode)
 
 	while ( (c = *pstring++, c != 0) )
 	{
-		DrawAccent(ppm, &pos, c, mode);				/* dessine le caractre */
+		DrawAccent(ppm, &pos, c);				/* dessine le caractre */
 	}
 
 	return pos;
@@ -378,7 +374,7 @@ short GetWord (char **ppnext, char *pword)
 	Dessine un paragraphe de texte dans un rectangle, en drapeau  droite.
  */
 
-void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size, ShowMode mode)
+void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size)
 {
 	Pt		pos;
 	char	word[50];
@@ -400,7 +396,7 @@ void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size, Show
 			lg = GetWord(&pnext, word);
 			if ( pos.x+lg <= rect.p2.x )
 			{
-				DrawText(ppm, pos, word, size, mode);		/* affiche un mot */
+				DrawText(ppm, pos, word, size);		/* affiche un mot */
 				pstring = pnext;
 			}
 			pos.x += lg;
@@ -416,7 +412,7 @@ void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size, Show
 	{
 		pos.x = rect.p2.x - LgChar(126);
 		pos.y = rect.p2.y - under;
-		DrawChar(ppm, &pos, 126, MODELOAD);		/* affiche petit triangle v */
+		DrawChar(ppm, &pos, 126);		/* affiche petit triangle v */
 	}
 }
 
@@ -504,7 +500,7 @@ void EditAff (void)
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
 		if ( pos.x >= chrect.p2.x-10 )  break;
-		DrawAccent(0, &pos, pchaine[i], MODELOAD);		/* affiche un caractre */
+		DrawAccent(0, &pos, pchaine[i]);		/* affiche un caractre */
 	}
 
         if ( begin > 0 )
@@ -513,7 +509,7 @@ void EditAff (void)
                 rect = chrect;
                 rect.p2.x = rect.p1.x + LgChar(127);
                 DrawFillRect(0, rect, 0, COLORBLANC);
-		DrawChar(0, &pos, 96, MODELOAD);				/* met le triangle < */
+		DrawChar(0, &pos, 96);				/* met le triangle < */
 	}
 #if 0
 	if ( pos.x < chrect.p2.x )
@@ -527,7 +523,7 @@ void EditAff (void)
 	if ( pchaine[i] != 0 )
 	{
 		pos.x = chrect.p2.x - LgChar(127);
-		DrawChar(0, &pos, 127, MODELOAD);				/* met le triangle > */
+		DrawChar(0, &pos, 127);				/* met le triangle > */
 	}
 }
 

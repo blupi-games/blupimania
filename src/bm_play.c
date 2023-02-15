@@ -942,7 +942,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p1.y = LYIMAGE()-319;
 		rect.p2.x = 113+446;
 		rect.p2.y = LYIMAGE()-319+72;
-		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
+		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID);
 	}
 
 	if ( phase == PHASE_SUIVANT )
@@ -958,7 +958,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p1.y = LYIMAGE()-275;
 		rect.p2.x = 85+470;
 		rect.p2.y = LYIMAGE()-275+163;
-		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID, MODEOR);
+		DrawParagraph(&pmimage, rect, ptx+2, TEXTSIZEMID);
 	}
 
 	if ( phase >= PHASE_FINI0 && phase <= PHASE_FINI8 )
@@ -968,7 +968,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		rect.p1.y = LYIMAGE()-266;
 		rect.p2.x = 85+470;
 		rect.p2.y = LYIMAGE()-266+190;
-		DrawParagraph(&pmimage, rect, ptx, TEXTSIZEMID, MODEOR);
+		DrawParagraph(&pmimage, rect, ptx, TEXTSIZEMID);
 	}
 
 	Pt dim = {pmimage.dy, pmimage.dx};
@@ -1569,7 +1569,7 @@ void DrawObjectif (void)
 	}
 
 	DrawFillRect(0, rect, MODELOAD, COLORBLANC);			/* efface le rectangle */
-	DrawParagraph(0, rect, ptext, TEXTSIZELIT, MODELOAD);	/* affiche la consigne */
+	DrawParagraph(0, rect, ptext, TEXTSIZELIT);	/* affiche la consigne */
 }
 
 
@@ -1619,7 +1619,6 @@ void DrawStatusBar (short avance, short max)
 	Pt				pgra;
 	char			lcolor, rcolor;
 	char			chaine[6];
-	ShowMode		mode;
 
 	if ( max != 0 )  pos = (avance*100)/max;
 	else             pos = 0;
@@ -1633,13 +1632,11 @@ void DrawStatusBar (short avance, short max)
 	{
 		lcolor = COLORVERTC;
 		rcolor = COLORROUGE;
-		mode   = MODEOR;
 	}
 	else
 	{
 		lcolor = COLORNOIR;
 		rcolor = COLORBLANC;
-		mode   = MODEXOR;
 	}
 
 	part = rect;
@@ -1681,7 +1678,7 @@ void DrawStatusBar (short avance, short max)
 		}
 	}
 
-	DrawText(0, pgra, chaine, TEXTSIZELIT, mode);
+	DrawText(0, pgra, chaine, TEXTSIZELIT);
 }
 
 
@@ -2533,7 +2530,7 @@ void DrawIdent (void)
 			*p++ = ' ';
 			*p++ = ' ';
 			PutNum(&p, fj.progres[joueur][6]+1, 0);
-			DrawText(0, pos, chaine, TEXTSIZELIT, MODEOR);	/* affiche la progression */
+			DrawText(0, pos, chaine, TEXTSIZELIT);	/* affiche la progression */
 		}
 		pos.y += 15;
 
@@ -2553,7 +2550,7 @@ void DrawIdent (void)
 			*p++ = ' ';
 			*p++ = ' ';
 			PutNum(&p, fj.progres[joueur][7]+1, 0);
-			DrawText(0, pos, chaine, TEXTSIZELIT, MODEOR);	/* affiche la progression */
+			DrawText(0, pos, chaine, TEXTSIZELIT);	/* affiche la progression */
 		}
 		pos.y += 40-15;
 	}
