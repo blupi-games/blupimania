@@ -8,11 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#define __MSDOS__ 1
-#ifdef __MSDOS__
 typedef unsigned short u_short;
-#endif
-
 
 
 /* ---------- */
@@ -161,35 +157,6 @@ typedef struct
 	short	reserve[100];					/* rserve */
 }
 Monde;
-
-
-
-/* --------------- */
-/* Modes de dessin */
-/* --------------- */
-
-#ifdef __MSDOS__
-typedef enum
-{
-  MODELOAD =	0,			/* mode load */
-  MODEOR   =	2,			/* mode or   */
-  MODEAND  =	5,			/* mode and  */
-  MODEXOR  =	7			/* mode xor  */
-}
-ShowMode;
-#else
-typedef enum
-{
-  MODELOAD =	0,			/* mode load */
-  MODEOR   =	1,			/* mode or   */
-  MODEAND  =	2,			/* mode and  */
-  MODEXOR  =	3			/* mode xor  */
-}
-ShowMode;
-#endif
-
-
-
 
 /* ----- */
 /* Icne */

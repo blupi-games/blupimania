@@ -2017,16 +2017,10 @@ Pt DecorGetOrigine (void)
 	return ovisu;
 }
 
+#define STEPDEL	3			/* dlai d'un pas (unit 20ms) */
+#define STEPX	24			/* pas horizontal (dplacement total = 176) */
+#define STEPY	18			/* pas vertical   (dplacement total =  90) */
 
-#ifdef __MSDOS__
-#define STEPDEL	3			/* dlai d'un pas (unit 20ms) */
-#define STEPX	24			/* pas horizontal (dplacement total = 176) */
-#define STEPY	18			/* pas vertical   (dplacement total =  90) */
-#else
-#define STEPDEL	3			/* dlai d'un pas (unit 20ms) */
-#define STEPX	24			/* pas horizontal (dplacement total = 176) */
-#define STEPY	18			/* pas vertical   (dplacement total =  90) */
-#endif
 
 /* ---------- */
 /* DecorMixPx */
@@ -2351,7 +2345,7 @@ static short IfHideIcon(Pt pos, Rectangle zone)
 	Copie une icne dans le pixmap du dcor, avec clipping selon la zone.
  */
 
-void CopyIconDecor (Pixmap *ppmicon, Pt pos, ShowMode mode, Rectangle zone)
+void CopyIconDecor (Pixmap *ppmicon, Pt pos, Rectangle zone)
 {
 	Pt		src, dst, dim;
 
@@ -2456,10 +2450,10 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					cel.x = j;
 					cel.y = i;
 					GetIcon(&pmissol, GetIconCaisseSSol(cel), 1);
-					CopyIconDecor(&pmissol, ph, MODEOR, zone);	/* dessine le sol sous la boule */
+					CopyIconDecor(&pmissol, ph, zone);	/* dessine le sol sous la boule */
 				}
 
-				CopyIconDecor(&pmichair, ph, MODEOR, zone);		/* dessine la cellule */
+				CopyIconDecor(&pmichair, ph, zone);		/* dessine la cellule */
 			}
 			ph.x += PLXICO;
 			ph.y += PLYICO;

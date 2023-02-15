@@ -585,9 +585,6 @@ void MondeMax (char banque)
 	if ( g_construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
 }
 
-
-
-#ifdef __MSDOS__
 void convshort (unsigned short *s)
 {
 	char	t;
@@ -612,7 +609,6 @@ void ConvMonde (Monde *m)
 	convshort(&m->freq);
 	convshort(&m->color);
 }
-#endif
 
 /* --------- */
 /* MondeRead */
@@ -639,9 +635,7 @@ short MondeRead (short monde, char banque)
 		maxmonde = 0;
 		goto vide;
 	}
-#ifdef __MSDOS__
 	ConvMonde (&descmonde) ;
-#endif
 	return 0;
 
 	vide:
@@ -663,13 +657,9 @@ short MondeWrite (short monde, char banque)
 {
 	short           err;
 
-#ifdef __MSDOS__
 	ConvMonde (&descmonde) ;
-#endif
 	err = FileWrite(&descmonde, monde*sizeof(Monde), sizeof(Monde), BanqueToFile(banque));
-#ifdef __MSDOS__
 	ConvMonde (&descmonde) ;
-#endif
 	MondeMax(banque);
 
 	return err;
