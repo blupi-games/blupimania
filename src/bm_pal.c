@@ -253,7 +253,7 @@ void DrawReste (Pt pos, short rest)
 	rect.p1.y = pos.y;
 	rect.p2.x = pos.x+14;
 	rect.p2.y = pos.y+13;
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'emplacement */
+	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
 
 	if ( rest >= 999 )  return;
 
@@ -301,7 +301,7 @@ void DrawTriangle (short rang)
 	rect.p1.y = pos.y;
 	rect.p2.x = pos.x+TEXTSIZELIT;
 	rect.p2.y = pos.y+TEXTSIZELIT+3;
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'emplacement */
+	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
 
 	if ( ticon[rang][1] == 0 )  return;				/* pas de sous-palette */
 
@@ -329,7 +329,7 @@ void PaletteDraw (void)
 	rect.p1.y = LYIMAGE()-1-332;
 	rect.p2.x = 6+55;
 	rect.p2.y = LYIMAGE()-1-332+173;
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'emplacement */
+	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
 
 	for ( rang=0 ; rang<MAXICONY ; rang++ )
 	{
@@ -481,7 +481,7 @@ short SPaletteOpen (short rang, Pixmap *ppm)
 	DrawFillRect
 	(
 		0, r,
-		MODELOAD, COLORBLANC
+		COLORBLANC
 	);
 
         r.p1.x=pos.x;
@@ -491,7 +491,7 @@ short SPaletteOpen (short rang, Pixmap *ppm)
 	DrawRect
 	(
 		0, r,
-		MODELOAD, COLORNOIR
+		COLORNOIR
 	);
 
         SPaletteRedraw(rang);
@@ -993,7 +993,7 @@ void DrawEditRest (Pt pos, short reste, short etat)
 	rect.p1.y = pos.y;
 	rect.p2.x = pos.x + LXICO/2 + 16;
 	rect.p2.y = pos.y + LYICO/2;
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'indicateur prcdent */
+	DrawFillRect(0, rect, COLORBLANC);	/* efface l'indicateur prcdent */
 
 	if ( etat == 0 )  return;						/* si bouton relch -> pas d'indicateur */
 
@@ -1355,7 +1355,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		rect.p1.y = INFOPOSY;
 		rect.p2.x = INFOPOSX+INFODIMX;
 		rect.p2.y = INFOPOSY+INFODIMY;
-		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface l'emplacement */
+		DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
 		return;
 	}
 
@@ -1390,13 +1390,13 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	{
 		rect.p1.x = 7+(force*8)/5;
 		rect.p2.x = 55;
-		DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface l'ascenseur */
+		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface l'ascenseur */
 	}
 	if ( force <= 30 )
 	{
 		rect.p1.x = 61;
 		rect.p2.x = 61+4;
-		DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface la lumire overflow */
+		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la lumire overflow */
 	}
 
 	rect.p1.y = 23;
@@ -1423,14 +1423,14 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	{
 		rect.p1.x = 26;
 		rect.p2.x = 49;
-		DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface le saut */
+		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface le saut */
 	}
 
 	if ( magic == 0 )
 	{
 		rect.p1.x = 49;
 		rect.p2.x = 67;
-		DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface le passe-muraille */
+		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface le passe-muraille */
 	}
 
 	rect.p1.y = 42;
@@ -1439,7 +1439,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	{
 		rect.p1.x = 1;
 		rect.p2.x = 54;
-		DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface la cl + ABC */
+		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl + ABC */
 	}
 	else
 	{
@@ -1447,19 +1447,19 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		{
 			rect.p1.x = 28;
 			rect.p2.x = 38;
-			DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface la cl A */
+			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl A */
 		}
 		if ( (cles & (1<<1)) == 0 )
 		{
 			rect.p1.x = 38;
 			rect.p2.x = 46;
-			DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface la cl B */
+			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl B */
 		}
 		if ( (cles & (1<<2)) == 0 )
 		{
 			rect.p1.x = 46;
 			rect.p2.x = 54;
-			DrawFillRect(&pminfo, rect, MODELOAD, COLORBLANC);	/* efface la cl C */
+			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl C */
 		}
 	}
 

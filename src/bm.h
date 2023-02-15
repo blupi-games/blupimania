@@ -491,9 +491,9 @@ void	ScrollPixelRect	(Pixmap *ppm, Pt od, Pt dim, Pt shift, char color, Rectangl
 short	CopyPixel		(Pixmap *ppms, Pt os,
 								 Pixmap *ppmd, Pt od,
 								 Pt dim);
-void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color);
-void	DrawRect		(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
-void	DrawFillRect	(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
+void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, char color);
+void	DrawRect		(Pixmap *ppm, Rectangle rect, char color);
+void	DrawFillRect	(Pixmap *ppm, Rectangle rect, char color);
 char	GetPixel		(Pixmap *ppm, Pt pos);
 void	BlackScreen		(void);
 short	SavePixmap		(Pixmap *ppm);

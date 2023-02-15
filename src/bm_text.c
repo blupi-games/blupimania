@@ -495,7 +495,7 @@ void EditAff (void)
 	pos.x = chrect.p1.x;
 	pos.y = chrect.p1.y + (chrect.p2.y-chrect.p1.y)/2 + charsize/2 - 1;
 
-	DrawFillRect(0, chrect, MODELOAD, COLORBLANC);	/* efface la ligne */
+	DrawFillRect(0, chrect, COLORBLANC);	/* efface la ligne */
 
 	for ( i=begin ; i<lgchaine ; i++ )
 	{
@@ -508,17 +508,9 @@ void EditAff (void)
 		pos.x = chrect.p1.x;
                 rect = chrect;
                 rect.p2.x = rect.p1.x + LgChar(127);
-                DrawFillRect(0, rect, 0, COLORBLANC);
+                DrawFillRect(0, rect, COLORBLANC);
 		DrawChar(0, &pos, 96);				/* met le triangle < */
 	}
-#if 0
-	if ( pos.x < chrect.p2.x )
-	{
-		rect = chrect;
-		rect.p1.x = pos.x;
-		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface la fin de la ligne */
-	}
-#endif
 
 	if ( pchaine[i] != 0 )
 	{
@@ -688,7 +680,7 @@ void InvCurs (short color)
 	p2.x = cx - 1;
 	p2.y = chrect.p2.y - 2;
 
-	DrawLine(0, p1, p2, MODEXOR, color);	/* inverse la droite verticale */
+	DrawLine(0, p1, p2, color);	/* inverse la droite verticale */
 }
 
 /* ------- */

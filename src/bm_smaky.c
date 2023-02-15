@@ -1232,17 +1232,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 
 	fill:
 	if ( color == -1 )  return;
-	DrawFillRect(ppm, *pzone, MODELOAD, color);		/* init la zone à mettre à jour */
-
-
-
-        //SDL_RenderClear(g_renderer);
- /*       p1.y = 0;
-        p1.x = 0;
-        dim.y = DIMYDRAW;
-        dim.x = DIMXDRAW;
-        CopyPixel(ppm, p1, NULL, p1, dim, 0);
-        SDL_RenderPresent(g_renderer);*/
+	DrawFillRect(ppm, *pzone, color);		/* init la zone à mettre à jour */
 }
 
 
@@ -1468,11 +1458,10 @@ void CloseGraDesc (Pixmap *ppm)
 		*ppm		->	pixmap o dessiner (0 = cran)
 		p1			->	dpart
 		p2			->	arrive
-		mode		->	mode de dessin
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
+void DrawLine (Pixmap *ppm, Pt p1, Pt p2, char color)
 {
   if (!ppm)				/* source dans l'cran ? */
   {
@@ -1514,62 +1503,6 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
   SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
   SDL_RenderDrawLine(g_renderer, p1.x, p1.y, p2.x, p2.y);
   SDL_SetRenderTarget(g_renderer, target);
-
-
-#if 0
-	u_long		csf,ccf;			/* sauvetage des couleurs */
-	Pt			o;
-	Point		p, d;
-	char		m;
-
-	OpenGraDesc(ppm);
-
-	if ( ppm == 0 )
-	{
-		o = origine;
-	}
-	else
-	{
-		o.x = 0;
-		o.y = 0;
-	}
-
-	switch (mode)
-	{
-		case MODEOR:	m = SETDOT; break;
-		case MODEAND:	m = CLRDOT; break;
-		case MODEXOR:	m = INVDOT; break;
-		default:		m = SETDOT;
-	}
-	if ( ppm == 0 &&					/* dans l'cran ? */
-		 pgradesc->dfcnp <= 1 &&		/* cran mono-chrome ? */
-		 (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
-	{
-		switch ( m )
-		{
-			case SETDOT:  m  = CLRDOT; break;
-			case CLRDOT:  m  = SETDOT; break;
-		}
-	}
-
-	csf = pgradesc->dfcsf;
-	ccf = pgradesc->dfccf;				/* sauve les couleurs */
-
-	pgradesc->dfcsf = color;
-	pgradesc->dfccf = ~color;
-
-	gra2_line							/* dessine une ligne */
-	(
-		pgradesc,
-		(p.y=o.y+p1.y, p.x=o.x+p1.x, p),
-		(d.y=p2.y-p1.y, d.x=p2.x-p1.x, d),
-		m
-	);
-	pgradesc->dfcsf = csf;
-	pgradesc->dfccf = ccf;				/* restitue les couleurs */
-
-	CloseGraDesc(ppm);
-#endif
 }
 
 
@@ -1582,11 +1515,10 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color)
 		*ppm		->	pixmap o dessiner (0 = cran)
 		rect.p1		->	coin sup/gauche
 		rect.p2		->	coin inf/droite
-		mode		->	mode de dessin
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
+void DrawRect (Pixmap *ppm, Rectangle rect, char color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;
@@ -1618,86 +1550,6 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
   SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
   SDL_RenderDrawRect(g_renderer, &_rect);
   SDL_SetRenderTarget(g_renderer, target);
-
-#if 0
-	u_long		csf,ccf;			/* sauvetage des couleurs */
-	Pt			o;
-	Point		p, d;
-	char		m;
-
-	OpenGraDesc(ppm);
-
-	if ( ppm == 0 )
-	{
-		o = origine;
-	}
-	else
-	{
-		o.x = 0;
-		o.y = 0;
-	}
-
-	switch (mode)
-	{
-		case MODEOR:	m = SETDOT; break;
-		case MODEAND:	m = CLRDOT; break;
-		case MODEXOR:	m = INVDOT; break;
-		default:		m = SETDOT;
-	}
-	if ( ppm == 0 &&					/* dans l'cran ? */
-		 pgradesc->dfcnp <= 1 &&		/* cran mono-chrome ? */
-		 (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
-	{
-		switch ( m )
-		{
-			case SETDOT:  m  = CLRDOT; break;
-			case CLRDOT:  m  = SETDOT; break;
-		}
-	}
-
-	csf = pgradesc->dfcsf;
-	ccf = pgradesc->dfccf;				/* sauve les couleurs */
-
-	pgradesc->dfcsf = color;
-	pgradesc->dfccf = ~color;
-
-	gra2_line							/* dessine une ligne */
-	(
-		pgradesc,
-		(p.y=o.y+rect.p1.y, p.x=o.x+rect.p1.x, p),
-		(d.y=0, d.x=rect.p2.x-rect.p1.x, d),
-		m
-	);
-
-	gra2_line							/* dessine une ligne */
-	(
-		pgradesc,
-		(p.y=o.y+rect.p1.y, p.x=o.x+rect.p2.x, p),
-		(d.y=rect.p2.y-rect.p1.y, d.x=0, d),
-		m
-	);
-
-	gra2_line							/* dessine une ligne */
-	(
-		pgradesc,
-		(p.y=o.y+rect.p2.y, p.x=o.x+rect.p2.x, p),
-		(d.y=0, d.x=rect.p1.x-rect.p2.x, d),
-		m
-	);
-
-	gra2_line							/* dessine une ligne */
-	(
-		pgradesc,
-		(p.y=o.y+rect.p2.y, p.x=o.x+rect.p1.x, p),
-		(d.y=rect.p1.y-rect.p2.y, d.x=0, d),
-		m
-	);
-
-	pgradesc->dfcsf = csf;
-	pgradesc->dfccf = ccf;				/* restitue les couleurs */
-
-	CloseGraDesc(ppm);
-#endif
 }
 
 
@@ -1711,11 +1563,10 @@ void DrawRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
 		*ppm		->	pixmap où dessiner (0 = écran)
 		rect.p1		->	coin sup/gauche
 		rect.p2		->	coin inf/droite
-		mode		->	mode de dessin
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
+void DrawFillRect (Pixmap *ppm, Rectangle rect, char color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;
@@ -1747,94 +1598,6 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, ShowMode mode, char color)
   SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
   SDL_RenderFillRect(g_renderer, &_rect);
   SDL_SetRenderTarget(g_renderer, target);
-
-#if 0
-
-	u_long		csf,ccf;			/* sauvetage des couleurs */
-	Pt			o;
-	Point		p, d;
-	Trame88		trame1 = {-1,-1,-1,-1,-1,-1,-1,-1};
-	Trame88		trame0 = {0,0,0,0,0,0,0,0};
-
-	OpenGraDesc(ppm);
-
-	if ( ppm == 0 )
-	{
-		o = origine;
-	}
-	else
-	{
-		o.x = 0;
-		o.y = 0;
-	}
-
-	if ( mode == MODEXOR )
-	{
-		gra2_trame							/* inverse la surface */
-		(
-			pgradesc,
-			(p.y=o.y+rect.p1.y, p.x=o.x+rect.p1.x, p),
-			(d.y=rect.p2.y-rect.p1.y, d.x=rect.p2.x-rect.p1.x, d),
-			INVDOT,
-			trame1
-		);
-		goto close;
-	}
-
-	if ( pgradesc->dfcmd == 0 )
-	{
-		if ( ppm == 0 &&					/* dans l'cran ? */
-			 (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
-		{
-			if ( color )  color = 0;
-			else          color = 1;
-		}
-		if ( color == 0 )
-		{
-			gra2_trame						/* rempli la surface */
-			(
-				pgradesc,
-				(p.y=o.y+rect.p1.y, p.x=o.x+rect.p1.x, p),
-				(d.y=rect.p2.y-rect.p1.y, d.x=rect.p2.x-rect.p1.x, d),
-				CLRDOT,
-				trame0
-			);
-		}
-		else
-		{
-			gra2_trame						/* rempli la surface */
-			(
-				pgradesc,
-				(p.y=o.y+rect.p1.y, p.x=o.x+rect.p1.x, p),
-				(d.y=rect.p2.y-rect.p1.y, d.x=rect.p2.x-rect.p1.x, d),
-				SETDOT,
-				trame1
-			);
-		}
-	}
-	else
-	{
-		csf = pgradesc->dfcsf;
-		ccf = pgradesc->dfccf;				/* sauve les couleurs */
-
-		pgradesc->dfcsf = color;
-		pgradesc->dfccf = color;
-
-		gra2_trame							/* rempli la surface */
-	    (
-			pgradesc,
-			(p.y=o.y+rect.p1.y, p.x=o.x+rect.p1.x, p),
-			(d.y=rect.p2.y-rect.p1.y, d.x=rect.p2.x-rect.p1.x, d),
-			LOADDOT,
-			trame1
-	    );
-		pgradesc->dfcsf = csf;
-		pgradesc->dfccf = ccf;				/* restitue les couleurs */
-	}
-
-	close:
-	CloseGraDesc(ppm);
-#endif
 }
 
 
@@ -2928,137 +2691,7 @@ short IfFileExist (char *pfilename)
 }
 
 
-/* -------- */
-/* CheckMem */
-/* -------- */
-
-/*
-	Vrifie s'il reste assez de mmoire en fonction des options
-	choisies. Si oui, retourne 1 (true).
- */
-
-short CheckMem (u_long flags)
-{
-#if 0
-	long		total, biggest;
-	long		mem = 0;
-
-	G_argmem(&total, &biggest);			/* demande la mmoire restante */
-	total -= 10000;						/* petite marge de 10 kilos ! */
-
-	if ( flags & 1<<0 )  mem += MEMBW+MEMRUNBW;
-	if ( flags & 1<<1 )  mem += MEMCOLOR+MEMRUNCOLOR;
-
-	if ( flags & (1<<2|1<<3) )  mem += MEMAUDIO;
-	if ( flags & 1<<2 )         mem += MEMBRUIT;
-	if ( flags & 1<<3 )         mem += MEMMUSIC;
-
-	return ( mem < total );
-#endif
-}
-
-
 #define KEYDBOX		0x7E00
-
-/* ======= */
-/* DboxMem */
-/* ======= */
-
-/*
-	Demande quelles ressources utiliser.
-	Retourne une erreur != 0 en cas d'erreur (quitter).
- */
-
-short DboxMem (void)
-{
-#if 0
-	int			err;
-	char		ligne[5] = "";
-	u_long		dbcanal;
-	u_long		flags = 0x0L;
-	u_long		taille;
-	short		touche;
-	char		*pdbox;
-	Point		debut, fin;
-	char		*menu = "\0\0\0\0\0\0\0\0\0\0\0\0";
-
-	err = res_get(chres, RSGETPOINTER+RSGETnoHAND, 0L, RtypDbox, DBOX_MEM, 0L, &pdbox, &taille);
-	if ( err )  return err;
-	err = dbox_open(pdbox, DBSAV, (Point){0,0}, flags, &dbcanal);
-	if ( err )  return err;
-
-	if ( pgradesc->dfcnp == 1 || !IfFileExist("(:,#:)BLUPIX01.COLOR") )
-	{
-		dbox_getco(dbcanal, 1+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "couleur" */
-		flags |= 1<<0;												/* enclenche "noir-blanc */
-	}
-	else
-	{
-		flags |= 1<<1;												/* enclenche "couleur" */
-	}
-
-	if ( admode != 0 || !IfFileExist("(:,#:)BLUPIX01.AUDIO") )
-	{
-		dbox_getco(dbcanal, 2+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "bruitages" */
-	}
-	else
-	{
-		flags |= 1<<2;												/* enclenche "bruitages" */
-	}
-
-	if ( admode != 0 || !IfFileExist("(:,#:)BLUPIX02.AUDIO") )
-	{
-		dbox_getco(dbcanal, 3+DBGCLABEL+DBGCGREY, &debut, &fin);	/* grise "musiques" */
-	}
-	else
-	{
-		flags |= 1<<3;												/* enclenche "musiques" */
-	}
-
-	if ( !CheckMem(flags) )
-	{
-		flags &= ~(1<<3);											/* dclenche "musiques" */
-		if ( !CheckMem(flags) )
-		{
-			flags &= ~(1<<2);										/* dclenche "bruitages" */
-			if ( !CheckMem(flags) )
-			{
-				flags &= ~(1<<1);									/* dclenche "couleurs" */
-				flags |=   1<<0;									/* enclenche "noir-blanc" */
-			}
-		}
-	}
-
-	if ( CheckMem(flags) )  dbox_getco(dbcanal, 50+DBGCLABEL+DBGCFULL, &debut, &fin);
-	else                    dbox_getco(dbcanal, 50+DBGCLABEL+DBGCGREY, &debut, &fin);
-
-	ShowMouse();							/* utilise la souris */
-	do
-	{
-		dbox_edit (dbcanal, ligne, &flags, &touche);
-		if ( touche == KEYDBOX )
-		{
-			if ( CheckMem(flags) )  dbox_getco(dbcanal, 50+DBGCLABEL+DBGCFULL, &debut, &fin);
-			else                    dbox_getco(dbcanal, 50+DBGCLABEL+DBGCGREY, &debut, &fin);
-		}
-	}
-	while ( touche != F1  && touche != F2  && touche != F3  &&
-			touche != F13 && touche != F14 && touche != F15 );
-	dbox_close (dbcanal);
-	HideMouse();							/* enlve la souris */
-	L_afmenu(menu);							/* affiche les soft-keys */
-
-	if ( flags & 1<<0 )  colormode = 0;		/* noir-blanc */
-	else                 colormode = 1;		/* couleur */
-
-	if ( flags & 1<<2 )  sound1 = 1;		/* bruitages */
-	if ( flags & 1<<3 )  sound2 = 1;		/* musiques */
-
-	if ( touche == F13 || touche == F14 || touche == F15 )  return 1;
-#endif
-	return 0;
-}
-
 
 /* --------- */
 /* FatalLoad */

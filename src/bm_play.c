@@ -1237,12 +1237,12 @@ void DrawVolume (short pot, short volume)
 	rect.p1.y = LYIMAGE()-135-1+3;
 	rect.p2.y = LYIMAGE()-135-1+3+((10-volume)*50/10);
 
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);
+	DrawFillRect(0, rect, COLORBLANC);
 
 	rect.p1.y = rect.p2.y;
 	rect.p2.y = LYIMAGE()-135-1+3+50;
 
-	DrawFillRect(0, rect, MODELOAD, COLORROUGE);
+	DrawFillRect(0, rect, COLORROUGE);
 }
 
 /* ------------ */
@@ -1422,7 +1422,7 @@ void DrawArrows (char mode)
 		rect.p1.y = LYIMAGE()-1-28;
 		rect.p2.x = 26+36;
 		rect.p2.y = LYIMAGE()-1-28+18;
-		DrawFillRect(0, rect, MODELOAD, COLORBLANC);	/* efface pause + disquette */
+		DrawFillRect(0, rect, COLORBLANC);	/* efface pause + disquette */
 	}
 }
 
@@ -1568,7 +1568,7 @@ void DrawObjectif (void)
 		}
 	}
 
-	DrawFillRect(0, rect, MODELOAD, COLORBLANC);			/* efface le rectangle */
+	DrawFillRect(0, rect, COLORBLANC);			/* efface le rectangle */
 	DrawParagraph(0, rect, ptext, TEXTSIZELIT);	/* affiche la consigne */
 }
 
@@ -1641,11 +1641,11 @@ void DrawStatusBar (short avance, short max)
 
 	part = rect;
 	part.p2.x = part.p1.x + ((part.p2.x-part.p1.x)*pos)/100;
-	DrawFillRect(0, part, MODELOAD, lcolor);	/* dessine le rectangle gauche */
+	DrawFillRect(0, part, lcolor);	/* dessine le rectangle gauche */
 
 	part.p1.x = part.p2.x;
 	part.p2.x = rect.p2.x;
-	DrawFillRect(0, part, MODELOAD, rcolor);	/* dessine le rectangle droite */
+	DrawFillRect(0, part, rcolor);	/* dessine le rectangle droite */
 
 	pgra.x = (rect.p2.x+rect.p1.x)/2;
 	pgra.y = rect.p1.y+TEXTSIZELIT+1;
@@ -4675,7 +4675,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 						rect.p1.y = 0;
 						rect.p2.x = LXIMAGE();
 						rect.p2.y = LYIMAGE();
-						DrawFillRect(0, rect, MODEXOR, COLORNOIR);	/* flash */
+						DrawFillRect(0, rect, COLORNOIR);	/* flash */
 						for ( delai=0 ; delai<20000 ; delai++ );
 					}
 				}
