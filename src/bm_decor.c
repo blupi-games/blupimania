@@ -120,8 +120,8 @@ Pt CelToGra2 (Pt cel, SDL_bool shift)
 
         if (shift)
         {
-          gra.x += /*POSXDRAW +*/ PLXICO*ovisu.x /*+ LXICO/2 -5*/;
-          gra.y += /*POSYDRAW +*/ PRYICO*ovisu.y /*+ LYICO/2 +11*/;
+          gra.x += POSXDRAW + PLXICO*ovisu.x - PLXICO;
+          gra.y += POSYDRAW + PRYICO*ovisu.y - PLYICO;
         }
 
 	return gra;

@@ -232,13 +232,13 @@ static Reg IconRegion (short i, Pt pos)
 	rg.r.p2.y = pos.y + pm.dy;		/* coin inf/droite */
 
 	i &= 0x01FF;					/* icne 0..512-1 */
-	if ( i < 128+64 )
+	/*if ( i < 128+64 )
 	{
 		rg.r.p1.x += IconBBox[i].left;
 		rg.r.p2.x -= IconBBox[i].right;
 		rg.r.p1.y += IconBBox[i].up;
 		rg.r.p2.y -= IconBBox[i].down;
-	}
+	}*/
 
 	return rg;						/* retourne la rgion */
 }
@@ -296,7 +296,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
         {
           //dim.y -= posz;
           Pixmap mask;
-          Pt p0 = {0, 0};
+          Pt p0 = {0, 0}, p2 = {0, 0};
 
           Pixmap pmtemp;
           pmtemp.texture = SDL_CreateTexture (
@@ -307,8 +307,9 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           pmtemp.orig.x = 0;
           pmtemp.orig.y = 0;
 
+          Pt maskDim = {LYICO, LXICO};
           GetIcon(&mask, ICO_SOLMASK, 1);
-          CopyPixel(&mask, p0, &pmtemp, p0, dim, 0);
+          CopyPixel(&mask, p0, &pmtemp, p0, maskDim, 0);
 
           /* Calcul la position du "toto" sans la chute */
           Pt absPos = {pos.y + POSYDRAW + LYICO - posz, pos.x + POSXDRAW + LXICO};
@@ -316,17 +317,30 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           Pt holeCel = GraToCel(absPos);
           // Récupère les coordonnées du trou
           Pt holeCoords = CelToGra2(holeCel, SDL_TRUE);
-          holeCoords.y -= PRYICO - 7; // -7 ??
-          holeCoords.x -= PLXICO + 1; // +1 ??
+
+          holeCoords.x -= POSXDRAW;
+          holeCoords.y -= POSYDRAW;
+
+          /* Evite de dessiner en dessus du masque */
+          Pt cropDim = {LYICO, LXICO};
+          cropDim.y -= use.r.p1.y - holeCoords.y;
 
           /* copie le fond dans le "masque" */
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_MOD);
-          CopyPixel(ppm, holeCoords, &pmtemp, p1, dim, 0);
+          if (holeCoords.y < 0)
+          {
+            maskDim.y += holeCoords.y;
+            p2.y = -holeCoords.y;
+            holeCoords.y = 0;
+          }
+          if (holeCoords.x < 0)
+          {
+            maskDim.x += holeCoords.x;
+            p2.x = -holeCoords.x;
+            holeCoords.x = 0;
+          }
+          CopyPixel(ppm, holeCoords, &pmtemp, p2, maskDim, 0);
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
-
-          /* Evite de dessiner en dessus du masque */
-          Pt cropDim = dim;
-          cropDim.y -= use.r.p1.y - holeCoords.y;
 
           /* Dessine le "toto" */
           CopyPixel								/* dessine la chair */
@@ -340,7 +354,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           );
 
           /* Utilise le "masque" par dessus */
-          CopyPixel(&pmtemp, p0, ppm, holeCoords, dim, 0);
+          CopyPixel(&pmtemp, p2, ppm, holeCoords, maskDim, 0);
 
           SDL_DestroyTexture(pmtemp.texture);
         }
@@ -883,6 +897,12 @@ void IconInit (void)
 
 	for ( i=0 ; i<128+64 ; i++ )
 	{
+          IconBBox[i].left = 0;
+          IconBBox[i].right = LXICO - 1;
+          IconBBox[i].up = 0;
+          IconBBox[i].down = LYICO - 1;
+          continue;
+
 		GetIcon(&pm, i+ICOMOFF, 1);
 
 		for ( x=0 ; x<LXICO/2 ; x++ )
