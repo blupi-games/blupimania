@@ -1125,7 +1125,7 @@ void DuplPixel(Pixmap *ppms, Pixmap *ppmd)
 	(
 		ppms, p,
 		ppmd, p,
-		dim, MODELOAD
+		dim
 	);
 }
 
@@ -1174,7 +1174,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		(
 			ppm, p1,
 			&tmp, p2,
-			_dim, MODELOAD
+			_dim
 		);
 		(*pzone).p2.x = pos.x - shift.x;
 	}
@@ -1190,7 +1190,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		(
 			ppm, p1,
 			&tmp, p2,
-			_dim, MODELOAD
+			_dim
 		);
 		(*pzone).p1.x = pos.x + dim.x - shift.x;
 	}
@@ -1206,7 +1206,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		(
 			ppm, p1,
 			&tmp, p2,
-			_dim, MODELOAD
+			_dim
 		);
 		(*pzone).p2.y = pos.y - shift.y;
 	}
@@ -1222,7 +1222,7 @@ void ScrollPixelRect (Pixmap *ppm, Pt pos, Pt dim, Pt shift, char color, Rectang
 		(
 			ppm, p1,
 			&tmp, p2,
-			_dim, MODELOAD
+			_dim
 		);
 		(*pzone).p1.y = pos.y + dim.y - shift.y;
 	}
@@ -1285,11 +1285,10 @@ void ScrollPixel (Pixmap *ppm, Pt shift, char color, Rectangle *pzone)
 		*ppmd	*pixmap destination (si == 0 -> cran)
 		od		origine destination (coin sup/gauche)
 		dim		dimensions du rectangle
-		mode	mode de transfert (MODELOAD/MODEOR/MODEAND)
 	Retourne 1 si rien n'a t dessin.
  */
 
-short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
+short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim)
 {
 	char		*ps,*pd;			/* ^source,^destination */
 	short		is,id;				/* Iy source, Iy destination */
@@ -1324,15 +1323,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
 		}
 	}
 
-#if 0
-	switch (mode)
-	{
-		case MODEOR:	m = SETDOT; break;
-		case MODEAND:	m = CLRDOT; break;
-		case MODEXOR:	m = INVDOT; break;
-		default:		m = LOADDOT;
-	}
-#endif
 	if ( ppms == 0 )				/* source dans l'cran ? */
 	{
 		os.x += origine.x;
@@ -1374,58 +1364,7 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim, ShowMode mode)
           SDL_RenderCopy (
             g_renderer, ppms ? ppms->texture : g_screen.texture, &srcRect, &dstRect);
           SDL_SetRenderTarget (g_renderer, target);
-          /* XXX */ //SDL_RenderPresent(g_renderer);
-#if 0
-	if ( pgradesc->dfcnp <= 1 )
-	{										/* noir-blanc */
-		if ( (pgradesc->dfmod&0x80) == 0 )	/* cran  fond blanc ? */
-		{
-			if ( ppms == 0 || ppmd == 0 )
-			{
-				switch ( m )
-				{
-					case LOADDOT: m += CPLDOT; break;
-					case SETDOT:  m  = CLRDOT; break;
-					case CLRDOT:  m  = SETDOT; break;
-				}
-			}
-		}
-		gra2_raster
-		(
-			pgradesc,						/* ^descripteur de fentre    */
-			(Point) {os.y, os.x}, ps, is,	/* source: origine, ^data, Iy */
-			(Point) {od.y, od.x}, pd, id,	/* dest:   origine, ^data, Iy */
-			(Point) {dim.y, dim.x}, m		/* dimensions, mode           */
-		);
-	}
-	else
-	{										/* couleur */
-		if ( ppms == 0 || ppms->nbp > 1 )  m += SRCCOUL;
-		if ( ppmd == 0 || ppmd->nbp > 1 )  m += DSTCOUL;
 
-		csf = pgradesc->dfcsf;
-		ccf = pgradesc->dfccf;				/* sauve les couleurs */
-
-		if ( (m&SRCCOUL) == 0 && (m&DSTCOUL) != 0 )
-		{									/* si source n-b et destination couleur */
-			pgradesc->dfcsf = ppms->scolor;
-			pgradesc->dfccf = ppms->ccolor;
-		}
-
-		gra2_craster
-		(
-			pgradesc,						/* ^descripteur de fentre    */
-			(Point) {os.y, os.x}, ps, is,	/* source: origine, ^data, Iy */
-			(Point) {od.y, od.x}, pd, id,	/* dest:   origine, ^data, Iy */
-			(Point) {dim.y, dim.x}, m		/* dimensions, mode           */
-		);
-
-		pgradesc->dfcsf = csf;
-		pgradesc->dfccf = ccf;				/* restitue les couleurs */
-	}
-
-	ShowMouse();							/* remet la souris si ncessaire */
-#endif
 	return 0;
 }
 

@@ -217,7 +217,7 @@ void DrawChar (Pixmap *ppm, Pt *ppos, char c, ShowMode mode)
 	}
 	/*src.x += ppmchar->orig.x;
         src.y += ppmchar->orig.y;*/
-	CopyPixel(ppmchar, src, ppm, dst, dim, mode);
+	CopyPixel(ppmchar, src, ppm, dst, dim);
 
 	(*ppos).x += dim.x;
 }

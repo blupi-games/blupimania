@@ -1190,7 +1190,7 @@ void InvCel (Pt cel, short outil)
 		if ( dim.y <= 0 )  return;
 	}
 
-	CopyPixel(&pmmask, src, 0, dst, dim, MODEXOR);
+	CopyPixel(&pmmask, src, 0, dst, dim);
 
 	if ( give )  GivePixmap(&pmmask);
 }
@@ -1359,8 +1359,6 @@ void SuperCelSet (SDL_bool invalid)
         g_superInvalid = invalid;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
-	/*if ( superinv == 1 )  return;
-	superinv = 1;*/
 
 	src = superpos;
 	dst.x = 0;
@@ -1373,7 +1371,7 @@ void SuperCelSet (SDL_bool invalid)
 		(
 			&pmdecor, src,
 			&pmsback, dst,
-			dim, MODELOAD
+			dim
 		);
 	}
 
@@ -1381,12 +1379,6 @@ void SuperCelSet (SDL_bool invalid)
         p.x = 0;
 	dim.x = LXICO;
 	dim.y = LYICO;
-	/*CopyPixel								/* allume dans pmdecor */
-	/*(
-		&pmsuper, p,
-		&pmdecor, superpos,
-		dim, MODEOR
-	);*/
 
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
@@ -1410,23 +1402,13 @@ void SuperCelClear (void)
 	Reg		rg;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
-	/*if ( superinv == 0 )  return;
-	superinv = 0;*/
 
 	src.x = 0;
 	src.y = 0;
 	dst = superpos;
 	dim.x = LXICO;
 	dim.y = LYICO;
-	if ( SuperCelClip(&dst, &dim) )
-	{
-		/*CopyPixel							/* restitue la zone dans pmsback */
-		/*(
-			&pmsback, src,
-			&pmdecor, dst,
-			dim, MODELOAD
-		);*/
-	}
+	SuperCelClip(&dst, &dim); // FIXME: useless ?
 
 	rg.r.p1.x = superpos.x;
 	rg.r.p1.y = superpos.y;
@@ -1931,19 +1913,6 @@ void DecorModif (Pt cel, short newicon)
                         dst.x = PLXICO*(j - cel.x) - PRXICO*(i - cel.y);
 			dst.y = PRYICO*(i - cel.y) + PLYICO*(j - cel.x);
 
-			if ( icon != ICO_BORDG && icon != ICO_BORDD )
-			{
-#ifdef __MSDOS__
-				//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
-#endif
-				/*CopyPixel						/* efface la surface au sol */
-				/*(
-					&pmisol, zero,
-					&pmnewdecor, dst,
-					dim, MODEAND
-				);*/
-			}
-
 			if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
 				 icon == ICO_LIVRE || icon == ICO_OBSTACLE+8 || icon == ICO_GLISSE ||
 				 icon == ICO_CAISSE || icon == ICO_CAISSEV || icon == ICO_CAISSEO ||
@@ -1960,7 +1929,7 @@ void DecorModif (Pt cel, short newicon)
 				(
 					&pmissol, zero,
 					&pmnewdecor, dst,
-					dim, MODEOR
+					dim
 				);
 			}
 
@@ -1977,7 +1946,7 @@ void DecorModif (Pt cel, short newicon)
 			(
 				&pm, zero,
 				&pmnewdecor, dst,
-				dim, MODEOR
+				dim
 			);
 		}
 	}
@@ -1998,13 +1967,13 @@ void DecorModif (Pt cel, short newicon)
 	(
 		&pmmask, zero,
 		&pmnewdecor, zero,
-		dim, MODEAND
+		dim
 	);
 	CopyPixel										/* dessine l'emplacement chang */
 	(
 		&pmnewdecor, zero,
 		&pmdecor, dst,
-		dim, MODEOR
+		dim
 	);
 
 	rg.r.p1.x = dst.x;
@@ -2084,8 +2053,7 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmold, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
     p1.y=0;
@@ -2098,8 +2066,7 @@ void DecorMixPx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmnew, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
 	CloseTime(STEPDEL);
@@ -2129,8 +2096,7 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmold, zero,
 		0,      p,
-		dim,
-		MODELOAD
+		dim
 	);
 
         p.y = POSYDRAW;
@@ -2143,8 +2109,7 @@ void DecorMixMx (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmnew, p2,
 		0,      p,
-		dim,
-		MODELOAD
+		dim
 	);
 
 	CloseTime(STEPDEL);
@@ -2176,8 +2141,7 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmold, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
     p1.x=0;
@@ -2190,8 +2154,7 @@ void DecorMixPy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmnew, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
 	CloseTime(STEPDEL);
@@ -2223,8 +2186,7 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmold, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
     p1.x=0;
@@ -2237,8 +2199,7 @@ void DecorMixMy (Pixmap *ppmold, Pixmap *ppmnew, short total, short part)
 	(
 		ppmnew, p1,
 		0,      p2,
-		dim,
-		MODELOAD
+		dim
 	);
 
 	CloseTime(STEPDEL);
@@ -2309,8 +2270,7 @@ void DecorSetOrigine (Pt origine, short quick)
 		(
 			0,        p,
 			&pmdecor, zero,
-			dim,
-			MODELOAD
+			dim
 		);
 
 		while ( newpos.x < termpos.x )
@@ -2426,7 +2386,7 @@ void CopyIconDecor (Pixmap *ppmicon, Pt pos, ShowMode mode, Rectangle zone)
 		if ( dim.y <= 0 )  return;
 	}
 
-	CopyPixel(ppmicon, src, &pmdecor, dst, dim, mode);
+	CopyPixel(ppmicon, src, &pmdecor, dst, dim);
 }
 
 
@@ -2466,8 +2426,6 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 	/*	Met à jour le décor dans pmdecor correspondant à la zone découverte. */
 
-	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);			/* demande le masque du sol */
-
 	pv = newpos;
 	for ( i=0 ; i<=MAXCELY ; i++ )
 	{
@@ -2481,26 +2439,9 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 			if ( !IfHideIcon(ph, zone) )
 			{
-				/*if ( icon != ICO_BORDG && icon != ICO_BORDD )
-				{
-#ifdef __MSDOS__
-					GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);	/* demande le masque du sol */
-/*#endif
-					CopyIconDecor(&pmisol, ph, MODEAND, zone);	/* efface la surface au sol */
-/*				}*/
-#ifndef __MSDOS__
-				if ( icon != lasti )
-#endif
-				{
 					lasti = icon;
-					/*if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
-						 icon == ICO_BORDG  || icon == ICO_BORDD  ||
-						 icon == ICO_GLISSE )
-					{
-						GetIcon(&pmimask, icon+ICOMOFF, 1);
-					}*/
 					GetIcon(&pmichair, icon, 1);
-				}
+
 				if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
 					 icon == ICO_LIVRE || icon == ICO_OBSTACLE+8 || icon == ICO_GLISSE ||
 					 icon == ICO_CAISSE || icon == ICO_CAISSEV || icon == ICO_CAISSEO ||
@@ -2517,12 +2458,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 					GetIcon(&pmissol, GetIconCaisseSSol(cel), 1);
 					CopyIconDecor(&pmissol, ph, MODEOR, zone);	/* dessine le sol sous la boule */
 				}
-				/*if ( icon >= ICO_BLOQUE || icon == ICO_DEPART ||
-					 icon == ICO_BORDG  || icon == ICO_BORDD  ||
-					 icon == ICO_GLISSE )
-				{
-					CopyIconDecor(&pmimask, ph, MODEAND, zone);	/* efface le volume en hauteur */
-				/*}*/
+
 				CopyIconDecor(&pmichair, ph, MODEOR, zone);		/* dessine la cellule */
 			}
 			ph.x += PLXICO;
@@ -2552,7 +2488,7 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 		dst.y = szone.p1.y;
 		dim.x = zone.p2.x - zone.p1.x;
 		dim.y = zone.p2.y - zone.p1.y;
-		CopyPixel(&pmdecor, src, 0, dst, dim, MODELOAD);
+		CopyPixel(&pmdecor, src, 0, dst, dim);
 	}
 }
 

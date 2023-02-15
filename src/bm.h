@@ -490,7 +490,7 @@ void	ScrollPixel		(Pixmap *ppm, Pt shift, char color, Rectangle *pzone);
 void	ScrollPixelRect	(Pixmap *ppm, Pt od, Pt dim, Pt shift, char color, Rectangle *pzone);
 short	CopyPixel		(Pixmap *ppms, Pt os,
 								 Pixmap *ppmd, Pt od,
-								 Pt dim, ShowMode mode);
+								 Pt dim);
 void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, ShowMode mode, char color);
 void	DrawRect		(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);
 void	DrawFillRect	(Pixmap *ppm, Rectangle rect, ShowMode mode, char color);

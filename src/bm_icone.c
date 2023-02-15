@@ -296,7 +296,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 
           Pt maskDim = {LYICO, LXICO};
           GetIcon(&mask, ICO_SOLMASK, 1);
-          CopyPixel(&mask, p0, &pmtemp, p0, maskDim, 0);
+          CopyPixel(&mask, p0, &pmtemp, p0, maskDim);
 
           /* Calcul la position du "toto" sans la chute */
           Pt absPos = {pos.y + POSYDRAW + LYICO - posz, pos.x + POSXDRAW + LXICO};
@@ -326,7 +326,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
             p2.x = -holeCoords.x;
             holeCoords.x = 0;
           }
-          CopyPixel(ppm, holeCoords, &pmtemp, p2, maskDim, 0);
+          CopyPixel(ppm, holeCoords, &pmtemp, p2, maskDim);
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
 
           /* Dessine le "toto" */
@@ -336,12 +336,11 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
                   p1,
                   ppm,								/* destination */
                   use.r.p1,
-                  cropDim,
-                  MODEOR								/* mode */
+                  cropDim
           );
 
           /* Utilise le "masque" par dessus */
-          CopyPixel(&pmtemp, p2, ppm, holeCoords, maskDim, 0);
+          CopyPixel(&pmtemp, p2, ppm, holeCoords, maskDim);
 
           SDL_DestroyTexture(pmtemp.texture);
         }
@@ -353,8 +352,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
 		p1,
 		ppm,								/* destination */
 		use.r.p1,
-		dim,
-		MODEOR								/* mode */
+		dim
 	);}
 
         if (m == 1)
@@ -403,8 +401,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
                   p1,
                   ppm,								/* destination */
                   p2,
-                  dim,
-                  MODEOR								/* mode */
+                  dim
           );
         }
 
@@ -666,8 +663,7 @@ void IconDrawClose (short bdraw)
 		(
 			ppmdecor, ListRegOld[i].reg.r.p1,
 			&pmwork, ListRegOld[i].reg.r.p1,
-			p1,
-			MODELOAD
+			p1
 		);
 
 
@@ -724,8 +720,7 @@ void IconDrawClose (short bdraw)
                                 hover.p1,
                                 &pmwork,								/* destination */
                                 hover.p2,
-                                hover.dim,
-                                MODEOR								/* mode */
+                                hover.dim
                         );
 
                         GivePixmap(&tmp);
@@ -748,8 +743,7 @@ void IconDrawClose (short bdraw)
 			(
 				&pmwork, p1,
 				0,       p2,
-				dim,
-				MODELOAD
+				dim
 			);
 		}
 	}

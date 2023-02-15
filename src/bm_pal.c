@@ -167,7 +167,7 @@ void DrawButton (Pt pos, short icon, short state)
 	(
 		&pm, src,
 		0, pos,
-		dim, MODEOR
+		dim
 	);
 
 	if ( icon == 1 )  return;
@@ -196,7 +196,7 @@ void DrawButton (Pt pos, short icon, short state)
 	(
 		&pm, p1,
 		0, pos,
-		p2, MODEOR
+		p2
 	);
 }
 
@@ -226,12 +226,9 @@ void DrawF1toF4 (short rang)
 
 	dim.x = 8;
 	dim.y = 7;
-/*
-	GetIcon(&pm, ICO_BUTTON_PAUSE+ICOMOFF, 1);
-	CopyPixel(&pm, src, 0, dst, dim, MODEAND);
-*/
+
 	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
-	CopyPixel(&pm, src, 0, dst, dim, MODEOR);
+	CopyPixel(&pm, src, 0, dst, dim);
 }
 
 
@@ -475,7 +472,7 @@ short SPaletteOpen (short rang, Pixmap *ppm)
         game.y = LYIMAGE();
 	if ( GetPixmap(ppm, game, 0, 2) != 0 )  return 1;
 
-	CopyPixel(0, p, ppm, p, game, MODELOAD);	/* sauve l'cran */
+	CopyPixel(0, p, ppm, p, game);	/* sauve l'cran */
 
         r.p1.x=pos.x;
         r.p1.y=pos.y;
@@ -517,7 +514,7 @@ void SPaletteClose (short rang, Pixmap *ppm)
 
         dim.x = LXIMAGE();
         dim.y = LYIMAGE();
-	CopyPixel(ppm, p, 0, p, dim, MODELOAD);	/* restitue l'cran */
+	CopyPixel(ppm, p, 0, p, dim);	/* restitue l'cran */
 	GivePixmap(ppm);
 }
 
@@ -1375,7 +1372,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		(
 			&pm, p1,
 			0, p2,
-			dim, MODELOAD
+			dim
 		);
 		return;
 	}
@@ -1417,7 +1414,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 		(
 			&pminfo, p1,
 			&pminfo, p2,
-			dim, MODELOAD
+			dim
 		);
 	}
 
@@ -1476,7 +1473,7 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 	(
 		&pminfo, p1,
 		0, p2,
-		dim, MODELOAD
+		dim
 	);
 
 	GivePixmap(&pminfo);

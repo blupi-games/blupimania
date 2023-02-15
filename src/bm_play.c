@@ -977,7 +977,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	(
 		&pmimage, orig,
 		0, orig,
-		dim, MODELOAD
+		dim
 	);
 
 	if ( phase == PHASE_PLAY )
@@ -1132,7 +1132,7 @@ void DrawRadioButton (Pt pos, short state)
 	else          icon = ICO_BUTTON_ROND0;
 
 	GetIcon(&pm, icon, 1);
-	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine le bouton */
+	CopyPixel(&pm, src, 0, pos, dim);		/* dessine le bouton */
 }
 
 
@@ -1392,7 +1392,7 @@ void DrawArrows (char mode)
 	dim.y = 52;
 
 	GetIcon(&pm, icon, 1);
-	CopyPixel(&pm, src, 0, dst, dim, MODELOAD);		/* dessine flches ou tlcommande */
+	CopyPixel(&pm, src, 0, dst, dim);		/* dessine flches ou tlcommande */
 
 	if ( icon == ICO_TELECOM )
 	{
@@ -1405,7 +1405,7 @@ void DrawArrows (char mode)
 		src.y = 52;
 		if ( mode == KEYGOFRONT )  src.x = 15;
 		if ( mode == KEYGOBACK  )  src.x = 30;
-		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette avant/arrire */
+		CopyPixel(&pm, src, 0, dst, dim);	/* dessine la manette avant/arrire */
 
 		dst.x = 7+29;
 		dst.y = LYIMAGE()-92-1+26;
@@ -1413,7 +1413,7 @@ void DrawArrows (char mode)
 		src.y = 0;
 		if ( mode == KEYGOLEFT  )  src.y = 15;
 		if ( mode == KEYGORIGHT )  src.y = 30;
-		CopyPixel(&pm, src, 0, dst, dim, MODELOAD);	/* dessine la manette gauche/droite */
+		CopyPixel(&pm, src, 0, dst, dim);	/* dessine la manette gauche/droite */
 	}
 
 	if ( g_typeedit )
@@ -1453,10 +1453,10 @@ void DrawPause (void)
 	dim.y = 18;
 
 	GetIcon(&pm, ICO_BUTTON_PAUSE+ICOMOFF, 1);
-	CopyPixel(&pm, src, 0, dst, dim, MODEAND);
+	CopyPixel(&pm, src, 0, dst, dim);
 
 	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
-	CopyPixel(&pm, src, 0, dst, dim, MODEOR);
+	CopyPixel(&pm, src, 0, dst, dim);
 }
 
 
@@ -1483,7 +1483,7 @@ void DrawBigDigit (Pt pos, short num)
 	dim.x = 20;
 	dim.y = 26;
 
-	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);
+	CopyPixel(&pm, src, 0, pos, dim);
 }
 
 /* ---------- */
@@ -1748,7 +1748,7 @@ void DrawNumMonde (void)
 	{
 		GetIcon(&pm, ICO_ARROWUP, 1);
 	}
-	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche suprieure (+) */
+	CopyPixel(&pm, src, 0, pos, dim);		/* dessine la flche suprieure (+) */
 
 	pos.y = LYIMAGE()-230-1;
 
@@ -1760,7 +1760,7 @@ void DrawNumMonde (void)
 	{
 		GetIcon(&pm, ICO_ARROWDOWN, 1);
 	}
-	CopyPixel(&pm, src, 0, pos, dim, MODELOAD);		/* dessine la flche infrieure (-) */
+	CopyPixel(&pm, src, 0, pos, dim);		/* dessine la flche infrieure (-) */
 
 	if ( phase == PHASE_DEPLACE )  return;
 	DrawStatusBar(g_monde, maxmonde-1);				/* dessine la barre d'avance */
@@ -2190,7 +2190,7 @@ void PartieDrawIcon (short key)
 	(
 		&pmicon, zero,
 		0, pos,
-		dim, MODEAND
+		dim
 	);
 
 	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE, 1);
@@ -2202,7 +2202,7 @@ void PartieDrawIcon (short key)
 	(
 		&pmicon, zero,
 		0, pos,
-		dim, MODEOR
+		dim
 	);
 }
 
@@ -2338,7 +2338,7 @@ void StopDrawIcon (void)
 	(
 		&pmicon, p,
 		0, pos,
-		dim, MODEAND
+		dim
 	);
 
 	GetIcon(&pmicon, ICO_STOPOUI, 1);
@@ -2346,7 +2346,7 @@ void StopDrawIcon (void)
 	(
 		&pmicon, p,
 		0, pos,
-		dim, MODEOR
+		dim
 	);
 
 	pos.x += LXICO+20;
@@ -2356,7 +2356,7 @@ void StopDrawIcon (void)
 	(
 		&pmicon, p,
 		0, pos,
-		dim, MODEAND
+		dim
 	);
 
 	GetIcon(&pmicon, ICO_STOPNON, 1);
@@ -2364,7 +2364,7 @@ void StopDrawIcon (void)
 	(
 		&pmicon, p,
 		0, pos,
-		dim, MODEOR
+		dim
 	);
 }
 
@@ -2416,7 +2416,7 @@ short StopPartie (short key, Pt pos)
 	  if ( GetPixmap(&pmsave, sdim, 0, 2) != 0 )  return KEYHOME;
           p.y = 0;
           p.x = 0;
-          CopyPixel(0, spos, &pmsave, p, sdim, MODELOAD);	/* sauve l'cran */
+          CopyPixel(0, spos, &pmsave, p, sdim);	/* sauve l'cran */
           open = SDL_TRUE;
           g_stopMenu = SDL_TRUE;
           key = 0;
@@ -2441,7 +2441,7 @@ next:
 
         p.y = 0;
         p.x = 0;
-	CopyPixel(&pmsave, p, 0, spos, sdim, MODELOAD);	/* restitue l'cran */
+	CopyPixel(&pmsave, p, 0, spos, sdim);	/* restitue l'cran */
 	GivePixmap(&pmsave);
         //SDL_RenderPresent(g_renderer);
         open = SDL_FALSE;
@@ -3445,22 +3445,13 @@ void AnimIconAddBack (Pt pos, char bFront)
 			if ( ipos.x < pos.x+LXICO && ipos.x+LXICO > pos.x &&
 				 ipos.y < pos.y+LYICO && ipos.y+LYICO > pos.y )
 			{
-#if 0
-				GetIcon(&pmicon, pt[5]+ICOMOFF, 1);		/* cherche le pixmap du fond */
-				CopyPixel								/* masque le fond */
-				(
-					&pmicon, (p.y=0, p.x=0, p),
-					&pmtemp, (p.y=ipos.y-pos.y, p.x=ipos.x-pos.x, p),
-					(p.y=LYICO, p.x=LXICO, p), MODEAND
-				);
-#endif
                                 Pt _pos = {ipos.y - pos.y, ipos.x - pos.x};
 				GetIcon(&pmicon, pt[5], 1);				/* cherche le pixmap de la chair */
 				CopyPixel								/* dessine la chair */
 				(
 					&pmicon, orig,
 					&pmtemp, _pos,
-					dim, MODEOR
+					dim
 				);
 			}
 		}
@@ -3487,7 +3478,7 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 	(
 		&pmimage, pos,
 		&pmtemp, orig,
-		dim, MODELOAD
+		dim
 	);
 
 	if ( bOther )  AnimIconAddBack(pos, 0);	/* ajoute les autres icnes derrire */
@@ -3507,7 +3498,7 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 	(
 		&pmicon, orig,
 		&pmtemp, orig,
-		dim, MODEOR
+		dim
 	);
 
 	if ( bOther )  AnimIconAddBack(pos, 1);	/* ajoute les autres icnes devant */
@@ -3516,7 +3507,7 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 	(
 		&pmtemp, orig,
 		ppm, pos,
-		dim, MODELOAD
+		dim
 	);
 }
 
