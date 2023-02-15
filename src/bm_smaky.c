@@ -216,6 +216,8 @@ void StartRandom (short g, short mode)
 
 void MusicStart (short song)
 {
+  static int prev = -1;
+
   if (song < 3)
     return;
 
@@ -234,7 +236,14 @@ void MusicStart (short song)
     "bmx011.ogg",
   };
 
-  int idx = song == 3 ? 0 : GetRandom(1, 0, countof(musics));
+  int idx = 0;
+
+  if (song != 3)
+  {
+    while ((idx = GetRandom(1, 0, countof(musics))) == prev)
+      ;
+    prev = idx;
+  }
 
   char filename[4096];
   snprintf(filename, sizeof(filename), "%s../share/blupimania/music/%s", SDL_GetBasePath (), musics[idx]);

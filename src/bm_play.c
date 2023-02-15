@@ -4444,17 +4444,11 @@ void MusicBackground (void)
 			}
 			else
 			{
-				n = 0;
 				do
 				{
-					#if 1
 					sound = GetRandom(1, 0, 8+1) / 2;		/* sound <- 0..4 */
-					#else
-					sound = GetRandom(1, 0, 12+1) / 3;		/* sound <- 0..4 */
-					#endif
-					n ++;
 				}
-				while ( sound == lastaccord && n < 2 );
+				while ( sound == lastaccord );
 			}
 			lastaccord = sound;
 			if ( sound != 0 )  sound --;					/* accord de base plus souvent */
