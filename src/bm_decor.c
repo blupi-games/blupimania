@@ -325,10 +325,6 @@ const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
         memset(list, 0 , sizeof(list));
 
 	short		icon;
-	Pt			p, off;
-
-        p.y = LYICO;
-        p.x = LXICO;
 
         Rectangle	zone;
         zone.p1.x = 0;
@@ -1058,77 +1054,7 @@ Pt GetSuperCel()
 
 Pt DecorDetCel (Pt pos)
 {
-	Pixmap		pmmask  = {0};
-	Pt			cel, c;
-	Pt			p;
-	Pt			posbase, posfront;
-	short		i = 0;
-	short		icon;
-	char		color;
-
-	static char table[] =
-	{
-		 2,  3,
-		 1,  3,
-		 3,  2,
-		 2,  2,
-		 1,  2,
-		 0,  2,
-		 2,  1,
-		 1,  1,
-		 0,  1,
-		 1,  0,
-		-100
-	};
-
-	//if ( g_typejeu == 1 )
-	{
-		return GraToCel(pos);			/* dtection "transparente" */
-	}
-#if 0
-	cel = GraToCel(pos);				/* calcule la cellule montre par la souris */
-	if ( cel.x < 0 || cel.x >= MAXCELX ||
-		 cel.y < 0 || cel.y >= MAXCELY )
-	{
-		cel.x = -1;
-		cel.y = -1;
-		return cel;
-	}
-	posbase = CelToGra(cel);
-	posbase.x += PLXICO*ovisu.x;
-	posbase.y += PRYICO*ovisu.y;
-	pos.x -= POSXDRAW + posbase.x;
-	pos.y -= POSYDRAW + posbase.y;		/* position relative dans l'icne de base */
-
-	while ( table[i] != -100 )
-	{
-		c.x = cel.x + table[i+0];
-		c.y = cel.y + table[i+1];
-
-		icon = DecorGetCel(c);
-		if ( icon >= ICO_BLOQUE || icon == ICO_DEPART )	/* cellule contenant un dcor en hauteur ? */
-		{
-			// FIXME GetCelMask(&pmmask, c);
-
-			posfront = CelToGra(c);
-			posfront.x += PLXICO*ovisu.x;
-			posfront.y += PRYICO*ovisu.y;
-			p = pos;
-			p.x -= posfront.x - posbase.x;
-			p.y -= posfront.y - posbase.y;
-			color = GetPixel(&pmmask, p);
-			if ( color > 0 )			/* point vis ? */
-			{
-				cel = c;				/* oui -> retourne cette cellule */
-				break;
-			}
-		}
-
-		i += 2;
-	}
-	GivePixmap(&pmmask);
-	return cel;
-#endif
+	return GraToCel(pos);			/* dtection "transparente" */
 }
 
 
@@ -1353,7 +1279,7 @@ short SuperCelClip (Pt *ppos, Pt *pdim)
 
 void SuperCelSet (SDL_bool invalid)
 {
-	Pt		p, src, dst, dim;
+	Pt		src, dst, dim;
 	Reg		rg;
 
         g_superInvalid = invalid;
@@ -1375,8 +1301,6 @@ void SuperCelSet (SDL_bool invalid)
 		);
 	}
 
-        p.y = 0;
-        p.x = 0;
 	dim.x = LXICO;
 	dim.y = LYICO;
 
@@ -1398,13 +1322,11 @@ void SuperCelSet (SDL_bool invalid)
 
 void SuperCelClear (void)
 {
-	Pt		src, dst, dim;
+	Pt		dst, dim;
 	Reg		rg;
 
 	if ( superpos.x == -1 && superpos.y == -1 )  return;
 
-	src.x = 0;
-	src.y = 0;
 	dst = superpos;
 	dim.x = LXICO;
 	dim.y = LYICO;
@@ -1477,7 +1399,7 @@ void DecorSuperCel (Pt pmouse)
 
 short DecorEvent (Pt pos, short poscel, short outil, int key)
 {
-	Pt		cel, new;
+	Pt		cel;
 	short	init, con, first;
 
 	if ( outil < 0 )  return 1;
@@ -1878,7 +1800,7 @@ void DecorModif (Pt cel, short newicon)
 	short		icon;
 	Pixmap		pmnewdecor = {0};
 	Pixmap		pmmask     = {0};
-	Pixmap		pmisol, pmissol;
+	Pixmap		pmissol;
 	Pixmap		pm;
 	Pt			dst, zero = {0, 0}, dim = {LYICO, LXICO};
 	Reg			rg;
@@ -1886,15 +1808,12 @@ void DecorModif (Pt cel, short newicon)
 	if ( newicon == pmonde->tmonde[cel.y][cel.x] )  return;
 	pmonde->tmonde[cel.y][cel.x] = newicon;			/* modifie une cellule du monde */
 
-	//SuperCelClear();								/* teint la super cellule */
-	//SuperCelFlush();								/* super cellule plus valable */
 	MoveModifCel(cel);								/* indique cellule modifie  move */
 
 	/*	Génère dans pmnewdecor l'image de la nouvelle partie du décor,
 		en redessinant toutes les cellules placées derrière. */
 
 	GetPixmap(&pmnewdecor, dim, 1, 1);	/* noirci le pixmap du dcor */
-	//GetIcon(&pmisol, ICO_SOL+ICOMOFF, 1);					/* demande le masque du sol */
 
         int k = 0;
 	for ( int i=cel.y - 3 ; i<=MAXCELY ; i++, k++ )
@@ -1932,14 +1851,6 @@ void DecorModif (Pt cel, short newicon)
 					dim
 				);
 			}
-
-			//GetIcon(&pm, icon+ICOMOFF, 1);
-			/*CopyPixel							/* efface le volume en hauteur */
-			/*(
-				&pm, zero,
-				&pmnewdecor, dst,
-				dim, MODEAND
-			);*/
 
 			GetIcon(&pm, icon, 1);
 			CopyPixel							/* dessine la cellule */
@@ -2394,9 +2305,8 @@ void CopyIconDecor (Pixmap *ppmicon, Pt pos, Rectangle zone)
 
 void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 {
-	Pixmap		pmisol, pmissol, pmichair, pmimask;
+	Pixmap		pmissol, pmichair;
 	Rectangle	zone;
-	short		lasti = -1;
 	Pt			shift;
 	Pt			pv, ph;
 	Pt			cel;
@@ -2433,7 +2343,6 @@ void DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
 			if ( !IfHideIcon(ph, zone) )
 			{
-					lasti = icon;
 					GetIcon(&pmichair, icon, 1);
 
 				if ( icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||

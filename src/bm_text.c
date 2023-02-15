@@ -810,8 +810,8 @@ short EditEvent (short key, Pt pos)
 	ins:
 	if ( key == KEYRETURN )  key = '\n';
 
-	if ( key >= 32 && key <= 127 ||
-		 key <= KEYAAIGU && key >= KEYcCEDILLE ||
+	if ( (key >= 32 && key <= 127) ||
+		 (key <= KEYAAIGU && key >= KEYcCEDILLE) ||
 		 key == '\n' )
 	{
 		err = InsChar((char)key);		/* insre le caractre frapp */
