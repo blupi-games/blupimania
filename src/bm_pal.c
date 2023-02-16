@@ -585,14 +585,15 @@ next:
         open = SDL_FALSE;
         g_subMenu = SDL_FALSE;
 
-        DrawButton(GetButtonPos(currentRank), ticon[currentRank][tspal[currentRank]], 0);
-        currentRank = -1;
-
 	if ( typepress )  type = 1;
 	else              type = 3;
+
+        DrawButton(GetButtonPos(currentRank), ticon[currentRank][tspal[currentRank]], type);
+        currentRank = -1;
+
 	DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], type);
 	DrawF1toF4(rang);
-	DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);	/* affiche le nouveau reste */
+	DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
 
 	if ( key == KEYCLICREL )  return 1;
 	return 0;
