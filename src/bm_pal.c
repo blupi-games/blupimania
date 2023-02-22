@@ -595,7 +595,9 @@ next:
 	DrawF1toF4(rang);
 	DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
 
-	if ( key == KEYCLICREL )  return 1;
+	if ( key == KEYCLICREL )
+          return 1;
+
 	return 0;
 }
 
@@ -806,7 +808,7 @@ short PaletteEvent (short event, Pt pos)
 		if ( ticon[rang][tspal[rang]] )
 		{
 			press = rang;
-			return 0;
+			return 2;
 		}
 	}
 
@@ -844,7 +846,7 @@ short PaletteEvent (short event, Pt pos)
           PlaySound(SOUND_CLIC, NULL);
 
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-	DrawF1toF4(_rang);
+	DrawF1toF4(press);
 	press = _rang;
 	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 
@@ -854,21 +856,23 @@ short PaletteEvent (short event, Pt pos)
 			 ticon[_rang][1] != 0 )
 		{
 			press = _rang;
+                        SDL_bool subMenu = g_subMenu;
 			if ( SPaletteTracking(_rang, pos, event) )			/* action dans sous-palette ... */
 			{
-				if ( typepress )  return 0;
-				return 1;
+				if ( typepress )
+                                  return 0;
+				return !subMenu && event == KEYCLICREL ? 2 : 1;
 			}
 		}
 
 		rang = GetButtonRang(pos);
-		if ( rang != press && rang < MAXICONY )
+		//if ( rang != press && rang < MAXICONY )
 		{
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
 			press = rang;
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 		}
-		return 0;
+		return event == KEYCLICREL ? 2 : 1;
 
 end:
 	if ( typepress == 0 )

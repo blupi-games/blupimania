@@ -4683,7 +4683,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 			else
 			{
 				if ( ev < 0 )  key = ev;
-				if ( ev == 0 )
+				if ( ev == 2 )
 				{
 					MoveBuild(PaletteGetPress(), key);
 				}
