@@ -311,6 +311,7 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
           /* Evite de dessiner en dessus du masque */
           Pt cropDim = {LYICO, LXICO};
           cropDim.y -= use.r.p1.y - holeCoords.y;
+          cropDim.x -= use.r.p1.x - holeCoords.x;
 
           /* copie le fond dans le "masque" */
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_MOD);
@@ -326,6 +327,10 @@ static SuperCelHover IconDrawOne(short i, short m, Pt pos, short posz, Pt cel, R
             p2.x = -holeCoords.x;
             holeCoords.x = 0;
           }
+          if (holeCoords.y + LYICO >= DIMYDRAW)
+            maskDim.y -= holeCoords.y + LYICO - DIMYDRAW;
+          if (holeCoords.x + LXICO >= DIMXDRAW)
+            maskDim.x -= holeCoords.x + LXICO - DIMXDRAW;
           CopyPixel(ppm, holeCoords, &pmtemp, p2, maskDim);
           SDL_SetTextureBlendMode(ppm->texture, SDL_BLENDMODE_BLEND);
 

@@ -69,8 +69,8 @@ Pt GraToCel (Pt gra)
 {
 	Pt		cel;
 
-	if ( gra.x < POSXDRAW || gra.x > POSXDRAW+DIMXDRAW ||
-		 gra.y < POSYDRAW || gra.y > POSYDRAW+DIMYDRAW )  goto error;
+	//if ( gra.x < POSXDRAW || gra.x > POSXDRAW+DIMXDRAW ||
+	//	 gra.y < POSYDRAW || gra.y > POSYDRAW+DIMYDRAW )  goto error;
 
 	gra.x -= POSXDRAW + PLXICO*ovisu.x + LXICO/2 - 5;
 	gra.y -= POSYDRAW + PRYICO*ovisu.y + LYICO/2 + 11;
