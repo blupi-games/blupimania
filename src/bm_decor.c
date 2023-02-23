@@ -1054,6 +1054,9 @@ Pt GetSuperCel()
 
 Pt DecorDetCel (Pt pos)
 {
+  if (pos.x < POSXDRAW || pos.y < POSYDRAW || pos.x > POSXDRAW + DIMXDRAW || pos.y > POSYDRAW + DIMYDRAW)
+    return (Pt){-1, -1};
+
 	return GraToCel(pos);			/* dtection "transparente" */
 }
 
