@@ -152,15 +152,7 @@ void DrawButton (Pt pos, short icon, short state)
 		iconbutton = ICO_BUTTON_BUILDSP;
 		dim.x = 52;
 	}
-#if 0
-	GetIcon(&pm, iconbutton+ICOMOFF, 1);
-	CopyPixel							/* efface le fond du bouton */
-	(
-		&pm, src,
-		0, pos,
-		dim, MODEAND
-	);
-#endif
+
 	if ( icon == 0 )  return;
 	GetIcon(&pm, iconbutton, 1);
 	CopyPixel							/* dessine le cadre du bouton */
@@ -182,15 +174,7 @@ void DrawButton (Pt pos, short icon, short state)
 		pos.x += 7;						/* dcalage si bouton press */
 		pos.y += 2;
 	}
-#if 0
-	GetIcon(&pm, icon+ICOMOFF, 1);
-	CopyPixel							/* efface le contenu du bouton */
-	(
-		&pm, p1,
-		0, pos,
-		p2, MODEAND
-	);
-#endif
+
 	GetIcon(&pm, icon, 1);
 	CopyPixel							/* dessine le contenu du bouton */
 	(
@@ -1312,7 +1296,7 @@ void PaletteEditClose (short palette[])
 void InfoDraw (short status, short force, short vision, short mechant, short magic, short cles)
 {
 	Pixmap		pm;
-	Pixmap		pminfo = {0,0,0,0,0,0,0};
+	Pixmap		pminfo = {0};
 	Rectangle	rect;
 	Pt			p1, p2, dim;
 

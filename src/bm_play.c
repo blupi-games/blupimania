@@ -577,7 +577,7 @@ void MondeMax (char banque)
 	if ( g_construit )  maxmonde ++;			/* si construit -> toujours un monde vide  la fin */
 }
 
-void convshort (unsigned short *s)
+void convshort (short *s)
 {
 	char	t;
 	char 	*p = (char*)s;
@@ -4483,11 +4483,6 @@ static short PlayInit (void)
         SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
         pmtemp.dx = LXICO;
         pmtemp.dy = LYICO;
-        //SDL_SetTextureBlendMode (pmtemp.texture, SDL_BLENDMODE_BLEND);
-        /*pmimage.texture = SDL_CreateTexture (
-          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());*/
-	//err = GetPixmap(&pmtemp, (p.y=LYICO, p.x=LXICO, p), 0, 1);
-	//if ( err )  FatalBreak(err);
 
 	   g_monde       = 0;					/* premier monde */
 	banque      = 'A';					/* banque de base */
@@ -4953,7 +4948,6 @@ static void PlayRelease (void)
 {
 	StartRandom(0, 1);
 	PlaySound(GetRandom(0, SOUND_SAUT1, SOUND_CAISSEG+1), NULL);
-	HideMouse();
 
 	BlackScreen();			/* efface tout l'écran */
 

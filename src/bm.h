@@ -432,18 +432,12 @@ void	PlaySoundLoop	(short mode);
 void	PlaySound		(short sound, const Pt * cel);
 SDL_bool SoundPlaying(short sound);
 
-void	PosMouse		(Pt pos);
-short	IfMouse			(void);
-void	ShowMouse		(void);
-void	HideMouse		(void);
-
 void	ClrEvents		(void);
 short	GetEvent		(Pt *ppos);
 int SDLEventToSmakyKey (const SDL_Event * event);
 KeyStatus GetKeyStatus	(void);
 short	IfColor			(void);
 void	ModColor		(short color, short red, short green, short blue);
-void	GetColor		(short color, short *pred, short *pgreen, short *pblue);
 void	CacheIcon		(short numero);
 short	GetIcon			(Pixmap *ppm, short numero, short mode);
 short	GetPixmap		(Pixmap *ppm, Pt dim, short fill, short colormode);
@@ -455,9 +449,9 @@ void	ScrollPixelRect	(Pixmap *ppm, Pt od, Pt dim, Pt shift, char color, Rectangl
 short	CopyPixel		(Pixmap *ppms, Pt os,
 								 Pixmap *ppmd, Pt od,
 								 Pt dim);
-void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, char color);
-void	DrawRect		(Pixmap *ppm, Rectangle rect, char color);
-void	DrawFillRect	(Pixmap *ppm, Rectangle rect, char color);
+void	DrawLine		(Pixmap *ppm, Pt p1, Pt p2, int color);
+void	DrawRect		(Pixmap *ppm, Rectangle rect, int color);
+void	DrawFillRect	(Pixmap *ppm, Rectangle rect, int color);
 char	GetPixel		(Pixmap *ppm, Pt pos);
 void	BlackScreen		(void);
 short	SavePixmap		(Pixmap *ppm);

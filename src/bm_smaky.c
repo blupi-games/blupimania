@@ -74,7 +74,6 @@ static short		colormode = 1;				/* 1 = couleur possible */
 static short		soundon = 1;				/* son on/off */
 static int			filsson = 0;				/* son  entendre */
 static int			filsrep = 0;				/* pas de rptition */
-static unsigned short		visumouse = 1;				/* 1 = souris visible */
 static KeyStatus	keystatus;					/* tat des flches du clavier */
 
 static Pixmap		pmsave = {0};	/* pixmap sauv en mmoire tendue (XMS) */
@@ -85,26 +84,24 @@ static Mix_Chunk *g_sounds[SOUND_MAX] = {NULL};
 static Mix_Music *g_music = NULL;
 static SDL_bool g_musicStopped = SDL_FALSE;
 
-
-/* Sauvetage d'une partie du descripteur de fentre */
-/* ------------------------------------------------ */
-
-#if 0
-static Point	savedf;			/* origine */
-static Point	savedfd;		/* dimensions */
-static Point	savedff;		/* origine fentre */
-static Point	savedffd;		/* dimensions fenetre */
-static Point	savedfwb;		/* debut (sous-)fenetre */
-static Point	savedfwe;		/* fin (sous-)fenetre */
-static void*	savedfabs;		/* adresse de base du bitmap */
-static short	savedfiix;		/* 0 => ecran SM8 et 1 => memoire */
-static short	savedfiiy;		/* increment si y=y+1 */
-static u_short	savedfcnb;		/* nombre de couleurs (2, 4, 16 ou 256) */
-static u_char	savedfcnp;		/* nombre de plans (1, 2, 4 ou 8) */
-static u_char	savedfcmd;		/* mode (0=noir-blanc, 1=couleur) */
-#endif
-
-
+static const SDL_Color g_colors[] = {
+  {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
+  {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
+  {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
+  {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
+  {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
+  {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
+  {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
+  {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
+  {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
+  {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
+  {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
+  {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
+  {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
+  {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
+  {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
+  {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
+};
 
 
 
@@ -437,86 +434,6 @@ SoundPlaying(short sound)
 {
   return Mix_Playing(sound);
 }
-
-
-/* ======== */
-/* PosMouse */
-/* ======== */
-
-/*
-	Dplace la souris.
- */
-
-void PosMouse (Pt pos)
-{
-#if 0
-	Point		p;
-
-	p.x = pos.x + origine.x;
-	p.y = pos.y + origine.y;
-
-	asm("moveml d4/d7,sp@-");			/* PUSH */
-	asm("movel %0,d4" : : "g" (p));		/* D4 <-- p */
-	asm(".word 0x4E46");				/* LIB */
-	asm(".word 145");					/* ?PMOUSE */
-	asm("moveml sp@+,d4/d7");			/* POP */
-#endif
-}
-
-
-
-/* ======= */
-/* IfMouse */
-/* ======= */
-
-/*
-	Indique si la souris existe sur cette machine.
-	Ceci est utile pour le PC qui n'a pas toujours une souris !
-	Si oui, retourne != 0.
- */
-
-short IfMouse (void)
-{
-	return 1;				/* sur smaky, y'a toujours une souris */
-}
-
-
-/* ========= */
-/* HideMouse */
-/* ========= */
-
-/*
-	Enlve la souris.
- */
-
-void HideMouse(void)
-{
-	if ( visumouse == 1 )
-	{
-		visumouse = 0;
-		//printf("%c",AFCCMO);		/* cache la souris */
-	}
-
-}
-
-
-/* ========= */
-/* ShowMouse */
-/* ========= */
-
-/*
-	Remet la souris.
- */
-
-void ShowMouse(void)
-{
-	if ( visumouse == 0 )
-	{
-		visumouse = 1;
-		//printf("%c",AFSCMO);		/* montre la souris */
-	}
-}
-
 
 /* ========= */
 /* ClrEvents */
@@ -885,54 +802,8 @@ short IfColor (void)
 
 void ModColor (short color, short red, short green, short blue)
 {
-#if 0
-	unsigned long	nocoul = color;
-	RGBColor		coulmod;
 
-	if ( colormode == 0 )  return;
-
-	coulmod.r = (red<<8)+red;
-	coulmod.g = (green<<8)+green;
-	coulmod.b = (blue<<8)+blue;
-
-	tcol_putclut(tcolcanal, TCFORCE, &nocoul, &coulmod);
-#endif
 }
-
-
-/* ======== */
-/* GetColor */
-/* ======== */
-
-/*
-	Donne les composantes rouge/vert/bleu d'une couleur.
-	Une composante est comprise entre 0 et 255.
- */
-
-void GetColor (short color, short *pred, short *pgreen, short *pblue)
-{
-#if 0
-	unsigned long	nocoul = color;
-	RGBColor		coulcherche;
-	RGBColor		coultrouve;
-
-	if ( colormode == 0 )
-	{
-		*pred   = 0;
-		*pgreen = 0;
-		*pblue  = 0;
-	}
-	else
-	{
-		tcol_srcclut(tcolcanal, TCFORCE+TCGIVE, &nocoul, &coulcherche, &coultrouve);
-
-		*pred   = coultrouve.r>>8;
-		*pgreen = coultrouve.g>>8;
-		*pblue  = coultrouve.b>>8;
-	}
-#endif
-}
-
 
 
 /* ========= */
@@ -1180,97 +1051,6 @@ short CopyPixel(Pixmap *ppms, Pt os, Pixmap *ppmd, Pt od, Pt dim)
 	return 0;
 }
 
-
-/* ----------- */
-/* OpenGraDesc */
-/* ----------- */
-
-/*
-	Prpare le descripteur de fentre pgradesc pour pouvoir dessiner
-	dans un pixmap en mmoire.
- */
-
-void OpenGraDesc (Pixmap *ppm)
-{
-#if 0
-	if ( ppm == 0 )
-	{
-		HideMouse();
-		return;
-	}
-
-	savedf    = pgradesc->df;
-	savedfd   = pgradesc->dfd;
-	savedff   = pgradesc->dff;
-	savedffd  = pgradesc->dffd;
-	savedfwb  = pgradesc->dfwb;
-	savedfwe  = pgradesc->dfwe;
-	savedfiix = pgradesc->dfiix;
-	savedfiiy = pgradesc->dfiiy;
-	savedfcnp = pgradesc->dfcnp;
-	savedfcnb = pgradesc->dfcnb;
-	savedfcmd = pgradesc->dfcmd;
-	savedfabs = pgradesc->dfabs;
-
-	pgradesc->df.x   = 0;
-	pgradesc->df.y   = 0;
-	pgradesc->dfd.x  = ppm->dx;
-	pgradesc->dfd.y  = ppm->dy;
-	pgradesc->dff.x  = 0;
-	pgradesc->dff.y  = 0;
-	pgradesc->dffd.x = ppm->dx;
-	pgradesc->dffd.y = ppm->dy;
-	pgradesc->dfwb.x = 0;
-	pgradesc->dfwb.y = 0;
-	pgradesc->dfwe.x = ppm->dx;
-	pgradesc->dfwe.y = ppm->dy;
-
-	pgradesc->dfiix = 1;
-	pgradesc->dfiiy = ppm->dxb;
-
-	pgradesc->dfcnp = ppm->nbp;
-	pgradesc->dfcnb = 1<<ppm->nbp;
-	if ( ppm->nbp == 1 )  pgradesc->dfcmd = 0;
-	else                  pgradesc->dfcmd = 2;
-
-	pgradesc->dfabs = ppm->data;
-#endif
-}
-
-/* ------------ */
-/* CloseGraDesc */
-/* ------------ */
-
-/*
-	Restitue le descripteur de fentre pgradesc pour pouvoir dessiner
-	comme avant.
- */
-
-void CloseGraDesc (Pixmap *ppm)
-{
-#if 0
-	if ( ppm == 0 )
-	{
-		ShowMouse();
-		return;
-	}
-
-	pgradesc->df    = savedf;
-	pgradesc->dfd   = savedfd;
-	pgradesc->dff   = savedff;
-	pgradesc->dffd  = savedffd;
-	pgradesc->dfwb  = savedfwb;
-	pgradesc->dfwe  = savedfwe;
-	pgradesc->dfiix = savedfiix;
-	pgradesc->dfiiy = savedfiiy;
-	pgradesc->dfcnp = savedfcnp;
-	pgradesc->dfcnb = savedfcnb;
-	pgradesc->dfcmd = savedfcmd;
-	pgradesc->dfabs = savedfabs;
-#endif
-}
-
-
 /* ======== */
 /* DrawLine */
 /* ======== */
@@ -1283,7 +1063,7 @@ void CloseGraDesc (Pixmap *ppm)
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawLine (Pixmap *ppm, Pt p1, Pt p2, char color)
+void DrawLine (Pixmap *ppm, Pt p1, Pt p2, int color)
 {
   if (!ppm)				/* source dans l'cran ? */
   {
@@ -1300,28 +1080,9 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, char color)
     p2.y += ppm->orig.y;
   }
 
-  static const SDL_Color colors[] = {
-    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
-    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
-    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
-    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
-    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
-    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
-    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
-    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
-    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
-    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
-    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
-    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
-    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
-    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
-    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
-    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
-  };
-
   SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
   SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_SetRenderDrawColor(g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b, g_colors[color].a);
   SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
   SDL_RenderDrawLine(g_renderer, p1.x, p1.y, p2.x, p2.y);
   SDL_SetRenderTarget(g_renderer, target);
@@ -1340,7 +1101,7 @@ void DrawLine (Pixmap *ppm, Pt p1, Pt p2, char color)
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawRect (Pixmap *ppm, Rectangle rect, char color)
+void DrawRect (Pixmap *ppm, Rectangle rect, int color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;
@@ -1348,28 +1109,9 @@ void DrawRect (Pixmap *ppm, Rectangle rect, char color)
   _rect.w = rect.p2.x - rect.p1.x;
   _rect.h = rect.p2.y - rect.p1.y;
 
-  static const SDL_Color colors[] = {
-    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
-    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
-    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
-    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
-    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
-    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
-    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
-    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
-    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
-    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
-    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
-    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
-    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
-    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
-    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
-    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
-  };
-
   SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
   SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_SetRenderDrawColor(g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b, g_colors[color].a);
   SDL_RenderDrawRect(g_renderer, &_rect);
   SDL_SetRenderTarget(g_renderer, target);
 }
@@ -1388,7 +1130,7 @@ void DrawRect (Pixmap *ppm, Rectangle rect, char color)
 		color		->	0 = blanc .. 15 = noir
  */
 
-void DrawFillRect (Pixmap *ppm, Rectangle rect, char color)
+void DrawFillRect (Pixmap *ppm, Rectangle rect, int color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;
@@ -1396,28 +1138,9 @@ void DrawFillRect (Pixmap *ppm, Rectangle rect, char color)
   _rect.w = rect.p2.x - rect.p1.x;
   _rect.h = rect.p2.y - rect.p1.y;
 
-  static const SDL_Color colors[] = {
-    {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
-    {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
-    {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
-    {255,0,0,SDL_ALPHA_OPAQUE}, // ROUGE
-    {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
-    {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
-    {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
-    {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
-    {0,255,0,SDL_ALPHA_OPAQUE}, // VERT CLAIR
-    {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
-    {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
-    {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
-    {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
-    {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
-    {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
-    {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
-  };
-
   SDL_Texture * target = SDL_GetRenderTarget(g_renderer);
   SDL_SetRenderTarget(g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor(g_renderer, colors[color].r, colors[color].g, colors[color].b, colors[color].a);
+  SDL_SetRenderDrawColor(g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b, g_colors[color].a);
   SDL_RenderFillRect(g_renderer, &_rect);
   SDL_SetRenderTarget(g_renderer, target);
 }
@@ -2176,7 +1899,7 @@ int OpenMachine(void)
       info.max_texture_height);
   }
 
-	int err = LoadIcon();					/* charge l'image des icnes */
+	LoadIcon();					/* charge l'image des icnes */
 
         InitSoundSystem();
         LoadSounds();

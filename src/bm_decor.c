@@ -1165,58 +1165,6 @@ short PutNewDecor (Pt cel, short min, short max, short first, short limit, short
 	return objet;
 }
 
-
-#if 0
-/* -------------- */
-/* PutUniqueDecor */
-/* -------------- */
-
-/*
-	Modifie une cellule du dcor en mettant un objet unique.
-	Si l'objet existe dj ailleur, met un autre.
-	Retourne 1 en cas d'erreur.
- */
-
-short PutUniqueDecor (Pt cel, short icon, short max, short offset, short first)
-{
-	short	i, trouve, objet;
-	Pt		pos;
-
-	if ( offset > 0 )
-	{
-		objet = DecorGetCel(cel);
-		if ( objet >= icon  &&
-			 objet <  icon+(offset*2) )
-		{
-			if ( objet < icon+offset )  objet += offset;
-			else                        objet -= offset;
-			DecorModif(cel, objet);
-			return 0;
-		}
-	}
-
-	for ( i=0 ; i<max ; i++ )
-	{
-		trouve = 0;
-		for ( pos.y=0 ; pos.y<MAXCELY ; pos.y++ )
-		{
-			for ( pos.x=0 ; pos.x<MAXCELX ; pos.x++ )
-			{
-				if ( icon+i        == DecorGetCel(pos) ||
-					 icon+i+offset == DecorGetCel(pos) )  trouve ++;
-			}
-		}
-		if ( trouve == 0 )
-		{
-			DecorModif(cel, icon+i+first);
-			return 0;
-		}
-	}
-	return 1;
-}
-#endif
-
-
 /* ------------- */
 /* SuperCelFlush */
 /* ------------- */
@@ -1411,33 +1359,7 @@ short DecorEvent (Pt pos, short poscel, short outil, int key)
 	else           cel = DecorDetCel(pos);	/* calcule la cellule montrée par la souris */
 
 	if ( poscel == 0 && key != KEYCLICREL )		/* si l'on a pas relàché tout de suite */
-	{
-#if 0
-		IconDrawOpen();
-		SuperCelClear();					/* teint la super cellule */
-		MoveRedraw();						/* redessine tous les toto */
-		IconDrawClose(1);
-
-		InvCel(cel, outil);					/* allume premire la cellule montre */
-		//while ( 1 )
-		{
-			//if ( key == KEYCLICREL )  break;
-			new = DecorDetCel(pos);			/* calcule la cellule montre par la souris */
-			if ( new.x != cel.x || new.y != cel.y )
-			{
-				InvCel(cel, outil);			/* teint l'ancienne cellule montre */
-				cel = new;
-				InvCel(cel, outil);			/* allume la nouvelle cellule montre */
-			}
-			return 0;
-		}
-#endif
           return 0;
-	}
-	else if (poscel == 0 && key == KEYCLICREL)
-        {
-          //InvCel(cel, outil);					/* teint la dernire cellule montre */
-        }
 
 	if ( !IfCelValide(cel, outil) )  return 1;
 
