@@ -1757,6 +1757,7 @@ void TrackingStatusBar (Pt pos)
 	MondeRead(g_monde, banque);				/* lit le nouveau monde sur disque */
 	DrawObjectif();							/* affiche l'objectif */
 
+#if 0
 	while ( 1 )
 	{
 		key = GetEvent(&pos);
@@ -1771,6 +1772,7 @@ void TrackingStatusBar (Pt pos)
 			DrawObjectif();					/* affiche l'objectif */
 		}
 	}
+#endif
 }
 
 
