@@ -169,7 +169,6 @@ Monde;
 #define DL		(1<<12)			/* quart inf/gauche */
 #define DR		(1<<11)			/* quart inf/droite */
 
-#define ICOMOFF		512			/* offset pour icnes de masque */
 #define ICONMASK	0x07FF		/* masque pour ne conserver que l'icne */
 
 #define LXICO		80			/* largeur d'une icne */

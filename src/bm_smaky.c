@@ -58,13 +58,9 @@ ImageSmaky;
 /* --------------------------- */
 
 static Pixmap		pmicon1c = {0};	/* pixmap des icnes1 (chair) */
-static Pixmap		pmicon1m = {0};	/* pixmap des icnes1 (masque) */
 static Pixmap		pmicon2c = {0};	/* pixmap des icnes2 (chair) */
-static Pixmap		pmicon2m = {0};	/* pixmap des icnes2 (masque) */
 static Pixmap		pmicon3c = {0};	/* pixmap des icnes3 (chair) */
-static Pixmap		pmicon3m = {0};	/* pixmap des icnes3 (masque) */
 static Pixmap		pmicon4c = {0};	/* pixmap des icnes4 (chair) */
-static Pixmap		pmicon4m = {0};	/* pixmap des icnes4 (masque) */
 static Pt			origine;					/* coin sup/gauche de l'origine */
 
 static unsigned int		nextrand[10];				/* valeurs alatoires suivantes */
@@ -1364,63 +1360,33 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 	ppm->dx     = LXICO;
 	ppm->dy     = LYICO;
 
-	if ( (numero&ICONMASK) < ICOMOFF )
-	{
-		no = numero;
-		if ( (numero&ICONMASK) < 128*1 )
-		{
-			ppm->texture  = pmicon1c.texture;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*2 )
-		{
-			ppm->texture  = pmicon2c.texture;
-			no -= 128*1;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*3 )
-		{
-			ppm->texture  = pmicon3c.texture;
-			no -= 128*2;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*4 )
-		{
-			ppm->texture  = pmicon4c.texture;
-			no -= 128*3;
-			goto data;
-		}
-		return 1;
-	}
-	else
-	{
-		numero -= ICOMOFF;
-		no = numero;
-		if ( (numero&ICONMASK) < 128*1 )
-		{
-			ppm->texture  = pmicon1m.texture;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*2 )
-		{
-			ppm->texture  = pmicon2m.texture;
-			no -= 128*1;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*3 )
-		{
-			ppm->texture  = pmicon3m.texture;
-			no -= 128*2;
-			goto data;
-		}
-		if ( (numero&ICONMASK) < 128*4 )
-		{
-			ppm->texture  = pmicon4m.texture;
-			no -= 128*3;
-			goto data;
-		}
-		return 1;
-	}
+        no = numero;
+        if ( (numero&ICONMASK) < 128*1 )
+        {
+                ppm->texture  = pmicon1c.texture;
+                goto data;
+        }
+        else if ( (numero&ICONMASK) < 128*2 )
+        {
+                ppm->texture  = pmicon2c.texture;
+                no -= 128*1;
+                goto data;
+        }
+        else if ( (numero&ICONMASK) < 128*3 )
+        {
+                ppm->texture  = pmicon3c.texture;
+                no -= 128*2;
+                goto data;
+        }
+        else if ( (numero&ICONMASK) < 128*4 )
+        {
+                ppm->texture  = pmicon4c.texture;
+                no -= 128*3;
+                goto data;
+        }
+        else
+          return 1;
+
 
 	data:
         ppm->orig.x = LXICO * ((no&ICONMASK)%16);
@@ -1477,25 +1443,13 @@ static int LoadIcon(void)
 	err = GetImage(&pmicon1c, IMAICON+0);			/* charge l'image des icnes */
 	if ( err )  return err;
 
-	err = GetImage(&pmicon1m, IMAICON+0+IMAMASK);	/* charge l'image des icnes */
-	if ( err )  return err;
-
 	err = GetImage(&pmicon2c, IMAICON+1);			/* charge l'image des icnes */
-	if ( err )  return err;
-
-	err = GetImage(&pmicon2m, IMAICON+1+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	err = GetImage(&pmicon3c, IMAICON+2);			/* charge l'image des icnes */
 	if ( err )  return err;
 
-	err = GetImage(&pmicon3m, IMAICON+2+IMAMASK);	/* charge l'image des icnes */
-	if ( err )  return err;
-
 	err = GetImage(&pmicon4c, IMAICON+3);			/* charge l'image des icnes */
-	if ( err )  return err;
-
-	err = GetImage(&pmicon4m, IMAICON+3+IMAMASK);	/* charge l'image des icnes */
 	if ( err )  return err;
 
 	return 0;

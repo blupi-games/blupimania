@@ -1429,9 +1429,6 @@ void DrawPause (void)
 	dim.x = 18;
 	dim.y = 18;
 
-	GetIcon(&pm, ICO_BUTTON_PAUSE+ICOMOFF, 1);
-	CopyPixel(&pm, src, 0, dst, dim);
-
 	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
 	CopyPixel(&pm, src, 0, dst, dim);
 }
@@ -2140,18 +2137,6 @@ void PartieDrawIcon (short key)
 		pos.x += LXICO+20;
 	}
 
-	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE+ICOMOFF, 1);
-	if ( key ==  KEYLOAD )  GetIcon(&pmicon, ICO_PREND+ICOMOFF, 1);
-	if ( key == -KEYSAVE )  GetIcon(&pmicon, ICO_ATTENTE+0+ICOMOFF, 1);
-	if ( key == -KEYLOAD )  GetIcon(&pmicon, ICO_ATTENTE+1+ICOMOFF, 1);
-
-	CopyPixel								/* masque le fond */
-	(
-		&pmicon, zero,
-		0, pos,
-		dim
-	);
-
 	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE, 1);
 	if ( key ==  KEYLOAD )  GetIcon(&pmicon, ICO_PREND, 1);
 	if ( key == -KEYSAVE )  GetIcon(&pmicon, ICO_ATTENTE+0, 1);
@@ -2292,14 +2277,6 @@ void StopDrawIcon (void)
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
 
-	GetIcon(&pmicon, ICO_STOPOUI+ICOMOFF, 1);
-	CopyPixel								/* masque le fond */
-	(
-		&pmicon, p,
-		0, pos,
-		dim
-	);
-
 	GetIcon(&pmicon, ICO_STOPOUI, 1);
 	CopyPixel								/* dessine la chair */
 	(
@@ -2309,14 +2286,6 @@ void StopDrawIcon (void)
 	);
 
 	pos.x += LXICO+20;
-
-	GetIcon(&pmicon, ICO_STOPNON+ICOMOFF, 1);
-	CopyPixel								/* masque le fond */
-	(
-		&pmicon, p,
-		0, pos,
-		dim
-	);
 
 	GetIcon(&pmicon, ICO_STOPNON, 1);
 	CopyPixel								/* dessine la chair */
