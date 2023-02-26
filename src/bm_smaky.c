@@ -368,6 +368,9 @@ void PlaySound (short sound, const Pt * cel)
   if (!g_sounds[sound])
     return;
 
+  if (SoundPlaying(sound))
+    return;
+
   Sint32 volume = g_soundVolume;
 
   if (cel)
