@@ -1752,27 +1752,15 @@ void TrackingStatusBar (Pt pos)
 
 	RectStatusBar(&rect);
 
-	   g_monde = DetectStatusBar(pos, maxmonde, &rect);
+        newmonde = DetectStatusBar(pos, maxmonde, &rect);
+        if (newmonde == g_monde)
+          return;
+
+        PlayEvSound(SOUND_CLIC);
+        g_monde = newmonde;
 	DrawNumMonde();							/* affiche le numro du monde */
 	MondeRead(g_monde, banque);				/* lit le nouveau monde sur disque */
 	DrawObjectif();							/* affiche l'objectif */
-
-#if 0
-	while ( 1 )
-	{
-		key = GetEvent(&pos);
-		if ( key == KEYCLICREL )  break;
-
-		newmonde = DetectStatusBar(pos, maxmonde, &rect);
-		if ( g_monde != newmonde )
-		{
-			         g_monde = newmonde;
-			DrawNumMonde();					/* affiche le numro du monde */
-			MondeRead(g_monde, banque);		/* lit le nouveau monde sur disque */
-			DrawObjectif();					/* affiche l'objectif */
-		}
-	}
-#endif
 }
 
 
@@ -4012,7 +4000,13 @@ short ExecuteAction (char event, Pt pos)
 		action = EventToAction(event);			/* action selon la touche presse */
 	}
 
-	if ( action != -1 )
+	if (g_keyMousePressed){
+          PhAction _action = ClicToAction(pos);
+          if (_action == ACTION_MONDEBAR)
+            action = ACTION_MONDEBAR;
+        }
+
+	if ( action != -1 && action != ACTION_MONDEBAR )
 	{
 		PlayEvSound(SOUND_CLIC);
 	}
