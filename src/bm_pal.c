@@ -854,7 +854,7 @@ short PaletteEvent (short event, Pt pos)
 		{
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
 			press = rang;
-                        if (event != KEYCLICREL)
+                        if (event != KEYCLICREL || typepress != 0)
                           DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
 		}
 		return event == KEYCLICREL ? 2 : 1;
