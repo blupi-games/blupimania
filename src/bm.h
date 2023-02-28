@@ -20,10 +20,6 @@ typedef unsigned short u_short;
 #define MAJREV		1			/* rvision */
 #define MINREV		0			/* version */
 
-#define FRENCH		1			/* franais */
-#define ENGLISH		0			/* anglais */
-#define GERMAN		0			/* allemand */
-
 #define LXIMAGE()	640			/* largeur d'une image */
 #define LYIMAGE()	340			/* hauteur d'une image */
 

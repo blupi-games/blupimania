@@ -405,7 +405,7 @@ static short tabpalette0[] =
 void
 ChangeLanguage(short language)
 {
-
+  g_langue = language;
 }
 
 void
@@ -812,7 +812,6 @@ void ShowImage (void)
 
 	static char *txrecommence[19] =
 	{
-#if FRENCH
 		"\001\002D\266sol\266, mais c'est rat\266 !\nEssaye encore une fois ...",
 		"\001\002Eh non, ce n'est pas r\266ussi, mais il faut pers\266v\266rer !",
 		"\001\002C'est rat\266 !\nLa prochaine sera la bonne.",
@@ -832,12 +831,10 @@ void ShowImage (void)
 		"\013\144D\266cid\266ment, cela ira peut-\264tre mieux demain ?",
 		"\013\144Laisse tomber et reprends ce jeu dans un mois !",
 		"\013\144Empoigne le probl\265me par un autre bout ?"
-#endif
 	};
 
 	static char *txsuivant[20] =
 	{
-#if FRENCH
 		"\001\001Super extra chouette, c'est r\266ussi du premier coup !",
 		"\001\001Bravo champion, z\266ro faute ...",
 		"\001\001Extra, la perfection quoi !",
@@ -861,12 +858,10 @@ plus vite la prochaine fois !",
 		"\013\144Bravo, que d'efforts pour en arriver l\271 !",
 		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... \
 mais rien n'est moins s\250r !"
-#endif
 	};
 
 	static char *txfini[9] =
 	{
-#if FRENCH
 		"Bravo, tu as termin\266 la premi\265re partie du niveau\0011.\n\
 Essaye maintenant la deuxi\265me partie, en t\266l\266commandant BLUPI\001...",
 		"Bravo, le niveau 1 est termin\266.\nEssaye maintenant le niveau\0012\001...",
@@ -890,7 +885,6 @@ pour tes copains (niveau\0015)\001...",
 
 		"Tr\265s bien, tu as termin\266 le niveau\0015.\n\
 Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
-#endif
 	};
 
 	if ( phase != PHASE_GENERIC )
@@ -1503,15 +1497,10 @@ void DrawObjectif (void)
 {
 	Rectangle	rect;
 	char		*ptext = descmonde.text;
-#if FRENCH
-	char		tomake[] = "Enigme \271 construire ...";
-#endif
-#if ENGLISH
-	char		tomake[] = "Puzzle to build ...";
-#endif
-#if GERMAN
-	char		tomake[] = "Ratsel zum bauen ...";
-#endif
+        char* tomake[3] = {};
+	tomake[0] = "Puzzle to build ...";
+	tomake[1] = "Enigme \271 construire ...";
+	tomake[2] = "Ratsel zum bauen ...";
 
 	switch ( phase )
 	{
@@ -1536,7 +1525,7 @@ void DrawObjectif (void)
 
 	if ( g_construit && g_monde == maxmonde-1 )
 	{
-		ptext = tomake;
+		ptext = tomake[g_langue];
 	}
 
 	DrawFillRect(0, rect, COLORBLANC);			/* efface le rectangle */
