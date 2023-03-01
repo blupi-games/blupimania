@@ -810,7 +810,29 @@ void ShowImage (void)
 	const char	*ptx;
 	short		image, err, nbessai, max;
 
-        static const char * txrecommence_fr[19] =
+        static const char * txrecommence_en[] =
+	{
+		"\001\002Oops! It looks as though you'll have to try again!",
+		"\001\002Bad luck!\nGive it another go...",
+		"\001\002Looked good...\n...but not good enough!",
+		"\001\002You'll need another try, I'm afraid...",
+		"\003\004Sorry, no good! Maybe you'll\nmake it next time.",
+		"\003\004Well, it could have been right... Go for more!",
+		"\003\004No, no, no!\nHow about another try?",
+		"\003\004Hum... not good enough!",
+		"\003\004It may not look like it,\nbut it's not that easy!",
+		"\005\006Well, well, well... It seems you'll need to try again!",
+		"\005\006Mind twisting, isn't it?\nGive it another go...",
+		"\005\006Boggles the mind, doesn't it?",
+		"\007\012You can't be far...\nKeep going!",
+		"\007\012Tough luck! Take a deep breath and go for more!",
+		"\007\012Who made that one up?\nKeep going...",
+		"\013\144Don't you feel like screaming? Keep it up...",
+		"\013\144Why don't you sleep on it, and try again tomorrow?",
+		"\013\144Patience, my foot! I'm gonna scream!",
+		"\013\144Take a deep breath... and try again!"
+	};
+        static const char * txrecommence_fr[] =
 	{
 		"\001\002D\266sol\266, mais c'est rat\266 !\nEssaye encore une fois ...",
 		"\001\002Eh non, ce n'est pas r\266ussi, mais il faut pers\266v\266rer !",
@@ -832,9 +854,52 @@ void ShowImage (void)
 		"\013\144Laisse tomber et reprends ce jeu dans un mois !",
 		"\013\144Empoigne le probl\265me par un autre bout ?"
 	};
-        static const char * const * txrecommence[3] = {0, txrecommence_fr, 0};
+        static const char * const * txrecommence[] = {txrecommence_en, txrecommence_fr, txrecommence_en};
+        static const size_t txrecommence_size[] = {countof(txrecommence_en), countof(txrecommence_fr), countof(txrecommence_en)};
 
-	static const char * txsuivant_fr[20] =
+        static const char * txsuivant_en[] =
+        {
+		"\001\001Top marks!",
+		"\001\001Ten out of ten!",
+		"\001\001Amazing!",
+		"\001\001Perfect!",
+		"\001\001There's only one word : YES!",
+		"\001\001You're pretty good at this!",
+		"\001\001Can't do better!",
+		"\001\001You can't beat that!",
+		"\001\001Spot on!",
+		"\001\001Bulls eye!\nGo for more!",
+		"\001\001BINGO!",
+		"\002\003That's better...!\nTry the next one...",
+		"\002\003It wasn't that bad, was it?",
+		"\002\003Well done!\nMove on to the next one...",
+		"\002\003Very good!\nBut the next one may be harder!",
+		"\002\003Good shot!\nLet's see what you'll make of the next one...",
+		"\002\003Excellent!\nNow what about the next one?",
+		"\002\003Yep! That's it...\n Let's see how you manage the next step...",
+		"\002\003Great stuff!\nKeep it up!",
+		"\004\006Okay, that's it!",
+		"\004\006Feels good to be through!",
+		"\004\006That one's over,\nlet's try the next one...",
+		"\004\006Okay!\nHow about the next one?",
+		"\004\006It's not quite as easy as it looks, is it..?",
+		"\004\006Whew! That one's done...\nLet's go for more!",
+		"\004\006I could feel the heat!\nBut it's over...",
+		"\004\006Difficult, but not impossible!\nTry more!",
+		"\007\012Quite a sweat, isn't it?\nKeep it up!",
+		"\007\012I was sure you'd make it!\nMove up one!",
+		"\007\012All right, it was hard,\nbut you made it!",
+		"\007\012Through at last!\nKeep going!",
+		"\007\012Made it just in time to try the next one...",
+		"\007\012Well, it was about time...\nGo for more!",
+		"\007\012How about that, you made it!\nWhat's the next one like?",
+		"\013\144Don't worry!\nThe next one might be even harder!",
+		"\013\144Rats! That one gave me a headache...",
+		"\013\144Oh well, you can't be the best every time..!",
+		"\013\144Good job you didn't give up!",
+		"\013\144Never lose hope!\nNext time will be better!"
+        };
+	static const char * txsuivant_fr[] =
 	{
 		"\001\001Super extra chouette, c'est r\266ussi du premier coup !",
 		"\001\001Bravo champion, z\266ro faute ...",
@@ -860,35 +925,42 @@ plus vite la prochaine fois !",
 		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... \
 mais rien n'est moins s\250r !"
 	};
-        static const char * const * txsuivant[3] = {0, txsuivant_fr, 0};
+        static const char * const * txsuivant[] = {txsuivant_en, txsuivant_fr, txsuivant_en};
+        static const size_t txsuivant_size[] = {countof(txsuivant_en), countof(txsuivant_fr), countof(txsuivant_en)};
 
-	static const char * txfini_fr[9] =
+        static const char * txfini_en[] =
 	{
-		"Bravo, tu as termin\266 la premi\265re partie du niveau\0011.\n\
-Essaye maintenant la deuxi\265me partie, en t\266l\266commandant BLUPI\001...",
+		"Well done, you've finished the first part of level 1.\nNow use the radio-controls to steer BLUPI through the second part...",
+		"Great going, level 1 is done.\nNow try level 2...",
+
+		"Well, that's it for the first part of level 2.\nHave you tried to radio-control BLUPI through this level?",
+		"Okay, you've steered BLUPI through level 2.\nDo you think you can handle level 3?",
+
+		"Excellent, you've finished the first part of level 3!\nTake a look at the second part of this level...",
+		"Excellent, you've got through level 3.\nBut wait till you try level 4!",
+
+		"It seems you're a winner...\nBut the second part (with the radio-controlled BLUPI) is no joke..!",
+		"Hooray! This game has no secrets for you...\nBut now you can draw your own puzzles in level 5.",
+
+		"Why don't you build a few even harder worlds... and send them to other BLUPIMANIACS?"
+	};
+	static const char * txfini_fr[] =
+	{
+		"Bravo, tu as termin\266 la premi\265re partie du niveau\0011.\nEssaye maintenant la deuxi\265me partie, en t\266l\266commandant BLUPI\001...",
 		"Bravo, le niveau 1 est termin\266.\nEssaye maintenant le niveau\0012\001...",
 
-		"Bravo, tu as termin\266 le niveau\0012, lorsque BLUPI est autonome.\n\
-T\266l\266commande maintenant BLUPI dans la deuxi\265me partie\001...",
-		"Bravo, tu as termin\266 le niveau\0012.\n\
-Penses-tu pouvoir r\266soudre le niveau\0013 (c'est dur dur)\001?",
+		"Bravo, tu as termin\266 le niveau\0012, lorsque BLUPI est autonome.\nT\266l\266commande maintenant BLUPI dans la deuxi\265me partie\001...",
+		"Bravo, tu as termin\266 le niveau\0012.\nPenses-tu pouvoir r\266soudre le niveau\0013 (c'est dur dur)\001?",
 
-		"Formidable, tu as termin\266 la premi\265re partie du niveau\0013\001!\n\
-Attaque maintenant la deuxi\265me partie de ce niveau\001...",
-		"Formidable, tu as termin\266 le niveau\0013\001!\n\
-Il reste le niveau\0014, mais attention, c'est du b\266ton\001...",
+		"Formidable, tu as termin\266 la premi\265re partie du niveau\0013\001!\nAttaque maintenant la deuxi\265me partie de ce niveau\001...",
+		"Formidable, tu as termin\266 le niveau\0013\001!\nIl reste le niveau\0014, mais attention, c'est du b\266ton\001...",
 
-		"Hyper extra m\266ga chouette !\n\
-Mais attention, la deuxi\265me partie (avec BLUPI t\266l\266command\266) \
-n'est pas franchement facile\001...",
-		"Hyper extra m\266ga chouette !\nCe jeu n'a plus de secrets pour toi. \
-Heureusement, tu peux encore dessiner tes propres \266nigmes, \
-pour tes copains (niveau\0015)\001...",
+		"Hyper extra m\266ga chouette !\nMais attention, la deuxi\265me partie (avec BLUPI t\266l\266command\266) n'est pas franchement facile\001...",
+		"Hyper extra m\266ga chouette !\nCe jeu n'a plus de secrets pour toi. Heureusement, tu peux encore dessiner tes propres \266nigmes, pour tes copains (niveau\0015)\001...",
 
-		"Tr\265s bien, tu as termin\266 le niveau\0015.\n\
-Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
+		"Tr\265s bien, tu as termin\266 le niveau\0015.\nEssaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	};
-        static const char * const * txfini[3] = {0, txfini_fr, 0};
+        static const char * const * txfini[] = {txfini_en, txfini_fr, txfini_en};
 
 	if ( phase != PHASE_GENERIC )
 	{
@@ -908,7 +980,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		max = 0;
 		do
 		{
-			ptx = txrecommence[g_langue][GetRandomEx(1,0,19,randomexrecommence)];
+			ptx = txrecommence[g_langue][GetRandomEx(1,0,txrecommence_size[g_langue],randomexrecommence)];
 			max ++;
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
@@ -924,7 +996,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		max = 0;
 		do
 		{
-			ptx = txsuivant[g_langue][GetRandomEx(1,0,20,randomexsuivant)];
+			ptx = txsuivant[g_langue][GetRandomEx(1,0,txsuivant_size[g_langue],randomexsuivant)];
 			max ++;
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
