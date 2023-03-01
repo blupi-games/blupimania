@@ -1628,11 +1628,8 @@ void DrawBigNum (Pt pos, short num)
 void DrawObjectif (void)
 {
 	Rectangle	rect;
-	char		*ptext = descmonde.text;
-        char* tomake[3] = {};
-	tomake[0] = "Puzzle to build ...";
-	tomake[1] = "Enigme \271 construire ...";
-	tomake[2] = "Ratsel zum bauen ...";
+	const char	*ptext = descmonde.text;
+        static const char * tomake[3] = {"Puzzle to build ...", "Enigme \271 construire ...", "R\267tsel zum bauen ..."};
 
 	switch ( phase )
 	{
