@@ -854,8 +854,29 @@ void ShowImage (void)
 		"\013\144Laisse tomber et reprends ce jeu dans un mois !",
 		"\013\144Empoigne le probl\265me par un autre bout ?"
 	};
-        static const char * const * txrecommence[] = {txrecommence_en, txrecommence_fr, txrecommence_en};
-        static const size_t txrecommence_size[] = {countof(txrecommence_en), countof(txrecommence_fr), countof(txrecommence_en)};
+        static const char * txrecommence_de[] =
+	{
+		"\001\002Tut mir leid, aber Du hast es verpatzt ! Nochmal ...",
+		"\001\002Nein, das war falsch ! Das Ganze nochmal !",
+		"\001\002Schon wider falsch ! N\267chtes mal mach es besser !",
+		"\001\002Nein, doch nicht so ! Mach es nochmal ...",
+		"\001\002Verflixt, das war schon wieder nichts !",
+		"\001\002Tja, das war ja wohl wieder nichts !",
+		"\001\002Nein, nein so geht das nicht ! Finde eine andere Idee ...",
+		"\003\005Ah, immer noch nicht, ber-\nlege ein bisschen mehr ...",
+		"\003\005Verflixt, schon wieder verpatzt !",
+		"\003\005Das is ja schon wieder in die Hosen gegangen !",
+		"\003\005Nein, nein und nochmals nein. Probier weiter ...",
+		"\003\005Du bist nicht der erste, der sich hier die Z\267hne ausbeisst",
+		"\006\012Heute ist wohl nicht Dein Tag, oder ?",
+		"\006\012Ganz sch\253n schwer, was ?",
+		"\006\012Keine Aufregung, die L\253sung wird schon kommen.",
+		"\006\012Nicht verzweifeln, Du wirst schon noch draufkommen.",
+		"\013\144Vielleicht versuchst Du's morgen nochmal ?",
+		"\013\144Gehe das Problem ganz anders an !"
+	};
+        static const char * const * txrecommence[] = {txrecommence_en, txrecommence_fr, txrecommence_de};
+        static const size_t txrecommence_size[] = {countof(txrecommence_en), countof(txrecommence_fr), countof(txrecommence_de)};
 
         static const char * txsuivant_en[] =
         {
@@ -922,8 +943,31 @@ void ShowImage (void)
 		"\013\144Bravo, que d'efforts pour en arriver l\271 !",
 		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... mais rien n'est moins s\250r !"
 	};
-        static const char * const * txsuivant[] = {txsuivant_en, txsuivant_fr, txsuivant_en};
-        static const size_t txsuivant_size[] = {countof(txsuivant_en), countof(txsuivant_fr), countof(txsuivant_en)};
+	static const char * txsuivant_de[] =
+	{
+		"\001\001Echt Super, gleich beim erstenmal geschafft !",
+		"\001\001Bravo Champion, null Fehler ...",
+		"\001\001Wirklich perfekt !",
+		"\001\001Das war echt Spitze !",
+		"\001\001Phantastisch wie du das machst !",
+		"\002\003Bravo, super, Du hast es geschafft !",
+		"\002\003Richtig, Meister !",
+		"\002\003Einwandfrei, Du kannst zum n\267chsten R\267tsel gehen ...",
+		"\002\003Sehr gut, aber das n\267chste R\267tsel ist vielleicht viel schwieriger !",
+		"\002\003Juppie, alles richtig !",
+		"\004\006Geschafft !",
+		"\004\006Ganz gut, und nun auf zum n\267chsten R\267tsel.",
+		"\004\006Richtig. Weiter geht's.",
+		"\004\006OK. Auf zum n\267chsten R\267tsel.",
+		"\007\012Mittelpr\267chtig.",
+		"\007\012OK, Du hast es geschafft, aber beeil Dich beim n\267chsten mal",
+		"\007\012Ohne Kommentar, es ist besser so ...",
+		"\013\144Uff, endlich geschafft.",
+		"\013\144Bravo, na endlich hast du's geschafft !",
+		"\013\144Es wurde aber auch langsam Zeit. Hoffentlich ist das n\267chste R\267tsel einfacher.",
+	};
+        static const char * const * txsuivant[] = {txsuivant_en, txsuivant_fr, txsuivant_de};
+        static const size_t txsuivant_size[] = {countof(txsuivant_en), countof(txsuivant_fr), countof(txsuivant_de)};
 
         static const char * txfini_en[] =
 	{
@@ -957,7 +1001,23 @@ void ShowImage (void)
 
 		"Tr\265s bien, tu as termin\266 le niveau\0015.\nEssaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	};
-        static const char * const * txfini[] = {txfini_en, txfini_fr, txfini_en};
+	static const char * txfini_de[] =
+	{
+		"Bravo, Du hast den ersten Teil der Stufe eins beendet.\nVersuche jetzt den zweiten Teil, wo Du Blupi fernsteuern kannst ...",
+		"Bravo, Du hast Stufe eins geschafft. Versuche nun Stufe zwei ...",
+
+		"Bravo, Du hast Stufe zwei mit dem automatischen BLUPI geschafft.\nVersuche nun Stufe zwei mit dem ferngesteuerten BLUPI !",
+		"Bravo, Stufe zwei ist geschafft. Glaubst Du,\nDu schaffst auch Stufe drei ?",
+
+		"Phantastisch, Du hast den ersten Teil der Stufe drei geschafft.\nNimm jetzt den zweiten Teil der Stufe drei in Angriff !",
+		"Super, Du hast Stufe drei beendet, aber es bleibt Dir noch Stufe vier, da wird's echt hart.",
+
+		"Bravo, super, phantastisch, aber Achtung, der zweite Teil mit dem ferngesteuerten Blupi ist nicht gerade einfach !",
+		"Kolossal, Du hast alle R\267tsel in diesesm Spiel gel\253st. Zumindest gelesen. Zudem Gl\247ck kannst Du auch Deine eigenen R\267tsel konstruieren (Stufe 5).",
+
+		"Ausgezeichnet ! Konstruiere nun neue, noch schwierigere R\267tsel."
+	};
+        static const char * const * txfini[] = {txfini_en, txfini_fr, txfini_de};
 
 	if ( phase != PHASE_GENERIC )
 	{
