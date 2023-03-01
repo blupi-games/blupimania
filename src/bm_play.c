@@ -909,21 +909,18 @@ void ShowImage (void)
 		"\002\003Bravo, super, c'est r\266ussi !",
 		"\002\003Champion, c'est juste !",
 		"\002\003Parfait, tu peux passer \271 l'\266nigme suivante ...",
-		"\002\003Tr\265s bien, mais la prochaine \266nigme sera peut-\264tre \
-beaucoup plus difficile !",
+		"\002\003Tr\265s bien, mais la prochaine \266nigme sera peut-\264tre beaucoup plus difficile !",
 		"\002\003Youpie, c'est tout juste !",
 		"\004\006Ouaip, c'est dans la poche !",
 		"\004\006\245a va, tu peux passer \271 l'\266nigme suivante ...",
 		"\004\006Correct, passe plus loin.",
 		"\004\006OK. (point \271 la ligne)",
 		"\007\012\245a ira pour cette fois, mais c'\266tait dur dur, non ?",
-		"\007\012Bon, \246a passe pour cette fois, mais t\270che d'y arriver \
-plus vite la prochaine fois !",
+		"\007\012Bon, \246a passe pour cette fois, mais t\270che d'y arriver plus vite la prochaine fois !",
 		"\007\012Sans commentaire, \246a vaut mieux ...",
 		"\013\144Ouf, c'est enfin r\266ussi. Bel effort ...",
 		"\013\144Bravo, que d'efforts pour en arriver l\271 !",
-		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... \
-mais rien n'est moins s\250r !"
+		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... mais rien n'est moins s\250r !"
 	};
         static const char * const * txsuivant[] = {txsuivant_en, txsuivant_fr, txsuivant_en};
         static const size_t txsuivant_size[] = {countof(txsuivant_en), countof(txsuivant_fr), countof(txsuivant_en)};
