@@ -1809,7 +1809,6 @@ void TrackingStatusBar (Pt pos)
 {
 	Rectangle	rect;
 	short		newmonde = g_monde;
-	short		key;
 
 	RectStatusBar(&rect);
 
