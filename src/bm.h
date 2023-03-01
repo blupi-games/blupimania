@@ -399,7 +399,7 @@ void	IconClose		(void);
 
 Pt		DrawText		(Pixmap *ppm, Pt pos, char *pstring, short size);
 Rectangle GetRectText	(Pt pos, char *pstring, short size);
-void	DrawParagraph	(Pixmap *ppm, Rectangle rect, char *pstring,
+void	DrawParagraph	(Pixmap *ppm, Rectangle rect, const char * pstring,
 							 short size);
 
 short	EditEvent		(short key, Pt pos);

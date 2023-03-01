@@ -807,10 +807,10 @@ short ConvPhaseToNumImage (Phase ph)
 void ShowImage (void)
 {
 	Rectangle	rect;
-	char		*ptx;
+	const char	*ptx;
 	short		image, err, nbessai, max;
 
-	static char *txrecommence[19] =
+        static const char * txrecommence_fr[19] =
 	{
 		"\001\002D\266sol\266, mais c'est rat\266 !\nEssaye encore une fois ...",
 		"\001\002Eh non, ce n'est pas r\266ussi, mais il faut pers\266v\266rer !",
@@ -832,8 +832,9 @@ void ShowImage (void)
 		"\013\144Laisse tomber et reprends ce jeu dans un mois !",
 		"\013\144Empoigne le probl\265me par un autre bout ?"
 	};
+        static const char * const * txrecommence[3] = {0, txrecommence_fr, 0};
 
-	static char *txsuivant[20] =
+	static const char * txsuivant_fr[20] =
 	{
 		"\001\001Super extra chouette, c'est r\266ussi du premier coup !",
 		"\001\001Bravo champion, z\266ro faute ...",
@@ -859,8 +860,9 @@ plus vite la prochaine fois !",
 		"\013\144C'est le moment ...\nEsp\266rons que l'\266nigme suivante sera plus facile ... \
 mais rien n'est moins s\250r !"
 	};
+        static const char * const * txsuivant[3] = {0, txsuivant_fr, 0};
 
-	static char *txfini[9] =
+	static const char * txfini_fr[9] =
 	{
 		"Bravo, tu as termin\266 la premi\265re partie du niveau\0011.\n\
 Essaye maintenant la deuxi\265me partie, en t\266l\266commandant BLUPI\001...",
@@ -886,6 +888,7 @@ pour tes copains (niveau\0015)\001...",
 		"Tr\265s bien, tu as termin\266 le niveau\0015.\n\
 Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 	};
+        static const char * const * txfini[3] = {0, txfini_fr, 0};
 
 	if ( phase != PHASE_GENERIC )
 	{
@@ -905,7 +908,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		max = 0;
 		do
 		{
-			ptx = txrecommence[GetRandomEx(1,0,19,randomexrecommence)];
+			ptx = txrecommence[g_langue][GetRandomEx(1,0,19,randomexrecommence)];
 			max ++;
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
@@ -921,7 +924,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 		max = 0;
 		do
 		{
-			ptx = txsuivant[GetRandomEx(1,0,20,randomexsuivant)];
+			ptx = txsuivant[g_langue][GetRandomEx(1,0,20,randomexsuivant)];
 			max ++;
 		}
 		while ( (nbessai < ptx[0] || nbessai > ptx[1]) && max < 100 );
@@ -934,7 +937,7 @@ Essaye encore de dessiner d'autres \266nigmes plus difficiles\001..."
 
 	if ( phase >= PHASE_FINI0 && phase <= PHASE_FINI8 )
 	{
-		ptx = txfini[phase-PHASE_FINI0];
+		ptx = txfini[g_langue][phase-PHASE_FINI0];
 		rect.p1.x = 85;
 		rect.p1.y = LYIMAGE()-266;
 		rect.p2.x = 85+470;

@@ -342,7 +342,7 @@ Rectangle GetRectText (Pt pos, char *pstring, short size)
 	Retourne la longueur  utiliser.
  */
 
-short GetWord (char **ppnext, char *pword)
+static short GetWord (const char **ppnext, char *pword)
 {
 	char		*pt;
 	Pt			pos;
@@ -374,11 +374,11 @@ short GetWord (char **ppnext, char *pword)
 	Dessine un paragraphe de texte dans un rectangle, en drapeau  droite.
  */
 
-void DrawParagraph (Pixmap *ppm, Rectangle rect, char *pstring, short size)
+void DrawParagraph (Pixmap *ppm, Rectangle rect, const char * pstring, short size)
 {
 	Pt		pos;
 	char	word[50];
-	char	*pnext;
+	const char *pnext;
 	short	lg, under;
 
 	charsize = size;
