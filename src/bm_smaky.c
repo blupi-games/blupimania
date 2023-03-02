@@ -1458,6 +1458,14 @@ static int LoadIcon(void)
 	return 0;
 }
 
+static void UnloadIcon()
+{
+  GivePixmap(&pmicon1c);
+  GivePixmap(&pmicon2c);
+  GivePixmap(&pmicon3c);
+  GivePixmap(&pmicon4c);
+}
+
 static void
 MusicStopped(void)
 {
@@ -1778,6 +1786,11 @@ short IfFileExist (char *pfilename)
 	return 1;								/* fichier existe */
 }
 
+void ReloadIcons()
+{
+  UnloadIcon();
+  LoadIcon();
+}
 
 /* =========== */
 /* OpenMachine */
@@ -1880,6 +1893,7 @@ int OpenMachine(void)
 
 void CloseMachine(void)
 {
+  UnloadIcon();
   UnloadSounds();
 }
 

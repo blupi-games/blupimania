@@ -468,6 +468,8 @@ short	MachinePartieRead	(long pos, char file);
 
 void PushUserEvent (Sint32 code, void * data);
 
+void ReloadIcons();
+
 #ifdef _WIN32
 #define countof(a) _countof (a)
 #else /* _WIN32 */

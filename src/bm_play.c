@@ -269,6 +269,7 @@ SDL_bool g_saveMenu = SDL_FALSE;
 /* --------------------------- */
 
 static Pixmap	pmimage = {0};	/* pixmap pour image */
+static int pmimageNum = -1;
 static Pixmap	pmtemp  = {0};	/* pixmap temporaire */
 static Phase	phase;						/* phase du jeu */
 static char		banque;						/* banque utilise */
@@ -1027,6 +1028,7 @@ void ShowImage (void)
 	image = ConvPhaseToNumImage(phase);
 
 	err = GetImage(&pmimage, image);
+        pmimageNum = image;
 	if ( err )  FatalBreak(err);				/* erreur fatale */
 
 	nbessai = retry+1;
@@ -1086,6 +1088,7 @@ void ShowImage (void)
 	if ( phase == PHASE_PLAY )
 	{
 		GivePixmap(&pmimage);					/* libre l'image si jeu */
+                pmimageNum = -1;
 	}
 	else
 	{
@@ -4542,6 +4545,26 @@ void MusicBackground (void)
 	}
 }
 
+void LoadTextures()
+{
+    g_screen.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+    SDL_SetTextureBlendMode(g_screen.texture, SDL_BLENDMODE_BLEND);
+    g_screen.dx = LXIMAGE();
+    g_screen.dy = LYIMAGE();
+
+    pmtemp.texture = SDL_CreateTexture (
+      g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
+    SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
+    pmtemp.dx = LXICO;
+    pmtemp.dy = LYICO;
+}
+
+void UnloadTextures()
+{
+  GivePixmap(&g_screen);
+  GivePixmap(&pmtemp);
+}
+
 /* ======== */
 /* PlayInit */
 /* ======== */
@@ -4555,16 +4578,7 @@ static short PlayInit (void)
 {
 	OpenMachine();						/* ouverture générale */
 
-        g_screen.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
-        SDL_SetTextureBlendMode(g_screen.texture, SDL_BLENDMODE_BLEND);
-        g_screen.dx = LXIMAGE();
-        g_screen.dy = LYIMAGE();
-
-        pmtemp.texture = SDL_CreateTexture (
-          g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
-        SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
-        pmtemp.dx = LXICO;
-        pmtemp.dy = LYICO;
+        LoadTextures();
 
 	   g_monde       = 0;					/* premier monde */
 	banque      = 'A';					/* banque de base */
@@ -5034,8 +5048,9 @@ static void PlayRelease (void)
 	BlackScreen();			/* efface tout l'écran */
 
 	GivePixmap(&pmimage);
-	GivePixmap(&pmtemp);
+        pmimageNum = -1;
 
+        UnloadTextures();
 	DecorClose();			/* fermeture des décors */
 	IconClose();			/* fermeture des icônes */
 	MoveClose();			/* fermeture des objets en mouvement */
@@ -5088,6 +5103,21 @@ int main (int argc, char *argv[])
         while (SDL_WaitEvent (&event))
         {
           next = SDL_FALSE;
+
+          if (event.type == SDL_RENDER_DEVICE_RESET || event.type == SDL_RENDER_TARGETS_RESET)
+          {
+            ReloadIcons();
+            UnloadTextures();
+            LoadTextures();
+
+            GivePixmap(&pmimage);
+            if (pmimageNum > -1)
+            {
+              	int err = GetImage(&pmimage, pmimageNum);
+                if ( err )  FatalBreak(err);
+            }
+            continue;
+          }
 
           if (event.type == SDL_MOUSEMOTION)
           {
