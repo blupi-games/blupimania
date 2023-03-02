@@ -603,18 +603,71 @@ SDLEventToSmakyKey (const SDL_Event * event)
 
     switch (event->type)
     {
-      case SDL_KEYDOWN:
-        if ((event->key.keysym.sym >= SDLK_a && event->key.keysym.sym <= SDLK_z)
-            || (event->key.keysym.sym >= SDLK_0 && event->key.keysym.sym <= SDLK_9)
-            || event->key.keysym.sym == SDLK_SPACE)
+      case SDL_TEXTINPUT:
+        if (!strncmp(event->text.text, "à", sizeof("à")))
+          key = KEYAGRAVE;
+        else if (!strncmp(event->text.text, "ä", sizeof("ä")))
+          key = KEYATREMA;
+        else if (!strncmp(event->text.text, "é", sizeof("é")))
+          key = KEYEAIGU;
+        else if (!strncmp(event->text.text, "è", sizeof("è")))
+          key = KEYEGRAVE;
+        else if (!strncmp(event->text.text, "ö", sizeof("ö")))
+          key = KEYOTREMA;
+        else if (!strncmp(event->text.text, "ù", sizeof("ù")))
+          key = KEYUGRAVE;
+        else if (!strncmp(event->text.text, "ü", sizeof("ü")))
+          key = KEYUTREMA;
+        else if (!strncmp(event->text.text, "ç", sizeof("ç")))
+          key = KEYCCEDILLE;
+
+        if (key)
+          break;
+
+        if ((event->text.text[0] >= SDLK_a && event->text.text[0] <= SDLK_z)
+            || (event->text.text[0] >= SDLK_0 && event->text.text[0] <= SDLK_9))
         {
-          if (event->key.keysym.mod & KMOD_SHIFT){
-              key = (char) toupper(event->key.keysym.sym);
-          } else {
-              key = (char) event->key.keysym.sym;
-          }
+          key = event->text.text[0];
           break;
         }
+
+        switch (event->text.text[0])
+        {
+          case SDLK_SPACE:
+          case SDLK_EXCLAIM:
+          case SDLK_QUOTEDBL:
+          case SDLK_HASH:
+          case SDLK_PERCENT:
+          case SDLK_DOLLAR:
+          case SDLK_AMPERSAND:
+          case SDLK_QUOTE:
+          case SDLK_LEFTPAREN:
+          case SDLK_RIGHTPAREN:
+          case SDLK_ASTERISK:
+          case SDLK_PLUS:
+          case SDLK_COMMA:
+          case SDLK_MINUS:
+          case SDLK_PERIOD:
+          case SDLK_SLASH:
+          case SDLK_COLON:
+          case SDLK_SEMICOLON:
+          case SDLK_LESS:
+          case SDLK_EQUALS:
+          case SDLK_GREATER:
+          case SDLK_QUESTION:
+          case SDLK_AT:
+          case SDLK_LEFTBRACKET:
+          case SDLK_BACKSLASH:
+          case SDLK_RIGHTBRACKET:
+          case SDLK_CARET:
+          case SDLK_UNDERSCORE:
+          case SDLK_BACKQUOTE:
+            key = event->text.text[0];
+            break;
+        }
+        break;
+
+      case SDL_KEYDOWN:
         switch (event->key.keysym.sym)
         {
           case SDLK_ESCAPE:
