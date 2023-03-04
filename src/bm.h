@@ -349,7 +349,6 @@ typedef struct {
 
 Pt		GraToCel		(Pt gra);
 Pt		CelToGra		(Pt cel);
-Pt		CelToGra3		(Pt cel);
 Pt		CelToGra2		(Pt cel, SDL_bool shift);
 short	DecorGetInitCel	(Pt cel);
 void	DecorPutInitCel	(Pt cel, short icon);
