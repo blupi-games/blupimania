@@ -604,18 +604,44 @@ SDLEventToSmakyKey (const SDL_Event * event)
     switch (event->type)
     {
       case SDL_TEXTINPUT:
-        if (!strncmp(event->text.text, "à", sizeof("à")))
+        if (!strncmp(event->text.text, "á", sizeof("á")))
+          key = KEYAAIGU;
+        else if (!strncmp(event->text.text, "à", sizeof("à")))
           key = KEYAGRAVE;
+        else if (!strncmp(event->text.text, "â", sizeof("â")))
+          key = KEYACIRCON;
         else if (!strncmp(event->text.text, "ä", sizeof("ä")))
           key = KEYATREMA;
         else if (!strncmp(event->text.text, "é", sizeof("é")))
           key = KEYEAIGU;
         else if (!strncmp(event->text.text, "è", sizeof("è")))
           key = KEYEGRAVE;
+        else if (!strncmp(event->text.text, "ê", sizeof("ê")))
+          key = KEYECIRCON;
+        else if (!strncmp(event->text.text, "ë", sizeof("ë")))
+          key = KEYETREMA;
+        else if (!strncmp(event->text.text, "í", sizeof("í")))
+          key = KEYIAIGU;
+        else if (!strncmp(event->text.text, "ì", sizeof("ì")))
+          key = KEYIGRAVE;
+        else if (!strncmp(event->text.text, "î", sizeof("î")))
+          key = KEYICIRCON;
+        else if (!strncmp(event->text.text, "ï", sizeof("ï")))
+          key = KEYITREMA;
+        else if (!strncmp(event->text.text, "ó", sizeof("ó")))
+          key = KEYOAIGU;
+        else if (!strncmp(event->text.text, "ò", sizeof("ò")))
+          key = KEYOGRAVE;
+        else if (!strncmp(event->text.text, "ô", sizeof("ô")))
+          key = KEYOCIRCON;
         else if (!strncmp(event->text.text, "ö", sizeof("ö")))
           key = KEYOTREMA;
+        else if (!strncmp(event->text.text, "ú", sizeof("ú")))
+          key = KEYUAIGU;
         else if (!strncmp(event->text.text, "ù", sizeof("ù")))
           key = KEYUGRAVE;
+        else if (!strncmp(event->text.text, "û", sizeof("û")))
+          key = KEYUCIRCON;
         else if (!strncmp(event->text.text, "ü", sizeof("ü")))
           key = KEYUTREMA;
         else if (!strncmp(event->text.text, "ç", sizeof("ç")))
