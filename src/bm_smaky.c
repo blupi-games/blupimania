@@ -651,7 +651,8 @@ SDLEventToSmakyKey (const SDL_Event * event)
           break;
 
         if ((event->text.text[0] >= SDLK_a && event->text.text[0] <= SDLK_z)
-            || (event->text.text[0] >= SDLK_0 && event->text.text[0] <= SDLK_9))
+            || (event->text.text[0] >= SDLK_0 && event->text.text[0] <= SDLK_9)
+            || (event->text.text[0] >= 65 && event->text.text[0] <= 90)) /* A..Z */
         {
           key = event->text.text[0];
           break;
