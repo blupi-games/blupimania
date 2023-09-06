@@ -1942,13 +1942,13 @@ int OpenMachine(void)
       info.max_texture_height);
   }
 
-	LoadIcon();					/* charge l'image des icnes */
+	LoadIcon();					/* charge l'image des icônes */
 
         InitSoundSystem();
         LoadSounds();
 
-	StartRandom(0, 0);					/* coup de sac du gnrateur alatoire toto */
-	StartRandom(1, 1);					/* coup de sac du gnrateur alatoire dcor */
+	StartRandom(0, 0);					/* coup de sac du générateur aléatoire toto */
+	StartRandom(1, 1);					/* coup de sac du générateur aléatoire décor */
 
 	keystatus = 0;
 

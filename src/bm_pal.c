@@ -159,12 +159,12 @@ void DrawButton (Pt pos, short icon, short state)
 
 	if ( state == 0 || state == 3 )
 	{
-		pos.x += 3;						/* dcalage si bouton relch */
+		pos.x += 3;						/* décalage si bouton relàché */
 		pos.y += 7;
 	}
 	else
 	{
-		pos.x += 7;						/* dcalage si bouton press */
+		pos.x += 7;						/* décalage si bouton pressé */
 		pos.y += 2;
 	}
 

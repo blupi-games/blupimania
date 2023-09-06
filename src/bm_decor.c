@@ -1084,26 +1084,26 @@ void InvCel (Pt cel, short outil)
 	dim.x  = LXICO;
 	dim.y  = LYICO;
 
-	if ( dst.x < POSXDRAW )					/* dpasse  gauche ? */
+	if ( dst.x < POSXDRAW )					/* dépasse à gauche ? */
 	{
 		dim.x -= POSXDRAW-dst.x;
 		if ( dim.x <= 0 )  return;
 		src.x += POSXDRAW-dst.x;
 		dst.x = POSXDRAW;
 	}
-	if ( dst.x+dim.x > POSXDRAW+DIMXDRAW )	/* dpasse  droite ? */
+	if ( dst.x+dim.x > POSXDRAW+DIMXDRAW )	/* dépasse à droite ? */
 	{
 		dim.x -= dst.x+dim.x - (POSXDRAW+DIMXDRAW);
 		if ( dim.x <= 0 )  return;
 	}
-	if ( dst.y < POSYDRAW )					/* dpasse en haut ? */
+	if ( dst.y < POSYDRAW )					/* dépasse en haut ? */
 	{
 		dim.y -= POSYDRAW-dst.y;
 		if ( dim.y <= 0 )  return;
 		src.y += POSYDRAW-dst.y;
 		dst.y = POSYDRAW;
 	}
-	if ( dst.y+dim.y > POSYDRAW+DIMYDRAW )	/* dpasse en bas ? */
+	if ( dst.y+dim.y > POSYDRAW+DIMYDRAW )	/* dépasse en bas ? */
 	{
 		dim.y -= dst.y+dim.y - (POSYDRAW+DIMYDRAW);
 		if ( dim.y <= 0 )  return;

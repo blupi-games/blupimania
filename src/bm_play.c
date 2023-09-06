@@ -1816,7 +1816,7 @@ void DrawNumMonde (void)
 	pos.x = 557;
 	pos.y = LYIMAGE()-249;
 
-	DrawBigNum(pos, g_monde+1);						/* dessine le numro du monde */
+	DrawBigNum(pos, g_monde+1);						/* dessine le numéro du monde */
 
 	src.x = 0;
 	src.y = 0;
@@ -1827,6 +1827,7 @@ void DrawNumMonde (void)
 	pos.x = 478,
 	pos.y = LYIMAGE()-283-1;
 
+        /* dessine la flèche supérieure (+) */
 	if ( g_monde < maxmonde-1 &&
 		 (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
                 DrawIcon(ICO_ARROWUP+1, src, pos, dim);
@@ -1835,6 +1836,7 @@ void DrawNumMonde (void)
 
 	pos.y = LYIMAGE()-230-1;
 
+        /* dessine la flche infrieure (-) */
 	if ( g_monde > 0 )
                 DrawIcon(ICO_ARROWDOWN+1, src, pos, dim);
 	else
@@ -2232,7 +2234,7 @@ short PartiePrend (short rang)
 /* -------------- */
 
 /*
-	Dessine l'icne prend ou sauve au milieu de la fentre.
+	Dessine l'icône prend ou sauve au milieu de la fenêtre.
  */
 
 void PartieDrawIcon (short key)
