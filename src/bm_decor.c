@@ -1071,20 +1071,10 @@ Pt DecorDetCel (Pt pos)
 
 void InvCel (Pt cel, short outil)
 {
-	Pixmap		pmmask  = {0};
 	Pt			src, dst, dim;
-	short		give;
 
 	if ( IfCelValide(cel, outil) )
-	{
-		//FIXME GetCelMask(&pmmask, cel);
-		give = 1;
-	}
-	else
-	{
-		GetIcon(&pmmask, ICO_CROIX, 1);		/* croix */
-		give = 0;
-	}
+		return;
 
 	src.x  = 0;
 	src.y  = 0;
