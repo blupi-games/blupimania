@@ -2806,6 +2806,10 @@ short ChangePhase (Phase newphase)
 
         g_ignoreKeyClicUp = SDL_TRUE;
 	phase = newphase;					/* change la phase */
+
+	if (phase == PHASE_GENERIC)
+	  JoueurRead();				/* lit le fichier des joueurs sur disque */
+
 	ShowImage();						/* affiche l'image de base */
 
 	/*	Ouvre la nouvelle phase de jeu. */
@@ -2815,7 +2819,6 @@ short ChangePhase (Phase newphase)
 	switch ( phase )
 	{
 		case PHASE_GENERIC:
-			JoueurRead();				/* lit le fichier des joueurs sur disque */
 			MusicStart(0);
 			musique = 1;
 			lastaccord = -1;
