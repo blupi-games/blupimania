@@ -1400,26 +1400,6 @@ error:
 	return err;
 }
 
-
-
-
-/* ========= */
-/* CacheIcon */
-/* ========= */
-
-/*
-	Cache en mmoire une icne en vue d'une utilisation prochaine.
-	Ceci est utile pour le PC qui n'a pas assez de mmoire pour
-	conserver toutes les icnes !
- */
-
-void CacheIcon(short numero)
-{
-	return;
-}
-
-
-
 /* ======= */
 /* GetIcon */
 /* ======= */

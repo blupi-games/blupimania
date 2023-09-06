@@ -66,7 +66,6 @@ bbox;
 #define MAXREGION	40						/* nb max de rgions dans une image */
 
 static Pixmap		pmwork  = {0};		/* pixmap temporaire de travail */
-static Pixmap		pmmask  = {0};		/* pixmap du masque selon le dcor devant */
 static Pixmap		pmcopy  = {0};		/* copie modifiable d'une icne */
 
 static icondraw		ListIconDrawNew[MAXICONDRAW];	/* liste des icnes  dessnier */
@@ -789,7 +788,6 @@ short IconOpen (void)
 void IconClose (void)
 {
 	GivePixmap(&pmwork);
-	GivePixmap(&pmmask);
 	GivePixmap(&pmcopy);
 }
 
