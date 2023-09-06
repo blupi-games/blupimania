@@ -261,13 +261,13 @@ Pixmap;
 /* Variables globales */
 /* ------------------ */
 
-extern	short	g_langue;				/* numro de la langue */
+extern	short	g_langue;				/* numéro de la langue */
 extern	short	g_monde;				/* monde actuel (0..n) */
-extern	short	g_updatescreen;		/* 1 -> cran  mettre  jour */
+extern	short	g_updatescreen;		/* 1 -> écran à mettre à jour */
 extern	short	g_typejeu;			/* type de jeu (0..1) */
-extern	short	g_typeedit;			/* 1 -> dition d'un monde */
-extern	short	g_typetext;			/* 1 -> dition d'un texte */
-extern	short	g_modetelecom;		/* 1 -> mode tlcommande gauche/droite */
+extern	short	g_typeedit;			/* 1 -> édition d'un monde */
+extern	short	g_typetext;			/* 1 -> édition d'un texte */
+extern	short	g_modetelecom;		/* 1 -> mode télécommande gauche/droite */
 extern	short	g_pause;				/* 1 -> pause */
 extern	short	g_passdaniel;			/* 1 -> toujours construction */
 extern	short	g_passpower;			/* 1 -> force infinie */

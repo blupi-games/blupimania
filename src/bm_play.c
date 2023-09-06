@@ -233,13 +233,13 @@ Joueur;
 /* Variables globales externes */
 /* --------------------------- */
 
-short		g_langue = 0;						/* numro de la langue */
+short		g_langue = 0;						/* numéro de la langue */
 short		g_monde;							/* monde actuel */
-short		g_updatescreen;					/* 1 -> cran  mettre  jour */
+short		g_updatescreen;					/* 1 -> écran à mettre à jour */
 short		g_typejeu;						/* type de jeu (0..1) */
-short		g_typeedit;						/* 1 -> dition d'un monde */
-short		g_typetext;						/* 1 -> dition d'un texte */
-short		g_modetelecom;					/* 1 -> mode tlcommande gauche/droite */
+short		g_typeedit;						/* 1 -> édition d'un monde */
+short		g_typetext;						/* 1 -> édition d'un texte */
+short		g_modetelecom;					/* 1 -> mode télécommande gauche/droite */
 short		g_pause;							/* 1 -> pause */
 short		g_passdaniel;						/* 1 -> toujours construction */
 short		g_passpower;						/* 1 -> force infinie */

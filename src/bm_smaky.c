@@ -199,12 +199,12 @@ void StartRandom (short g, short mode)
 /* ========== */
 
 /*
-	Dmarre une musique de fond donne (song).
-	song = 0	->		musique pendant gnrique initial
-	song = 1	->		musique si termin un niveau
-	song = 2	->		musique si termin une nigme
-	song = 3	->		musique pendant rglages
-	song = 4	->		musique pendant jeu (choix alatoire)
+	Démarre une musique de fond donnée (song).
+	song = 0	->		musique pendant générique initial
+	song = 1	->		musique si terminé un niveau
+	song = 2	->		musique si terminé une énigme
+	song = 3	->		musique pendant réglages
+	song = 4	->		musique pendant jeu (choix aléatoire)
  */
 
 void MusicStart (short song)
