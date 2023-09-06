@@ -287,6 +287,7 @@ extern SDL_bool g_clearKeyEvents;
 extern SDL_bool g_ignoreKeyClicUp;
 extern Pt g_keyMousePos;
 extern SDL_bool g_keyMousePressed;
+extern Sint32 g_keyFunctionUp;
 extern SDL_bool g_subMenu;
 extern SDL_bool g_superInvalid;
 

@@ -259,6 +259,7 @@ SDL_bool g_clearKeyEvents = SDL_FALSE;
 SDL_bool g_ignoreKeyClicUp = SDL_FALSE;
 Pt g_keyMousePos = {0};
 SDL_bool g_keyMousePressed = SDL_FALSE;
+Sint32 g_keyFunctionUp = 0;
 SDL_bool g_subMenu = SDL_FALSE;
 SDL_bool g_stopMenu = SDL_FALSE;
 SDL_bool g_saveMenu = SDL_FALSE;
@@ -4801,12 +4802,14 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
                         key = 0;
                       }
                 }
-		if ( key == KEYCLIC || key == KEYCLICREL || g_keyMousePressed || (key >= KEYF4 && key <= KEYF1) )
+		if ( key == KEYCLIC || key == KEYCLICREL || g_keyMousePressed || g_keyFunctionUp == 1 || (key >= KEYF4 && key <= KEYF1) )
 		{
 			ev = PaletteEvent(key, pos);
                       if (key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1))
                         forPalette = SDL_TRUE;
                 }
+                if (g_keyFunctionUp)
+		      g_keyFunctionUp--;
 		if ( forPalette )
 		{
 			if ( g_typejeu == 0 || g_typeedit )
@@ -4823,6 +4826,7 @@ static short PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 				if ( ev == 2 )
 				{
 					MoveBuild(PaletteGetPress(), key);
+					g_keyFunctionUp = 5;
 				}
 			}
 

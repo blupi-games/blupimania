@@ -771,25 +771,44 @@ short PaletteEvent (short event, Pt pos)
 	short		typep, typer;
         static int _rang = -1;
 
-	if ( typepress == 0 && event >= KEYF4 && event <= KEYF1 )
-	{
-		rang = -event+KEYF1;
-		if ( ticon[rang][tspal[rang]] )
-		{
-			press = rang;
-			return 2;
-		}
-	}
-
 	if ( typepress )
 	{
-		typep = 1;		/* bouton press */
-		typer = 0;		/* bouton relch */
+		typep = 1;		/* bouton pressé */
+		typer = 0;		/* bouton relâché */
 	}
 	else
 	{
-		typep = 4;		/* bouton press */
-		typer = 3;		/* bouton relch */
+		typep = 4;		/* bouton pressé */
+		typer = 3;		/* bouton relâché */
+	}
+
+	if ( event >= KEYF4 && event <= KEYF1 )
+	{
+		if (typepress == 0)
+		{
+		    rang = -event+KEYF1;
+		    if ( ticon[rang][tspal[rang]] )
+		    {
+			    DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
+			    DrawF1toF4(press);
+			    press = rang;
+			    DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
+			    return 2;
+		    }
+		}
+		return 1;
+
+	}
+
+	if (typepress == 0 && g_keyFunctionUp)
+	{
+		if ( ticon[press][tspal[press]] )
+		{
+		   DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
+		   DrawF1toF4(press);
+		}
+		g_keyFunctionUp = SDL_FALSE;
+		return 0;
 	}
 
 	rang = SpecButton(pos);
@@ -838,6 +857,7 @@ short PaletteEvent (short event, Pt pos)
 		//if ( rang != press && rang < MAXICONY )
 		{
 			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
+			DrawF1toF4(press);
 			press = rang;
                         if (event != KEYCLICREL || typepress != 0)
                           DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
