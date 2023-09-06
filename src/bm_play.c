@@ -4504,6 +4504,7 @@ short ExecuteAction (char event, Pt pos)
           fj.language = action - ACTION_LANG_EN;
           DrawLanguage();
           ChangeLanguage(fj.language);
+	  PushUserEvent(RESET, NULL);
           return 0;
         }
 
