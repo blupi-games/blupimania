@@ -120,7 +120,8 @@ typedef unsigned short u_short;
 
 typedef enum {
   FRAME_TICK = 1,
-  MUSIC_STOP = 2
+  MUSIC_STOP = 2,
+  RESET = 3,
 } UserEvent;
 
 /* --------- */
@@ -304,6 +305,7 @@ short	PaletteStatus	(short rang);
 short	PaletteGetPress	(void);
 short	PaletteEvent	(short event, Pt pos);
 void	PaletteNew		(short *pdesc, short type);
+void PaletteDraw (void);
 
 void	PaletteEditOpen	(short palette[]);
 short	PaletteEditEvent (short palette[], short event, Pt pos);
@@ -432,7 +434,8 @@ int SDLEventToSmakyKey (const SDL_Event * event);
 KeyStatus GetKeyStatus	(void);
 short	IfColor			(void);
 void	ModColor		(short color, short red, short green, short blue);
-void	CacheIcon		(short numero);
+void DrawIcon(short num, Pt p1, Pt p2, Pt dim);
+void DrawIconTemp(short num, Pt p1, Pt p2, Pt dim);
 short	GetIcon			(Pixmap *ppm, short numero, short mode);
 short	GetPixmap		(Pixmap *ppm, Pt dim, short fill, short colormode);
 short	GetImage		(Pixmap *ppm, short numero);
@@ -467,7 +470,10 @@ short	MachinePartieRead	(long pos, char file);
 
 void PushUserEvent (Sint32 code, void * data);
 
-void ReloadIcons();
+int LoadIcon();
+void UnloadIcon();
+int LoadDecor();
+void UnloadDecor();
 
 #ifdef _WIN32
 #define countof(a) _countof (a)

@@ -1119,9 +1119,7 @@ void InvCel (Pt cel, short outil)
 		if ( dim.y <= 0 )  return;
 	}
 
-	CopyPixel(&pmmask, src, 0, dst, dim);
-
-	if ( give )  GivePixmap(&pmmask);
+        DrawIcon(ICO_CROIX, src, dst, dim);
 }
 
 
@@ -2386,7 +2384,34 @@ short DecorNewMonde (Monde *pm)
 }
 
 
+int LoadDecor()
+{
+  Pt			p;
+  int		err;
 
+  p.y = DIMYDRAW;
+  p.x = DIMXDRAW;
+  err = GetPixmap(&pmdecor, p, 1, 1);
+  if ( err )  return err;
+
+  p.y = LYICO;
+  p.x = LXICO;
+  err = GetPixmap(&pmsuper, p, -1, 1);
+  if ( err )  return err;
+
+  p.y = LYICO;
+  p.x = LXICO;
+  err = GetPixmap(&pmsback, p, -1, 1);
+
+  return err;
+}
+
+void UnloadDecor()
+{
+  GivePixmap(&pmdecor);
+  GivePixmap(&pmsuper);
+  GivePixmap(&pmsback);
+}
 
 /* ========= */
 /* DecorOpen */
@@ -2398,23 +2423,10 @@ short DecorNewMonde (Monde *pm)
 
 short DecorOpen (void)
 {
-	Pt			p;
-	short		err;
+  int err = LoadDecor();
 
-        p.y = DIMYDRAW;
-        p.x = DIMXDRAW;
-	err = GetPixmap(&pmdecor, p, 1, 1);
-	if ( err )  return err;
-
-        p.y = LYICO;
-        p.x = LXICO;
-	err = GetPixmap(&pmsuper, p, -1, 1);
-	if ( err )  return err;
-
-        p.y = LYICO;
-        p.x = LXICO;
-	err = GetPixmap(&pmsback, p, -1, 1);
-	if ( err )  return err;
+	if (err)
+          return err;
 
 	lastsensuni = 0;
 	lastaccel   = 0;
@@ -2434,9 +2446,7 @@ short DecorOpen (void)
 
 void DecorClose (void)
 {
-	GivePixmap(&pmdecor);
-	GivePixmap(&pmsuper);
-	GivePixmap(&pmsback);
+  UnloadDecor();
 }
 
 

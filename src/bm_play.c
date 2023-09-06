@@ -1213,6 +1213,17 @@ void ChangeCouleur (void)
 }
 
 
+void DrawIcon(short num, Pt p1, Pt p2, Pt dim){
+  Pixmap pm = {0};
+  GetIcon(&pm, num, 1);
+  CopyPixel(&pm, p1, 0, p2, dim);
+}
+
+void DrawIconTemp(short num, Pt p1, Pt p2, Pt dim){
+  Pixmap pm = {0};
+  GetIcon(&pm, num, 1);
+  CopyPixel(&pm, p1, &pmtemp, p2, dim);
+}
 
 /* --------------- */
 /* DrawRadioButton */
@@ -1224,7 +1235,6 @@ void ChangeCouleur (void)
 
 void DrawRadioButton (Pt pos, short state)
 {
-	Pixmap		pm;
 	short		icon;
 	Pt			src, dim;
 
@@ -1237,8 +1247,7 @@ void DrawRadioButton (Pt pos, short state)
 	if ( state )  icon = ICO_BUTTON_ROND1;
 	else          icon = ICO_BUTTON_ROND0;
 
-	GetIcon(&pm, icon, 1);
-	CopyPixel(&pm, src, 0, pos, dim);		/* dessine le bouton */
+        DrawIcon(icon, src, pos, dim); /* dessine le bouton */
 }
 
 
@@ -1474,7 +1483,6 @@ void DrawCouleur (void)
 
 void DrawArrows (char mode)
 {
-	Pixmap		pm;
 	short		icon;
 	Pt			src, dst, dim;
 	Rectangle	rect;
@@ -1497,8 +1505,7 @@ void DrawArrows (char mode)
 	dim.x = 54;
 	dim.y = 52;
 
-	GetIcon(&pm, icon, 1);
-	CopyPixel(&pm, src, 0, dst, dim);		/* dessine flches ou tlcommande */
+        DrawIcon(icon, src, dst, dim); /* dessine flèches ou télécommande */
 
 	if ( icon == ICO_TELECOM )
 	{
@@ -1511,7 +1518,7 @@ void DrawArrows (char mode)
 		src.y = 52;
 		if ( mode == KEYGOFRONT )  src.x = 15;
 		if ( mode == KEYGOBACK  )  src.x = 30;
-		CopyPixel(&pm, src, 0, dst, dim);	/* dessine la manette avant/arrire */
+                DrawIcon(icon, src, dst, dim); /* dessine la manette avant/arrière */
 
 		dst.x = 7+29;
 		dst.y = LYIMAGE()-92-1+26;
@@ -1519,7 +1526,7 @@ void DrawArrows (char mode)
 		src.y = 0;
 		if ( mode == KEYGOLEFT  )  src.y = 15;
 		if ( mode == KEYGORIGHT )  src.y = 30;
-		CopyPixel(&pm, src, 0, dst, dim);	/* dessine la manette gauche/droite */
+                DrawIcon(icon, src, dst, dim); /* dessine la manette gauche/droite */
 	}
 
 	if ( g_typeedit )
@@ -1543,7 +1550,6 @@ void DrawArrows (char mode)
 
 void DrawPause (void)
 {
-	Pixmap		pm;
 	Pt			src, dst, dim;
 
 	if ( g_typeedit )  return;
@@ -1558,8 +1564,7 @@ void DrawPause (void)
 	dim.x = 18;
 	dim.y = 18;
 
-	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
-	CopyPixel(&pm, src, 0, dst, dim);
+        DrawIcon(ICO_BUTTON_PAUSE, src, dst, dim);
 }
 
 
@@ -1575,10 +1580,7 @@ void DrawPause (void)
 
 void DrawBigDigit (Pt pos, short num)
 {
-	Pixmap		pm;
 	Pt			src, dim;
-
-	GetIcon(&pm, ICO_CHAR_BIG, 1);
 
 	src.x = (num%4)*20;
 	src.y = (num/4)*26;
@@ -1586,7 +1588,7 @@ void DrawBigDigit (Pt pos, short num)
 	dim.x = 20;
 	dim.y = 26;
 
-	CopyPixel(&pm, src, 0, pos, dim);
+        DrawIcon(ICO_CHAR_BIG, src, pos, dim);
 }
 
 /* ---------- */
@@ -1809,7 +1811,6 @@ short DetectStatusBar (Pt pos, short max, Rectangle *prect)
 
 void DrawNumMonde (void)
 {
-	Pixmap		pm;
 	Pt			pos, src, dim;
 
 	pos.x = 557;
@@ -1828,26 +1829,16 @@ void DrawNumMonde (void)
 
 	if ( g_monde < maxmonde-1 &&
 		 (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]) )
-	{
-		GetIcon(&pm, ICO_ARROWUP+1, 1);
-	}
+                DrawIcon(ICO_ARROWUP+1, src, pos, dim);
 	else
-	{
-		GetIcon(&pm, ICO_ARROWUP, 1);
-	}
-	CopyPixel(&pm, src, 0, pos, dim);		/* dessine la flche suprieure (+) */
+		DrawIcon(ICO_ARROWUP, src, pos, dim);
 
 	pos.y = LYIMAGE()-230-1;
 
 	if ( g_monde > 0 )
-	{
-		GetIcon(&pm, ICO_ARROWDOWN+1, 1);
-	}
+                DrawIcon(ICO_ARROWDOWN+1, src, pos, dim);
 	else
-	{
-		GetIcon(&pm, ICO_ARROWDOWN, 1);
-	}
-	CopyPixel(&pm, src, 0, pos, dim);		/* dessine la flche infrieure (-) */
+                DrawIcon(ICO_ARROWDOWN, src, pos, dim);
 
 	if ( phase == PHASE_DEPLACE )  return;
 	DrawStatusBar(g_monde, maxmonde-1);				/* dessine la barre d'avance */
@@ -2246,28 +2237,22 @@ short PartiePrend (short rang)
 
 void PartieDrawIcon (short key)
 {
-	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			pos, zero = {0, 0}, dim = {LYICO, LXICO};
 
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
 
 	if ( key == KEYLOAD || key == -KEYLOAD )
-	{
 		pos.x += LXICO+20;
-	}
 
-	if ( key ==  KEYSAVE )  GetIcon(&pmicon, ICO_SAUVE, 1);
-	if ( key ==  KEYLOAD )  GetIcon(&pmicon, ICO_PREND, 1);
-	if ( key == -KEYSAVE )  GetIcon(&pmicon, ICO_ATTENTE+0, 1);
-	if ( key == -KEYLOAD )  GetIcon(&pmicon, ICO_ATTENTE+1, 1);
-
-	CopyPixel								/* dessine la chair */
-	(
-		&pmicon, zero,
-		0, pos,
-		dim
-	);
+	if ( key ==  KEYSAVE )
+          DrawIcon(ICO_SAUVE, zero, pos, dim);
+	else if ( key ==  KEYLOAD )
+          DrawIcon(ICO_PREND, zero, pos, dim);
+	else if ( key == -KEYSAVE )
+          DrawIcon(ICO_ATTENTE+0, zero, pos, dim);
+	else if ( key == -KEYLOAD )
+          DrawIcon(ICO_ATTENTE+1, zero, pos, dim);
 }
 
 /* ----------------- */
@@ -2391,29 +2376,16 @@ next:
 
 void StopDrawIcon (void)
 {
-	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
 	Pt			pos, p = {0, 0}, dim = {LYICO, LXICO};
 
 	pos.x = POSXDRAW+20;
 	pos.y = POSYDRAW+DIMYDRAW-LYICO-20;
 
-	GetIcon(&pmicon, ICO_STOPOUI, 1);
-	CopyPixel								/* dessine la chair */
-	(
-		&pmicon, p,
-		0, pos,
-		dim
-	);
+        DrawIcon(ICO_STOPOUI, p, pos, dim);
 
 	pos.x += LXICO+20;
 
-	GetIcon(&pmicon, ICO_STOPNON, 1);
-	CopyPixel								/* dessine la chair */
-	(
-		&pmicon, p,
-		0, pos,
-		dim
-	);
+        DrawIcon(ICO_STOPNON, p, pos, dim);
 }
 
 /* --------------- */
@@ -2647,7 +2619,90 @@ void PhaseEditClose (void)
 	   g_typeedit = 0;		/* fin de l'dition */
 }
 
+short RedrawPhase (Phase phase)
+{
+	Rectangle	rect;
 
+	ShowImage();						/* affiche l'image de base */
+
+	switch ( phase )
+	{
+		case PHASE_GENERIC:
+		case PHASE_SUIVANT:
+		case PHASE_FINI0:
+		case PHASE_FINI1:
+		case PHASE_FINI2:
+		case PHASE_FINI3:
+		case PHASE_FINI4:
+		case PHASE_FINI5:
+		case PHASE_FINI6:
+		case PHASE_FINI7:
+		case PHASE_FINI8:
+			break;
+
+		case PHASE_IDENT:
+			DrawJoueur();				/* affiche le joueur */
+			DrawIdent();				/* affiche tous les noms */
+			JoueurEditOpen();			/* prpare l'dition du nom */
+			break;
+
+		case PHASE_REGLAGE:
+			DrawVitesse();				/* affiche la vitesse */
+			DrawScroll();				/* affiche le scroll */
+			DrawBruitage();				/* affiche le mode de bruitages */
+			DrawTelecom();				/* affiche le mode de tlcommande */
+			break;
+
+		case PHASE_REGLAGE2:
+                        DrawLanguage();
+                        DrawScreen();
+			break;
+
+		case PHASE_PARAM:
+			PaletteEditOpen(descmonde.palette);
+			rect.p1.x = 218;
+			rect.p1.y = LYIMAGE()-47;
+			rect.p2.x = 218+180;
+			rect.p2.y = LYIMAGE()-47+23;
+			EditOpen(descmonde.text, MAXTEXT, rect);
+			DrawCouleur();				/* affiche le mode de couleur */
+			break;
+
+		case PHASE_PRIVE:
+			DrawNumMonde();				/* affiche le numéro du monde */
+			DrawObjectif();				/* affiche l'objectif */
+			break;
+
+		case PHASE_DEPLACE:
+			DrawNumMonde();				/* affiche le numéro du monde */
+			DrawObjectif();				/* affiche l'objectif */
+			break;
+
+		case PHASE_OBJECTIF:
+			DrawNumMonde();				/* affiche le numéro du monde */
+			DrawObjectif();				/* affiche l'objectif */
+			break;
+
+		case PHASE_RECOMMENCE:
+			DrawObjectif();				/* affiche l'objectif */
+			break;
+
+		case PHASE_PLAY:
+			DrawArrows(0);				/* dessine les flèches */
+			DrawPause();				/* dessine le bouton pause */
+                        PaletteDraw();
+
+                        /* Redraw the whole main game screen */
+                        Pt ovisu = DecorGetOrigine();
+                        DecorSetOrigine(ovisu, 1);
+			break;
+
+		default:
+			break;
+	}
+
+	return 0;							/* nouvelle phase ok */
+}
 
 /* ----------- */
 /* ChangePhase */
@@ -3471,7 +3526,6 @@ void AnimIconAddBack (Pt pos, char bFront)
 {
 	short	*pt = animpb;
 	Pt		ipos;
-	Pixmap	pmicon;						/* pixmap de l'icne  dessiner */
 	Pt orig = {0, 0};
         Pt dim = {LYICO, LXICO};
 
@@ -3488,13 +3542,7 @@ void AnimIconAddBack (Pt pos, char bFront)
 				 ipos.y < pos.y+LYICO && ipos.y+LYICO > pos.y )
 			{
                                 Pt _pos = {ipos.y - pos.y, ipos.x - pos.x};
-				GetIcon(&pmicon, pt[5], 1);				/* cherche le pixmap de la chair */
-				CopyPixel								/* dessine la chair */
-				(
-					&pmicon, orig,
-					&pmtemp, _pos,
-					dim
-				);
+                                DrawIconTemp(pt[5], orig, _pos, dim);
 			}
 		}
 		pt += 5+pt[4];
@@ -3511,8 +3559,6 @@ void AnimIconAddBack (Pt pos, char bFront)
 
 void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 {
-	Pixmap		pmicon;						/* pixmap de l'icne  dessiner */
-
         Pt orig = {0, 0};
         Pt dim = {LYICO, LXICO};
 	CopyPixel								/* copie l'image originale */
@@ -3524,13 +3570,7 @@ void AnimDrawIcon (Pixmap *ppm, short icon, Pt pos, char bOther)
 
 	if ( bOther )  AnimIconAddBack(pos, 0);	/* ajoute les autres icnes derrire */
 
-	GetIcon(&pmicon, icon, 1);				/* cherche le pixmap de la chair */
-	CopyPixel								/* dessine la chair */
-	(
-		&pmicon, orig,
-		&pmtemp, orig,
-		dim
-	);
+        DrawIconTemp(icon, orig, orig, dim);
 
 	if ( bOther )  AnimIconAddBack(pos, 1);	/* ajoute les autres icnes devant */
 
@@ -5106,9 +5146,15 @@ int main (int argc, char *argv[])
 
           if (event.type == SDL_RENDER_DEVICE_RESET || event.type == SDL_RENDER_TARGETS_RESET)
           {
-            ReloadIcons();
+            BlackScreen();
+
+            UnloadIcon();
             UnloadTextures();
+            UnloadDecor();
+
+            LoadIcon();
             LoadTextures();
+            LoadDecor();
 
             GivePixmap(&pmimage);
             if (pmimageNum > -1)
@@ -5116,6 +5162,8 @@ int main (int argc, char *argv[])
               	int err = GetImage(&pmimage, pmimageNum);
                 if ( err )  FatalBreak(err);
             }
+
+            RedrawPhase(phase);
             continue;
           }
 

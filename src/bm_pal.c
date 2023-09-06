@@ -125,7 +125,6 @@ short GetButtonRang (Pt pos)
 
 void DrawButton (Pt pos, short icon, short state)
 {
-	Pixmap		pm;
 	short		iconbutton;
 	Pt			src, dim, p1 = {1, 1}, p2 = {30, 30};
 
@@ -154,13 +153,7 @@ void DrawButton (Pt pos, short icon, short state)
 	}
 
 	if ( icon == 0 )  return;
-	GetIcon(&pm, iconbutton, 1);
-	CopyPixel							/* dessine le cadre du bouton */
-	(
-		&pm, src,
-		0, pos,
-		dim
-	);
+        DrawIcon(iconbutton, src, pos, dim); /* dessine le cadre du bouton */
 
 	if ( icon == 1 )  return;
 
@@ -175,13 +168,7 @@ void DrawButton (Pt pos, short icon, short state)
 		pos.y += 2;
 	}
 
-	GetIcon(&pm, icon, 1);
-	CopyPixel							/* dessine le contenu du bouton */
-	(
-		&pm, p1,
-		0, pos,
-		p2
-	);
+        DrawIcon(icon, p1, pos, p2); /* dessine le contenu du bouton */
 }
 
 
@@ -195,7 +182,6 @@ void DrawButton (Pt pos, short icon, short state)
 
 void DrawF1toF4 (short rang)
 {
-	Pixmap		pm;
 	Pt			src, dst, dim;
 
 	if ( typepress != 0 )  return;
@@ -211,8 +197,7 @@ void DrawF1toF4 (short rang)
 	dim.x = 8;
 	dim.y = 7;
 
-	GetIcon(&pm, ICO_BUTTON_PAUSE, 1);
-	CopyPixel(&pm, src, 0, dst, dim);
+        DrawIcon(ICO_BUTTON_PAUSE, src, dst, dim);
 }
 
 
@@ -1327,19 +1312,13 @@ void InfoDraw (short status, short force, short vision, short mechant, short mag
 
 	if ( mechant )
 	{
-		GetIcon(&pm, ICO_INFO+1, 1);
                 p1.y = 1;
                 p1.x = 1;
                 p2.y = INFOPOSY;
                 p2.x = INFOPOSX;
                 dim.y = INFODIMY;
                 dim.x = INFODIMX;
-		CopyPixel
-		(
-			&pm, p1,
-			0, p2,
-			dim
-		);
+                DrawIcon(ICO_INFO+1, p1, p2, dim);
 		return;
 	}
 

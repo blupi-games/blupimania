@@ -1518,7 +1518,7 @@ short GetIcon(Pixmap *ppm, short numero, short mode)
 	Chargement de l'image des icnes.
  */
 
-static int LoadIcon(void)
+int LoadIcon(void)
 {
 	int		err;
 
@@ -1537,7 +1537,7 @@ static int LoadIcon(void)
 	return 0;
 }
 
-static void UnloadIcon()
+void UnloadIcon()
 {
   GivePixmap(&pmicon1c);
   GivePixmap(&pmicon2c);
@@ -1863,12 +1863,6 @@ short IfFileExist (char *pfilename)
 
 	fclose(channel);						/* ferme le fichier */
 	return 1;								/* fichier existe */
-}
-
-void ReloadIcons()
-{
-  UnloadIcon();
-  LoadIcon();
 }
 
 /* =========== */
