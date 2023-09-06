@@ -1274,7 +1274,20 @@ static int LoadImage(int numero, Pixmap *pim)
 {
 	int			err = 1;
 	char		name[4096];				/* nom de l'image BLUPIXnn.IMAGE */
-	char *lang = "fr/";
+	char *lang = "";
+
+        switch (g_langue)
+        {
+          case 0:
+            lang = "en/";
+            break;
+          case 1:
+            lang = "fr/";
+            break;
+          case 2:
+            lang = "de/";
+            break;
+        }
 
         if (numero < 22 || numero == 33)
           lang = "";
@@ -1855,6 +1868,17 @@ short IfFileExist (char *pfilename)
 
 int OpenMachine(void)
 {
+  SDL_Locale * locales = SDL_GetPreferredLocales();
+  if (locales)
+  {
+    if (!strncmp(locales[0].language, "en", 2))
+      g_langue = 0;
+    else if (!strncmp(locales[0].language, "fr", 2))
+      g_langue = 1;
+    else if (!strncmp(locales[0].language, "de", 2))
+      g_langue = 2;
+  }
+
 #ifdef __LINUX__
   if (!getenv ("ALSA_CONFIG_DIR"))
   {
