@@ -766,6 +766,8 @@ SDLEventToSmakyKey (const SDL_Event * event)
           case SDLK_F9:
             key = KEYF9;
             break;
+          case SDLK_PAGEDOWN:
+            PushUserEvent(RESET, NULL);
           default:
             key = 0;
         }

@@ -5149,7 +5149,7 @@ int main (int argc, char *argv[])
         {
           next = SDL_FALSE;
 
-          if (event.type == SDL_RENDER_DEVICE_RESET || event.type == SDL_RENDER_TARGETS_RESET)
+          if (event.type == SDL_RENDER_DEVICE_RESET || event.type == SDL_RENDER_TARGETS_RESET || (event.type == SDL_USEREVENT && event.user.code == RESET))
           {
             BlackScreen();
 
