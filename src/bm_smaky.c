@@ -1678,6 +1678,18 @@ void BlackScreen (void)
     SDL_RenderClear (g_renderer);
 }
 
+static SDL_bool isShare(char file)
+{
+  return file >= '1' && file <= '8';
+}
+
+static void getLocationPattern(char file, char *filename, size_t length)
+{
+  if (isShare(file))
+    snprintf(filename, length, "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+  else
+    snprintf(filename, length, "%sblupixa.dat", SDL_GetPrefPath ("Epsitec SA", "Blupimania"));
+}
 
 
 /* ======== */
@@ -1695,7 +1707,7 @@ short FileRead (void *pdata, long pos, short nb, char file)
 	char		filename[4096];
 	short		n = 0;
 
-        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        getLocationPattern(file, filename, sizeof(filename));
 
 	filename[strlen(filename) - 5] = file;
 	//if ( file >= 'a' )  n = 6;
@@ -1732,7 +1744,7 @@ short FileWrite (void *pdata, long pos, short nb, char file)
 	FILE		*channel;
 	char		filename[4096];
 
-        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        getLocationPattern(file, filename, sizeof(filename));
 
 	filename[strlen(filename) - 5] = file;
 	//if ( file >= 'a' )  n = 6;
@@ -1783,7 +1795,7 @@ long FileGetLength (char file)
 	short		n = 0;
 	long		lg;
 
-        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        getLocationPattern(file, filename, sizeof(filename));
 
 	filename[strlen(filename) - 5] = file;
 	//if ( file >= 'a' )  n = 6;
@@ -1811,7 +1823,7 @@ short FileDelete (char file)
 {
 	char		filename[4096];
 
-        snprintf(filename, sizeof(filename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        getLocationPattern(file, filename, sizeof(filename));
 
 	filename[strlen(filename) - 5] = file;
 	return remove(filename);
@@ -1832,8 +1844,8 @@ short FileRename (char oldfile, char newfile)
         char		oldfilename[4096];
         char		newfilename[4096];
 
-        snprintf(oldfilename, sizeof(oldfilename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
-        snprintf(newfilename, sizeof(newfilename), "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+        getLocationPattern(oldfile, oldfilename, sizeof(oldfilename));
+        getLocationPattern(newfile, newfilename, sizeof(newfilename));
 
 	oldfilename[strlen(oldfilename) - 5] = oldfile;
 	newfilename[strlen(newfilename) - 5] = newfile;
