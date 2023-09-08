@@ -2343,6 +2343,7 @@ void PartieDisque (short key, Pt pos)
 next:
         open = SDL_FALSE;
         g_saveMenu = SDL_FALSE;
+	g_ignoreKeyClicUp = SDL_TRUE;
 
 	if ( mode != KEYLOAD && key <= KEYF1 && key >= KEYF4 )
 	{
