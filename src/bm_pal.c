@@ -504,11 +504,15 @@ short SPaletteTracking (short rang, Pt pos, int key)
         static SDL_bool open = SDL_FALSE;
 	Pt		limit;
 	short		old = -1, new;
-	short		type;
+	short		type = -1;
         static int currentRank = -1;
 
         if (currentRank >= 0 && currentRank != rang)
+	{
+	  if ( typepress )  type = 0;
+	  else              type = 3;
           goto next;
+	}
 
         if (open == SDL_FALSE)
         {
@@ -554,10 +558,14 @@ next:
         open = SDL_FALSE;
         g_subMenu = SDL_FALSE;
 
-	if ( typepress )  type = 1;
-	else              type = 3;
+	if (type != 0 && type != 3)
+	{
+	  if ( typepress )  type = 1;
+	  else              type = 3;
+	}
 
         DrawButton(GetButtonPos(currentRank), ticon[currentRank][tspal[currentRank]], type);
+	DrawF1toF4(currentRank);
         currentRank = -1;
 
 	DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], type);
