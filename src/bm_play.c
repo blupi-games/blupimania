@@ -30,11 +30,11 @@
 /*
 	BLUPIX?.DAT		banque	contenu
 	---------------------------------------------------------------------
-	1..8			A..H	nigmes niveaux 1A, 1T, 2A, 2T, ... 4T
-	E..H			I..L	nigmes niveaux 5 (priv) pour les 4 joueurs
-	I..P			A..H	nigmes mode dmo
-	W						parties sauves (dmo)
-	X						joueurs (dmo)
+	1..8			A..H	énigmes niveaux 1A, 1T, 2A, 2T, ... 4T
+	E..H			I..L	énigmes niveaux 5 (privé) pour les 4 joueurs
+	I..P			A..H	énigmes mode dmo
+	W						parties sauvées (démo)
+	X						joueurs (démo)
 	Y						parties sauves (normal)
 	Z						joueurs (normal)
  */
