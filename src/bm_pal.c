@@ -868,7 +868,8 @@ end:
 	if ( typepress == 0 )
 	{
 		DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-		DrawF1toF4(press);
+		if ( ticon[press][tspal[press]] )
+		  DrawF1toF4(press);
 	}
 	return event == KEYCLICREL ? 1 : 0;
 }
