@@ -177,7 +177,9 @@ typedef enum
         ACTION_SCREEN_FULL,
         ACTION_LANG_EN,
         ACTION_LANG_FR,
-        ACTION_LANG_DE
+        ACTION_LANG_DE,
+	ACTION_THEME_DOS,
+	ACTION_THEME_SMAKY100,
 }
 PhAction;
 
@@ -223,7 +225,8 @@ typedef struct
 	short	musicvolume;					/* volume musique */
 	short   language; /* language (en, fr, de) */
         short   screen; /* zoom (normal, double, fullscreen) */
-	short	reserve2[91];					/* rserve */
+        short   theme; /* theme (DOS, Smaky 100) */
+	short	reserve2[90];					/* rserve */
 }
 Joueur;
 
@@ -234,6 +237,7 @@ Joueur;
 /* --------------------------- */
 
 short		g_langue = 0;						/* numéro de la langue */
+short		g_theme = 0;						/* 1 -> theme Smaky 100 */
 short		g_monde;							/* monde actuel */
 short		g_updatescreen;					/* 1 -> écran à mettre à jour */
 short		g_typejeu;						/* type de jeu (0..1) */
@@ -301,6 +305,11 @@ static short	passindex;					/* index de l'dition du mot de passe */
 static char		randomexrecommence[30];		/* tirage exclusif texte si recommence */
 static char		randomexsuivant[30];		/* tirage exclusif texte si russi */
 
+SDL_bool g_afterglow = SDL_TRUE;
+Pixmap g_screenBase = { 0 };
+Pixmap g_screenAfterglow0 = { 0 };
+Pixmap g_screenAfterglow1 = { 0 };
+Pixmap g_screenAfterglow2 = { 0 };
 
 
 
@@ -432,7 +441,22 @@ ChangeScreen(short zoom)
   SDL_Delay (100);
 }
 
+void
+ChangeTheme(short theme)
+{
+  g_theme = theme;
+  g_colors = g_colorsTheme[g_theme];
 
+  switch (theme)
+  {
+    case 0:
+      g_afterglow = SDL_FALSE;
+      break;
+    case 1:
+      g_afterglow = SDL_TRUE;
+      break;
+  }
+}
 
 /* ----------- */
 /* PlayEvSound */
@@ -688,6 +712,7 @@ short JoueurRead (void)
 
         ChangeLanguage(fj.language);
         ChangeScreen(fj.screen);
+	ChangeTheme(fj.theme);
 
 	PlayNoiseVolume(fj.noisevolume);
 	PlayMusicVolume(fj.musicvolume);
@@ -1443,6 +1468,30 @@ void DrawScreen (void)
 	for ( i=0 ; i<3 ; i++ )
 	{
 		if ( fj.screen == i )  DrawRadioButton(pos, 1);
+		else                     DrawRadioButton(pos, 0);
+		pos.y += 32;
+	}
+}
+
+/* ---------- */
+/* DrawTheme  */
+/* ---------- */
+
+/*
+	Draw the theme selection
+ */
+
+void DrawTheme (void)
+{
+	short		i;
+	Pt			pos;
+
+	pos.x = 272;
+	pos.y = 202;
+
+	for ( i=0 ; i<2 ; i++ )
+	{
+		if ( fj.theme == i )  DrawRadioButton(pos, 1);
 		else                     DrawRadioButton(pos, 0);
 		pos.y += 32;
 	}
@@ -2661,6 +2710,7 @@ short RedrawPhase (Phase phase)
 		case PHASE_REGLAGE2:
                         DrawLanguage();
                         DrawScreen();
+			DrawTheme();
 			break;
 
 		case PHASE_PARAM:
@@ -2811,7 +2861,10 @@ short ChangePhase (Phase newphase)
 	phase = newphase;					/* change la phase */
 
 	if (phase == PHASE_GENERIC)
+	{
 	  JoueurRead();				/* lit le fichier des joueurs sur disque */
+	  LoadIcon();					/* charge l'image des icônes */
+	}
 
 	ShowImage();						/* affiche l'image de base */
 
@@ -2863,6 +2916,7 @@ short ChangePhase (Phase newphase)
 		case PHASE_REGLAGE2:
                         DrawLanguage();
                         DrawScreen();
+			DrawTheme();
 			break;
 
 		case PHASE_PARAM:
@@ -3219,6 +3273,8 @@ static short timage53[] =				/* réglages 2 */
 	272,340-49,210,29,		0,		ACTION_SCREEN_1,
 	272,340-81,210,29,		0,		ACTION_SCREEN_2,
 	272,340-113,210,29,		0,		ACTION_SCREEN_FULL,
+	272,340-204,210,29,		0,		ACTION_THEME_DOS,
+	272,340-236,210,29,		0,		ACTION_THEME_SMAKY100,
         43,340-281,73,51,  0,  ACTION_REGLAGE,
 	132,340-281,166,51,		KEYRETURN,	ACTION_DEBUT,
 	314,340-281,279,51,		KEYDEF,		ACTION_IDENT,
@@ -4519,6 +4575,15 @@ short ExecuteAction (char event, Pt pos)
           return 0;
         }
 
+        if (action >= ACTION_THEME_DOS && action <= ACTION_THEME_SMAKY100)
+	{
+	  fj.theme = action - ACTION_THEME_DOS;
+	  DrawTheme();
+	  ChangeTheme(fj.theme);
+	  PushUserEvent(RESET, NULL);
+	  return 0;
+	}
+
 	if ( action >= ACTION_COULEUR0 &&
 		 action <= ACTION_COULEUR4 )
 	{
@@ -4601,6 +4666,26 @@ void LoadTextures()
     g_screen.dx = LXIMAGE();
     g_screen.dy = LYIMAGE();
 
+    g_screenBase.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+    SDL_SetTextureBlendMode(g_screenBase.texture, SDL_BLENDMODE_BLEND);
+    g_screenBase.dx = LXIMAGE();
+    g_screenBase.dy = LYIMAGE();
+
+    g_screenAfterglow0.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+    SDL_SetTextureBlendMode(g_screenAfterglow0.texture, SDL_BLENDMODE_BLEND);
+    g_screenAfterglow0.dx = LXIMAGE();
+    g_screenAfterglow0.dy = LYIMAGE();
+
+    g_screenAfterglow1.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+    SDL_SetTextureBlendMode(g_screenAfterglow1.texture, SDL_BLENDMODE_BLEND);
+    g_screenAfterglow1.dx = LXIMAGE();
+    g_screenAfterglow1.dy = LYIMAGE();
+
+    g_screenAfterglow2.texture = SDL_CreateTexture (g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE(), LYIMAGE());
+    SDL_SetTextureBlendMode(g_screenAfterglow2.texture, SDL_BLENDMODE_BLEND);
+    g_screenAfterglow2.dx = LXIMAGE();
+    g_screenAfterglow2.dy = LYIMAGE();
+
     pmtemp.texture = SDL_CreateTexture (
       g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
     SDL_SetTextureBlendMode(pmtemp.texture, SDL_BLENDMODE_BLEND);
@@ -4611,6 +4696,10 @@ void LoadTextures()
 void UnloadTextures()
 {
   GivePixmap(&g_screen);
+  GivePixmap(&g_screenBase);
+  GivePixmap(&g_screenAfterglow0);
+  GivePixmap(&g_screenAfterglow1);
+  GivePixmap(&g_screenAfterglow2);
   GivePixmap(&pmtemp);
 }
 
@@ -5130,6 +5219,67 @@ static Uint32 MainLoop (Uint32 interval, void * param)
   return interval;
 }
 
+void
+Render ()
+{
+  SDL_Texture * target;
+
+  if (!g_afterglow)
+  {
+    SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+    SDL_RenderPresent(g_renderer);
+    return;
+  }
+
+  // Copy new texture to base texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenBase.texture);
+  SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Apply previous (green) tetxure on the base texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenBase.texture);
+  SDL_SetTextureAlphaMod(g_screenAfterglow0.texture, 128);
+  SDL_RenderCopy(g_renderer, g_screenAfterglow0.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Apply previous older (green) tetxure on the base texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenBase.texture);
+  SDL_SetTextureAlphaMod(g_screenAfterglow1.texture, 128);
+  SDL_RenderCopy(g_renderer, g_screenAfterglow1.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Apply previous older (green) tetxure on the base texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenBase.texture);
+  SDL_SetTextureAlphaMod(g_screenAfterglow2.texture, 128);
+  SDL_RenderCopy(g_renderer, g_screenAfterglow2.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Show the base texture
+  SDL_RenderCopy(g_renderer, g_screenBase.texture, NULL, NULL);
+  SDL_RenderPresent(g_renderer);
+
+  // Save the previous (green) texture as older texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenAfterglow1.texture);
+  SDL_RenderCopy(g_renderer, g_screenAfterglow0.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Save the previous (green) texture as older texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenAfterglow2.texture);
+  SDL_RenderCopy(g_renderer, g_screenAfterglow1.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+
+  // Save the current texture as next previous (green) texture
+  target = SDL_GetRenderTarget(g_renderer);
+  SDL_SetRenderTarget(g_renderer, g_screenAfterglow0.texture);
+  SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
+  SDL_SetRenderTarget(g_renderer, target);
+}
 
 
 /* =================== */
@@ -5220,8 +5370,7 @@ int main (int argc, char *argv[])
             }
           }
 
-          SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-          SDL_RenderPresent(g_renderer);
+	  Render();
 
           err = PlayEvent(&event, key, g_lastmouse, next);			/* fait évoluer le jeu */
           if ( err == 2 )  break;				/* quitte si terminé */

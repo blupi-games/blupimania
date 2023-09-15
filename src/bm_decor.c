@@ -2086,8 +2086,7 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixMx(&pmdecor, ppmicon,
 					   termpos.x-oldpos.x,
 					   newpos.x-oldpos.x);		/* adapte le dcor "<" */
-                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-                        SDL_RenderPresent(g_renderer);
+                        Render();
 		}
 
 		while ( newpos.x > termpos.x )
@@ -2097,8 +2096,7 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixPx(&pmdecor, ppmicon,
 					   oldpos.x-termpos.x,
 					   oldpos.x-newpos.x);		/* adapte le dcor ">" */
-                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-                        SDL_RenderPresent(g_renderer);
+                        Render();
 		}
 
 		while ( newpos.y < termpos.y )
@@ -2108,8 +2106,7 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixMy(&pmdecor, ppmicon,
 					   termpos.y-oldpos.y,
 					   newpos.y-oldpos.y);		/* adapte le dcor "^" */
-                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-                        SDL_RenderPresent(g_renderer);
+                        Render();
 		}
 
 		while ( newpos.y > termpos.y )
@@ -2119,8 +2116,7 @@ void DecorSetOrigine (Pt origine, short quick)
 			DecorMixPy(&pmdecor, ppmicon,
 					   oldpos.y-termpos.y,
 					   oldpos.y-newpos.y);		/* adapte le dcor "v" */
-                        SDL_RenderCopy(g_renderer, g_screen.texture, NULL, NULL);
-                        SDL_RenderPresent(g_renderer);
+                        Render();
 		}
 
 		RestorePixmap(&pmdecor);				/* restitue le nouveau dcor */

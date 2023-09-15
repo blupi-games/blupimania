@@ -263,6 +263,7 @@ Pixmap;
 /* ------------------ */
 
 extern	short	g_langue;				/* numéro de la langue */
+extern  short   g_theme;                /* 1 -> theme Smaky 100 */
 extern	short	g_monde;				/* monde actuel (0..n) */
 extern	short	g_updatescreen;		/* 1 -> écran à mettre à jour */
 extern	short	g_typejeu;			/* type de jeu (0..1) */
@@ -290,6 +291,9 @@ extern SDL_bool g_keyMousePressed;
 extern Sint32 g_keyFunctionUp;
 extern SDL_bool g_subMenu;
 extern SDL_bool g_superInvalid;
+
+extern const SDL_Color *g_colors;
+extern const SDL_Color *g_colorsTheme[2];
 
 
 
@@ -470,6 +474,7 @@ short	MachinePartieWrite	(long pos, char file);
 short	MachinePartieRead	(long pos, char file);
 
 void PushUserEvent (Sint32 code, void * data);
+void Render ();
 
 int LoadIcon();
 void UnloadIcon();

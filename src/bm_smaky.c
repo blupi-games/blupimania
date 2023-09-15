@@ -65,8 +65,6 @@ static Pt			origine;					/* coin sup/gauche de l'origine */
 
 static unsigned int		nextrand[10];				/* valeurs alatoires suivantes */
 
-static short		colormode = 1;				/* 1 = couleur possible */
-
 static short		soundon = 1;				/* son on/off */
 static int			filsson = 0;				/* son  entendre */
 static int			filsrep = 0;				/* pas de rptition */
@@ -80,7 +78,7 @@ static Mix_Chunk *g_sounds[SOUND_MAX] = {NULL};
 static Mix_Music *g_music = NULL;
 static SDL_bool g_musicStopped = SDL_FALSE;
 
-static const SDL_Color g_colors[] = {
+static const SDL_Color g_colorsDOS[] = {
   {255,255,255,SDL_ALPHA_OPAQUE}, // BLANC
   {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
   {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
@@ -99,7 +97,35 @@ static const SDL_Color g_colors[] = {
   {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
 };
 
+static const SDL_Color g_colorsSmaky100[] = {
+  {0x00,0xED,0x18,SDL_ALPHA_OPAQUE}, // (BLANC) GREEN (OLD SMAKY 100)
+  {255,255,0,SDL_ALPHA_OPAQUE}, // JAUNE
+  {255,204,64,SDL_ALPHA_OPAQUE}, // ORANGE
+  {0,0,0,SDL_ALPHA_OPAQUE}, // (ROUGE) BLACK
+  {220,220,220,SDL_ALPHA_OPAQUE}, // GRIS CLAIR
+  {190,190,190,SDL_ALPHA_OPAQUE}, // GRIS FONCE
+  {0,255,255,SDL_ALPHA_OPAQUE}, // CYAN
+  {0,0,255,SDL_ALPHA_OPAQUE}, // BLEU
+  {0x00,0xED,0x18,SDL_ALPHA_OPAQUE}, // (VERT CLAIR) GREEN (OLD SMAKY 100)
+  {0,205,0,SDL_ALPHA_OPAQUE}, // VERT FONCE
+  {224,161,255,SDL_ALPHA_OPAQUE}, // VIOLET
+  {255,0,255,SDL_ALPHA_OPAQUE}, // MAGENTA
+  {224,164,164,SDL_ALPHA_OPAQUE}, // BRUN CLAIR
+  {187,0,0,SDL_ALPHA_OPAQUE}, // BRUN FONCE
+  {169,216,255,SDL_ALPHA_OPAQUE}, // BLEU MOYEN
+  {0,0,0,SDL_ALPHA_OPAQUE}, // NOIR
+};
 
+/* --------------------------- */
+/* Variables globales externes */
+/* --------------------------- */
+
+const SDL_Color *g_colors;
+
+const SDL_Color * g_colorsTheme[2] = {
+  g_colorsDOS,
+  g_colorsSmaky100
+};
 
 /* ========= */
 /* GetRandom */
@@ -867,7 +893,7 @@ KeyStatus GetKeyStatus (void)
 
 short IfColor (void)
 {
-	if ( colormode )  return 1;				/* couleur */
+	if ( g_theme == 0 )  return 1;				/* couleur */
 	return 0;								/* noir/blanc */
 }
 
@@ -1295,14 +1321,10 @@ static int LoadImage(int numero, Pixmap *pim)
         if (numero < 22 || numero == 33)
           lang = "";
 
-	if ( colormode && (numero < IMAMASK || numero >= 20) )
-	{
+	if ( g_theme == 0 )
 		snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.color.png", SDL_GetBasePath (), lang, numero);
-	}
 	else
-	{
-		snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.image.png", SDL_GetBasePath (), lang, numero);
-	}
+		snprintf(name, sizeof(name), "%s../share/blupimania/image/%sblupix%02d.smaky.png", SDL_GetBasePath (), lang, numero);
 
 	SDL_Surface * surface = IMG_Load (name);
         SDL_Texture * texture = SDL_CreateTextureFromSurface (g_renderer, surface);
@@ -1894,6 +1916,8 @@ int OpenMachine(void)
       g_langue = 2;
   }
 
+  g_colors = g_colorsTheme[g_theme];
+
 #ifdef __LINUX__
   if (!getenv ("ALSA_CONFIG_DIR"))
   {
@@ -1960,8 +1984,6 @@ int OpenMachine(void)
       SDL_LOG_CATEGORY_APPLICATION, "renderer[%d]: max_texture_height=%u", i,
       info.max_texture_height);
   }
-
-	LoadIcon();					/* charge l'image des icônes */
 
         InitSoundSystem();
         LoadSounds();
