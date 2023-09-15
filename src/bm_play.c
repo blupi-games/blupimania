@@ -2428,6 +2428,7 @@ short StopPartie (short key, Pt pos)
 	Pt			spos, sdim;
 	Pt			p;
         static SDL_bool open = SDL_FALSE;
+	g_ignoreKeyClicUp = SDL_TRUE;
 
 	spos.x = POSXDRAW+20;
 	spos.y = POSYDRAW+DIMYDRAW-LYICO-20;
