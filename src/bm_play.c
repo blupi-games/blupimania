@@ -2122,9 +2122,9 @@ short PlayPartieRead (int pos, char file)
 	   g_typejeu = partie.typejeu;
 	banque = partie.banque;
 
-	if ( banque < 'I' )
+	if ( banque < 'i' )
 	{
-		fj.niveau[fj.joueur] = banque-'A';
+		fj.niveau[fj.joueur] = banque-'a';
 	}
 	else
 	{
@@ -4719,7 +4719,7 @@ static short PlayInit (void)
         LoadTextures();
 
 	   g_monde       = 0;					/* premier monde */
-	banque      = 'A';					/* banque de base */
+	banque      = 'a';					/* banque de base */
 	phase       = -1;					/* pas de phase connue */
 	   g_pause       = 0;
 	   g_construit   = 0;
