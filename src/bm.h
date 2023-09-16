@@ -39,7 +39,6 @@ typedef unsigned short u_short;
 
 #define IMABASE		1			/* image de base */
 #define IMAICON		1			/* image des icnes */
-#define IMAMASK		10			/* offset pour image de masque */
 
 #define MAXIMAGE	(20*2)		/* nb max d'images */
 #define MAXSOUND	10			/* nb max de sons */
