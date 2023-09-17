@@ -1707,8 +1707,23 @@ static SDL_bool isShare(char file)
 
 static void getLocationPattern(char file, char *filename, size_t length)
 {
+  char *lang = "";
+
+  switch (g_langue)
+  {
+    case 0:
+      lang = "en/";
+      break;
+    case 1:
+      lang = "fr/";
+      break;
+    case 2:
+      lang = "de/";
+      break;
+  }
+
   if (isShare(file))
-    snprintf(filename, length, "%s../share/blupimania/data/blupixa.dat", SDL_GetBasePath ());
+    snprintf(filename, length, "%s../share/blupimania/data/%sblupixa.dat", SDL_GetBasePath (), lang);
   else
     snprintf(filename, length, "%sblupixa.dat", SDL_GetPrefPath ("Epsitec SA", "Blupimania"));
 }
