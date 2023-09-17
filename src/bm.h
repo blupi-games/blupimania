@@ -10,7 +10,29 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "config.h"
+
 typedef unsigned short u_short;
+
+struct arguments {
+    int speedrate;
+    int timerinterval;
+    SDL_bool fullscreen;
+    int zoom;
+    char *renderer;
+    char *driver;
+};
+
+enum Settings {
+  SETTING_SPEEDRATE     = 1 << 0,
+  SETTING_TIMERINTERVAL = 1 << 1,
+  SETTING_FULLSCREEN    = 1 << 2,
+  SETTING_ZOOM          = 1 << 3,
+  SETTING_RENDERER      = 1 << 4,
+  SETTING_DRIVER        = 1 << 5,
+};
+
+extern int g_settingsOverload;
 
 
 /* ---------- */
@@ -465,7 +487,7 @@ short	FileDelete		(char file);
 short	FileRename		(char oldfile, char newfile);
 
 void	FatalError		(short err);
-int	OpenMachine		(void);
+int	OpenMachine		(int argc, char * argv[], struct arguments *arguments);
 void	CloseMachine	(void);
 
 long	MachinePartieLg		(void);

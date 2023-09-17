@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <math.h>
 #include <time.h>
+#include <argp.h>
 
 #include <SDL2/SDL_mixer.h>
 #include "bm.h"
@@ -1910,6 +1911,83 @@ short IfFileExist (char *pfilename)
 	return 1;								/* fichier existe */
 }
 
+const char *argp_program_version = "blupimania " BLUPIMANIA_VERSION_STR;
+const char *argp_program_bug_address = "<your@email.address>";
+static char doc[] = "Your program description.";
+static char args_doc[] = "[FILENAME]...";
+static struct argp_option options[] = {
+    { "speedrate", 's', "value", 0, "Change the speed rate [0;1;2] (default: 1)"},
+    { "timerinterval", 't', "value", 0, "Set the timer interval (refresh) (default: 25)"},
+    { "fullscreen", 'f', 0, 0, "Load in fullscreen [on;off] (default: off)"},
+    { "zoom", 'z', "value", 0, "Change the window scale (only if fullscreen is off) [1;2] (default: 2)"},
+    { "renderer", 'r', "value", 0, "Set a renderer [auto;software;accelerated] (default: auto)"},
+    { "driver", 'd', "value", 0, "Set a driver [auto;direct3d;direct3d11;opengl;opengles2;opengles] (default: auto, ignored with software renderer)"},
+    { 0 }
+};
+
+static error_t parse_opt(int key, char *arg, struct argp_state *state) {
+    struct arguments *arguments = state->input;
+    switch (key) {
+    case 's': arguments->speedrate = SDL_atoi(arg); g_settingsOverload |= SETTING_SPEEDRATE;
+      if (arguments->speedrate < 0 || arguments->speedrate > 2)
+        return ARGP_ERR_UNKNOWN;
+      break;
+    case 't': arguments->timerinterval = SDL_atoi(arg); g_settingsOverload |= SETTING_TIMERINTERVAL;
+      if (arguments->timerinterval < 10)
+        return ARGP_ERR_UNKNOWN;
+    break;
+    case 'f': arguments->fullscreen = SDL_TRUE; g_settingsOverload |= SETTING_FULLSCREEN; break;
+    case 'z': arguments->zoom = SDL_atoi(arg); g_settingsOverload |= SETTING_ZOOM;
+      if (arguments->zoom < 1 || arguments->zoom > 2)
+        return ARGP_ERR_UNKNOWN;
+      break;
+    case 'r': arguments->renderer = arg; g_settingsOverload |= SETTING_RENDERER; break;
+    case 'd': arguments->driver = arg; g_settingsOverload |= SETTING_DRIVER; break;
+    case ARGP_KEY_ARG: return 0;
+    default: return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
+}
+
+static struct argp argp = { options, parse_opt, args_doc, doc, 0, 0, 0 };
+
+static int
+parseArgs (int argc, char * argv[], struct arguments *arguments)
+{
+    arguments->speedrate = 1;
+    arguments->timerinterval = g_timerInterval;
+    arguments->fullscreen = SDL_FALSE;
+    arguments->zoom = 2;
+    arguments->renderer = "auto";
+    arguments->driver = "auto";
+
+    int rc = argp_parse(&argp, argc, argv, 0, 0, arguments);
+    if (rc)
+      return rc;
+
+    g_timerInterval = arguments->timerinterval;
+
+    if (!SDL_strcasecmp(arguments->renderer, "auto"))
+      g_rendererType = 0;
+    else if (!SDL_strcasecmp(arguments->renderer, "software"))
+      g_rendererType = SDL_RENDERER_SOFTWARE;
+    else if (!SDL_strcasecmp(arguments->renderer, "accelerated"))
+      g_rendererType = SDL_RENDERER_ACCELERATED;
+
+  if ((!g_rendererType || g_rendererType == SDL_RENDERER_ACCELERATED))
+  {
+    if (SDL_strstr(arguments->driver, "direct3d")
+      || SDL_strstr(arguments->driver, "direct3d11")
+      || SDL_strstr(arguments->driver, "opengl")
+      || SDL_strstr(arguments->driver, "opengles2")
+      || SDL_strstr(arguments->driver, "opengles")
+    )
+      SDL_SetHint (SDL_HINT_RENDER_DRIVER, arguments->driver);
+  }
+
+  return EXIT_SUCCESS;
+}
+
 /* =========== */
 /* OpenMachine */
 /* =========== */
@@ -1918,8 +1996,12 @@ short IfFileExist (char *pfilename)
 	Ouverture gnrale, chargement des librairies, gencar, etc.
  */
 
-int OpenMachine(void)
+int OpenMachine(int argc, char * argv[], struct arguments *arguments)
 {
+  int rc = parseArgs (argc, argv, arguments);
+  if (rc)
+    return rc;
+
   SDL_Locale * locales = SDL_GetPreferredLocales();
   if (locales)
   {

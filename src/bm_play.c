@@ -22,7 +22,8 @@
 #define DEMONC	1			/* si version demo -> pas de construction */
 #endif
 
-
+static struct arguments arguments;
+int g_settingsOverload;
 
 /* Fichiers sur disque */
 /* ------------------- */
@@ -694,7 +695,7 @@ short MondeWrite (short monde, char banque)
 	Retourne 0 si la lecture est ok.
  */
 
-short JoueurRead (void)
+short JoueurRead (struct arguments * arguments)
 {
 	short		err;
 
@@ -706,6 +707,14 @@ short JoueurRead (void)
 	{
 		fj.noisevolume = 10-3;
 		fj.musicvolume = 10-6;
+	}
+
+	if (arguments)
+	{
+	  if (g_settingsOverload & (SETTING_FULLSCREEN | SETTING_ZOOM))
+	    fj.screen = arguments->fullscreen ? 2 : arguments->zoom - 1;
+	  if (g_settingsOverload & SETTING_SPEEDRATE)
+	    fj.vitesse = arguments->speedrate;
 	}
 
 	   g_modetelecom = fj.modetelecom;
@@ -2862,7 +2871,8 @@ short ChangePhase (Phase newphase)
 
 	if (phase == PHASE_GENERIC)
 	{
-	  JoueurRead();				/* lit le fichier des joueurs sur disque */
+	  JoueurRead(&arguments);				/* lit le fichier des joueurs sur disque */
+	  JoueurWrite();
 	  LoadIcon();					/* charge l'image des icônes */
 	}
 
@@ -2899,7 +2909,7 @@ short ChangePhase (Phase newphase)
 			break;
 
 		case PHASE_IDENT:
-			JoueurRead();				/* lit le fichier des joueurs sur disque */
+			JoueurRead(NULL);				/* lit le fichier des joueurs sur disque */
 			DrawJoueur();				/* affiche le joueur */
 			DrawIdent();				/* affiche tous les noms */
 			JoueurEditOpen();			/* prpare l'dition du nom */
@@ -4715,9 +4725,11 @@ void UnloadTextures()
 	Retourne != 0 en cas d'erreur.
  */
 
-static short PlayInit (void)
+static int PlayInit (int argc, char * argv[])
 {
-	OpenMachine();						/* ouverture générale */
+	int rc = OpenMachine(argc, argv, &arguments);						/* ouverture générale */
+	if (rc)
+	  return rc;
 
         LoadTextures();
 
@@ -5294,7 +5306,9 @@ int main (int argc, char *argv[])
 	int			err;						/* condition de sortie */
 	short		key;						/* touche pressée  */
 
-	PlayInit();								/* initialise le jeu */
+	int rc = PlayInit(argc, argv);								/* initialise le jeu */
+	if (rc)
+	  return rc;
 
         SDL_TimerID updateTimer = SDL_AddTimer (
           g_timerInterval,
