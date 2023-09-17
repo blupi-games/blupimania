@@ -11,17 +11,17 @@ include_directories (${CMAKE_INSTALL_PREFIX}/include)
 link_directories (${CMAKE_INSTALL_PREFIX}/lib)
 
 project (blupimania)
-set (PB_VERSION_MAJOR 1)
-set (PB_VERSION_MINOR 14)
-set (PB_VERSION_PATCH 2)
-set (PB_VERSION_EXTRA "")
-set (PB_PRODUCT_NAME "Blupimania")
-set (PB_PACKAGE_NAME "blupimania")
-set (PB_EXEC         "blupimania")
-set (PB_ICON_REF     "blupi")
-set (PB_DESCRIPTION "Blupimania - A delirious spell-binding game")
+set (BM_VERSION_MAJOR 1)
+set (BM_VERSION_MINOR 14)
+set (BM_VERSION_PATCH 2)
+set (BM_VERSION_EXTRA "")
+set (BM_PRODUCT_NAME "Blupimania")
+set (BM_PACKAGE_NAME "blupimania")
+set (BM_EXEC         "blupimania")
+set (BM_ICON_REF     "blupi")
+set (BM_DESCRIPTION "Blupimania - A delirious spell-binding game")
 
-option (PB_HTTP_VERSION_CHECK "Run a version check over HTTP (with CURL)" OFF)
+option (BM_HTTP_VERSION_CHECK "Run a version check over HTTP (with CURL)" OFF)
 
 configure_file (
   "${PROJECT_SOURCE_DIR}/src/config.h.in"
