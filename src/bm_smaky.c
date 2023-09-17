@@ -1920,6 +1920,7 @@ static struct argp_option options[] = {
     { "timerinterval", 't', "value", 0, "Set the timer interval (refresh) (default: 25)"},
     { "fullscreen", 'f', 0, 0, "Load in fullscreen [on;off] (default: off)"},
     { "zoom", 'z', "value", 0, "Change the window scale (only if fullscreen is off) [1;2] (default: 2)"},
+    { "theme", 'm', "value", 0, "Change the theme [dos;smaky100] (default: dos)"},
     { "renderer", 'r', "value", 0, "Set a renderer [auto;software;accelerated] (default: auto)"},
     { "driver", 'd', "value", 0, "Set a driver [auto;direct3d;direct3d11;opengl;opengles2;opengles] (default: auto, ignored with software renderer)"},
     { 0 }
@@ -1941,6 +1942,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
       if (arguments->zoom < 1 || arguments->zoom > 2)
         return ARGP_ERR_UNKNOWN;
       break;
+    case 'm': arguments->theme = arg; g_settingsOverload |= SETTING_THEME; break;
     case 'r': arguments->renderer = arg; g_settingsOverload |= SETTING_RENDERER; break;
     case 'd': arguments->driver = arg; g_settingsOverload |= SETTING_DRIVER; break;
     case ARGP_KEY_ARG: return 0;

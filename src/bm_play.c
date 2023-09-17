@@ -715,6 +715,8 @@ short JoueurRead (struct arguments * arguments)
 	    fj.screen = arguments->fullscreen ? 2 : arguments->zoom - 1;
 	  if (g_settingsOverload & SETTING_SPEEDRATE)
 	    fj.vitesse = arguments->speedrate;
+	  if (g_settingsOverload & SETTING_THEME)
+	    fj.theme = !SDL_strcmp(arguments->theme, "smaky100") ? 1 : 0;
 	}
 
 	   g_modetelecom = fj.modetelecom;

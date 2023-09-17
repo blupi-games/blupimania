@@ -19,6 +19,7 @@ struct arguments {
     int timerinterval;
     SDL_bool fullscreen;
     int zoom;
+    char *theme;
     char *renderer;
     char *driver;
 };
@@ -28,8 +29,9 @@ enum Settings {
   SETTING_TIMERINTERVAL = 1 << 1,
   SETTING_FULLSCREEN    = 1 << 2,
   SETTING_ZOOM          = 1 << 3,
-  SETTING_RENDERER      = 1 << 4,
-  SETTING_DRIVER        = 1 << 5,
+  SETTING_THEME         = 1 << 4,
+  SETTING_RENDERER      = 1 << 5,
+  SETTING_DRIVER        = 1 << 6,
 };
 
 extern int g_settingsOverload;
