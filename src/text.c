@@ -5,8 +5,8 @@
 
 #include <string.h>
 
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 
 /* --------------------------- */
 /* Variables globales internes */

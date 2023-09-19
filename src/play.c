@@ -13,8 +13,8 @@
 #include <string.h>
 
 #include "actions.h"
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 
 #if 0
 #define DEMONC 1 /* si version demo -> pas de construction */

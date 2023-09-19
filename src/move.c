@@ -7,8 +7,8 @@
 #include <string.h>
 
 #include "actions.h"
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 
 /* ------------------------- */
 /* Descripteur d'un automate */

@@ -7,8 +7,8 @@
 #include <string.h>
 
 #include "actions.h"
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 
 #define MAXICONY 4        /* nb max d'icônes dans la palette */
 #define MAXICONX (15 + 1) /* nb max par sous-palette */

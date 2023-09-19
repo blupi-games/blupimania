@@ -4,8 +4,8 @@
 /* ========== */
 
 
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 #include "actions.h"
 
 

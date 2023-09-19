@@ -1,6 +1,6 @@
 
 /* ==== */
-/* bm.h */
+/* blupimania.h */
 /* ==== */
 
 #pragma once

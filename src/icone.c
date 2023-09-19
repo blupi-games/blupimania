@@ -5,8 +5,8 @@
 
 #include <stdio.h>
 
-#include "bm.h"
-#include "bm_icon.h"
+#include "blupimania.h"
+#include "icon.h"
 
 /* ---------------------------------- */
 /* Descripteur d'une icône à dessiner */

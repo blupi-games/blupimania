@@ -13,7 +13,7 @@
 #include <time.h>
 
 #include "actions.h"
-#include "bm.h"
+#include "blupimania.h"
 #include <SDL2/SDL_mixer.h>
 
 #define GCTEXT          \
