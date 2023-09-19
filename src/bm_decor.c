@@ -389,8 +389,12 @@ const ImageStack * DecorIconMask(Pt pos, short posz, Pt cel)
                     continue;
                   if (icon == ICO_ARRIVEE || icon == ICO_ARRIVEEPRIS || icon == ICO_ARRIVEEBOUM || icon == ICO_ARRIVEEVIDE)
                   {
-                    /* Consider to redraw only the ballon part (not the ground) */
-                    dim.y = 53;
+                    /* Consider to redraw only the ballon part (not the ground)
+		     * Note that the sprites are a bit special here. At the top
+		     * a black line seems missing and it's not an error. it's
+		     * necessary here in orer to redraw properly the ballon part.
+		     */
+                    dim.y = 51;
                   }
 
                   if ( c.x < MAXCELX && c.y < MAXCELY &&
