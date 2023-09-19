@@ -6,760 +6,780 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "actions.h"
 #include "bm.h"
 #include "bm_icon.h"
-#include "actions.h"
 
+#define MAXICONY 4        /* nb max d'icônes dans la palette */
+#define MAXICONX (15 + 1) /* nb max par sous-palette */
 
-
-
-#define MAXICONY	4							/* nb max d'icnes dans la palette */
-#define MAXICONX	(15+1)						/* nb max par sous-palette */
-
-#define MAXEDITY	4
-#define MAXEDITX	12
-
-
+#define MAXEDITY 4
+#define MAXEDITX 12
 
 /* --------------------------- */
 /* Variables globales internes */
 /* --------------------------- */
 
-static short	ticon[MAXICONY][MAXICONX];		/* icnes des boutons */
-static short	trest[MAXICONY][MAXICONX];		/* nb disponible */
-static short	tspal[MAXICONY];				/* tats des sous-palettes (0..MAXICONX-1) */
-static short	press;							/* bouton press (0..MAXICONY-1) */
-static short	typepress;						/* 1 -> palette avec bouton press */
+static short ticon[MAXICONY][MAXICONX]; /* icônes des boutons */
+static short trest[MAXICONY][MAXICONX]; /* nb disponible */
+static short tspal[MAXICONY]; /* états des sous-palettes (0..MAXICONX-1) */
+static short press;           /* bouton pressé (0..MAXICONY-1) */
+static short typepress;       /* 1 -> palette avec bouton pressé */
 
-static short	tediticon[MAXEDITY][MAXEDITX];	/* dition palette: icnes */
-static short	teditetat[MAXEDITY][MAXEDITX];	/* dition palette: tats */
-static short	teditrest[MAXEDITY][MAXEDITX];	/* dition palette: restes */
+static short tediticon[MAXEDITY][MAXEDITX]; /* édition palette: icônes */
+static short teditetat[MAXEDITY][MAXEDITX]; /* édition palette: états */
+static short teditrest[MAXEDITY][MAXEDITX]; /* édition palette: restes */
 
-static short	laststatus;
-static short	lastforce;
-static short	lastvision;
-static short	lastmechant;
-static short	lastmagic;
-static short	lastcles;
+static short laststatus;
+static short lastforce;
+static short lastvision;
+static short lastmechant;
+static short lastmagic;
+static short lastcles;
 
-
-
-typedef struct
-{
-	short	typepress;						/* 1 -> palette avec bouton press */
-	short	reserve[10];					/* rserve */
-}
-Partie;
-
-
-
-
+typedef struct {
+  short typepress;   /* 1 -> palette avec bouton pressé */
+  short reserve[10]; /* rserve */
+} Partie;
 
 /* ------------ */
 /* GetButtonPos */
 /* ------------ */
 
 /*
-	Donne la position d'un bouton.
+    Donne la position d'un bouton.
  */
 
-Pt GetButtonPos (short rang)
+Pt
+GetButtonPos (short rang)
 {
-	Pt		pos;
+  Pt pos;
 
-	if ( rang < 0 || rang >= MAXICONY )
-	{
-		pos.x = -1;
-		pos.y = -1;
-		return pos;
-	}
+  if (rang < 0 || rang >= MAXICONY)
+  {
+    pos.x = -1;
+    pos.y = -1;
+    return pos;
+  }
 
-	pos.x = POSXPALETTE;
-	pos.y = POSYPALETTE + rang*(LYICO/2+4);
-	return pos;
+  pos.x = POSXPALETTE;
+  pos.y = POSYPALETTE + rang * (LYICO / 2 + 4);
+  return pos;
 }
-
 
 /* ------------- */
 /* GetButtonRang */
 /* ------------- */
 
 /*
-	Donne le rang du bouton cliqu par la souris.
-	Retourne -1 si la souris n'est pas sur un bouton.
+    Donne le rang du bouton cliqué par la souris.
+    Retourne -1 si la souris n'est pas sur un bouton.
  */
 
-short GetButtonRang (Pt pos)
+short
+GetButtonRang (Pt pos)
 {
-	short		i;
-	Pt			pb;
+  short i;
+  Pt    pb;
 
-	if ( pos.x < POSXPALETTE ||
-		 pos.x > POSXPALETTE+DIMXPALETTE )  return -1;
+  if (pos.x < POSXPALETTE || pos.x > POSXPALETTE + DIMXPALETTE)
+    return -1;
 
-	for ( i=0 ; i<MAXICONY ; i++ )
-	{
-		if ( ticon[i][0] == 0 )  continue;
+  for (i = 0; i < MAXICONY; i++)
+  {
+    if (ticon[i][0] == 0)
+      continue;
 
-		pb = GetButtonPos(i);
-		if ( pos.y >= pb.y &&
-			 pos.y <= pb.y+LYICO/2 )  return i;
-	}
-	return -1;
+    pb = GetButtonPos (i);
+    if (pos.y >= pb.y && pos.y <= pb.y + LYICO / 2)
+      return i;
+  }
+  return -1;
 }
-
 
 /* ---------- */
 /* DrawButton */
 /* ---------- */
 
 /*
-	Dessine un bouton.
-	state = 0	->	bouton relch normal
-	state = 1	->	bouton press
-	state = 2	->	flche ">" pour sous-palette
-	state = 3	->	bouton relch pour action joueur
-	state = 4	->	bouton press pour action joueur
-	state = 5	->	flche ">" pour sous-palette action joueur
+    Dessine un bouton.
+    state = 0	->	bouton relâché normal
+    state = 1	->	bouton pressé
+    state = 2	->	flèche ">" pour sous-palette
+    state = 3	->	bouton relâché pour action joueur
+    state = 4	->	bouton pressé pour action joueur
+    state = 5	->	flèche ">" pour sous-palette action joueur
  */
 
-void DrawButton (Pt pos, short icon, short state)
+void
+DrawButton (Pt pos, short icon, short state)
 {
-	short		iconbutton;
-	Pt			src, dim, p1 = {1, 1}, p2 = {30, 30};
+  short iconbutton;
+  Pt    src, dim, p1 = {1, 1}, p2 = {30, 30};
 
-	if ( pos.x < 0 )  return;
+  if (pos.x < 0)
+    return;
 
-	src.x = 0;
-	src.y = 0;
-	dim.x = LXICO/2;
-	dim.y = LYICO/2;
+  src.x = 0;
+  src.y = 0;
+  dim.x = LXICO / 2;
+  dim.y = LYICO / 2;
 
-	if ( state == 0 )  iconbutton = ICO_BUTTON_REL;
-	if ( state == 1 )  iconbutton = ICO_BUTTON_PRESS;
-	if ( state == 2 )  iconbutton = ICO_BUTTON_SPAL;
+  if (state == 0)
+    iconbutton = ICO_BUTTON_REL;
+  if (state == 1)
+    iconbutton = ICO_BUTTON_PRESS;
+  if (state == 2)
+    iconbutton = ICO_BUTTON_SPAL;
 
-	if ( state == 3 || state == 4 )
-	{
-		iconbutton = ICO_BUTTON_BUILD;
-		dim.x = 52;
-		if ( state == 4 )  src.y = LYICO/2;
-	}
+  if (state == 3 || state == 4)
+  {
+    iconbutton = ICO_BUTTON_BUILD;
+    dim.x      = 52;
+    if (state == 4)
+      src.y = LYICO / 2;
+  }
 
-	if ( state == 5 )
-	{
-		iconbutton = ICO_BUTTON_BUILDSP;
-		dim.x = 52;
-	}
+  if (state == 5)
+  {
+    iconbutton = ICO_BUTTON_BUILDSP;
+    dim.x      = 52;
+  }
 
-	if ( icon == 0 )  return;
-        DrawIcon(iconbutton, src, pos, dim); /* dessine le cadre du bouton */
+  if (icon == 0)
+    return;
 
-	if ( icon == 1 )  return;
+  DrawIcon (iconbutton, src, pos, dim); /* dessine le cadre du bouton */
 
-	if ( state == 0 || state == 3 )
-	{
-		pos.x += 3;						/* décalage si bouton relàché */
-		pos.y += 7;
-	}
-	else
-	{
-		pos.x += 7;						/* décalage si bouton pressé */
-		pos.y += 2;
-	}
+  if (icon == 1)
+    return;
 
-        DrawIcon(icon, p1, pos, p2); /* dessine le contenu du bouton */
+  if (state == 0 || state == 3)
+  {
+    pos.x += 3; /* décalage si bouton relàché */
+    pos.y += 7;
+  }
+  else
+  {
+    pos.x += 7; /* décalage si bouton pressé */
+    pos.y += 2;
+  }
+
+  DrawIcon (icon, p1, pos, p2); /* dessine le contenu du bouton */
 }
-
 
 /* ---------- */
 /* DrawF1toF4 */
 /* ---------- */
 
 /*
-	Dessine le nom de la touche raccourci.
+    Dessine le nom de la touche raccourci.
  */
 
-void DrawF1toF4 (short rang)
+void
+DrawF1toF4 (short rang)
 {
-	Pt			src, dst, dim;
+  Pt src, dst, dim;
 
-	if ( typepress != 0 )  return;
-	if ( rang < 0 || rang >= MAXICONY )  return;
+  if (typepress != 0)
+    return;
+  if (rang < 0 || rang >= MAXICONY)
+    return;
 
-	dst = GetButtonPos(rang);
-	dst.x += 5;
-	dst.y += LYICO/2 - 7-1;
+  dst = GetButtonPos (rang);
+  dst.x += 5;
+  dst.y += LYICO / 2 - 7 - 1;
 
-	src.x = 8*rang;
-	src.y = LYICO/2 - 7;
+  src.x = 8 * rang;
+  src.y = LYICO / 2 - 7;
 
-	dim.x = 8;
-	dim.y = 7;
+  dim.x = 8;
+  dim.y = 7;
 
-        DrawIcon(ICO_BUTTON_PAUSE, src, dst, dim);
+  DrawIcon (ICO_BUTTON_PAUSE, src, dst, dim);
 }
-
 
 /* --------- */
 /* DrawReste */
 /* --------- */
 
 /*
-	Affiche le nb restant  ct d'un bouton.
+    Affiche le nb restant à côté d'un bouton.
  */
 
-void DrawReste (Pt pos, short rest)
+void
+DrawReste (Pt pos, short rest)
 {
-	Rectangle	rect;
-	char		chaine[4];
+  Rectangle rect;
+  char      chaine[4];
 
-	if ( pos.x < 0 )  return;
-	pos.x += LXICO/2+1;
-	pos.y += 1;
+  if (pos.x < 0)
+    return;
+  pos.x += LXICO / 2 + 1;
+  pos.y += 1;
 
-	rect.p1.x = pos.x;
-	rect.p1.y = pos.y;
-	rect.p2.x = pos.x+14;
-	rect.p2.y = pos.y+13;
-	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
+  rect.p1.x = pos.x;
+  rect.p1.y = pos.y;
+  rect.p2.x = pos.x + 14;
+  rect.p2.y = pos.y + 13;
+  DrawFillRect (0, rect, COLORBLANC); /* efface l'emplacement */
 
-	if ( rest >= 999 )  return;
+  if (rest >= 999)
+    return;
 
-	if ( rest > 99 )  rest = 99;		/* 2 digits au maximum */
-	if ( rest < 10 )
-	{
-		pos.x += 4;
-		chaine[0] = rest+'0';			/* units */
-		chaine[1] = 0;
-	}
-	else
-	{
-		chaine[0] = rest/10+'0';		/* dizaines */
-		chaine[1] = rest%10+'0';		/* units */
-		chaine[2] = 0;
-	}
+  if (rest > 99)
+    rest = 99; /* 2 digits au maximum */
+  if (rest < 10)
+  {
+    pos.x += 4;
+    chaine[0] = rest + '0'; /* unités */
+    chaine[1] = 0;
+  }
+  else
+  {
+    chaine[0] = rest / 10 + '0'; /* dizaines */
+    chaine[1] = rest % 10 + '0'; /* unités */
+    chaine[2] = 0;
+  }
 
-	pos.y += TEXTSIZELIT;
-	DrawText(0, pos, chaine, TEXTSIZELIT);
+  pos.y += TEXTSIZELIT;
+  DrawText (0, pos, chaine, TEXTSIZELIT);
 }
-
 
 /* ------------ */
 /* DrawTriangle */
 /* ------------ */
 
 /*
-	Dessine le petit triangle en bas  ct de l'icne, pour indiquer
-	la prsence d'une sous-palette.
+    Dessine le petit triangle en bas à côté de l'icône, pour indiquer
+    la présence d'une sous-palette.
  */
 
-void DrawTriangle (short rang)
+void
+DrawTriangle (short rang)
 {
-	Pt			pos;
-	Rectangle	rect;
-	char		chaine[2];
+  Pt        pos;
+  Rectangle rect;
+  char      chaine[2];
 
-	pos = GetButtonPos(rang);
-	if ( pos.x < 0 )  return;
+  pos = GetButtonPos (rang);
+  if (pos.x < 0)
+    return;
 
-	pos.x += LXICO/2+4;
-	pos.y += LYICO/2-15;
+  pos.x += LXICO / 2 + 4;
+  pos.y += LYICO / 2 - 15;
 
-	rect.p1.x = pos.x;
-	rect.p1.y = pos.y;
-	rect.p2.x = pos.x+TEXTSIZELIT;
-	rect.p2.y = pos.y+TEXTSIZELIT+3;
-	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
+  rect.p1.x = pos.x;
+  rect.p1.y = pos.y;
+  rect.p2.x = pos.x + TEXTSIZELIT;
+  rect.p2.y = pos.y + TEXTSIZELIT + 3;
+  DrawFillRect (0, rect, COLORBLANC); /* efface l'emplacement */
 
-	if ( ticon[rang][1] == 0 )  return;				/* pas de sous-palette */
+  if (ticon[rang][1] == 0)
+    return; /* pas de sous-palette */
 
-	chaine[0] = 127;								/* code du petit triangle */
-	chaine[1] = 0;
-	pos.y += TEXTSIZELIT;
-	DrawText(0, pos, chaine, TEXTSIZELIT);	/* dessine le petit triangle */
+  chaine[0] = 127; /* code du petit triangle */
+  chaine[1] = 0;
+  pos.y += TEXTSIZELIT;
+  DrawText (0, pos, chaine, TEXTSIZELIT); /* dessine le petit triangle */
 }
-
 
 /* ----------- */
 /* PaletteDraw */
 /* ----------- */
 
 /*
-	Dessine la palette d'icnes.
+    Dessine la palette d'icônes.
  */
 
-void PaletteDraw (void)
+void
+PaletteDraw (void)
 {
-	Rectangle	rect;
-	short		rang, state;
+  Rectangle rect;
+  short     rang, state;
 
-	rect.p1.x = 6;
-	rect.p1.y = LYIMAGE()-1-332;
-	rect.p2.x = 6+55;
-	rect.p2.y = LYIMAGE()-1-332+173;
-	DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
+  rect.p1.x = 6;
+  rect.p1.y = LYIMAGE () - 1 - 332;
+  rect.p2.x = 6 + 55;
+  rect.p2.y = LYIMAGE () - 1 - 332 + 173;
+  DrawFillRect (0, rect, COLORBLANC); /* efface l'emplacement */
 
-	for ( rang=0 ; rang<MAXICONY ; rang++ )
-	{
-		if ( ticon[rang][tspal[rang]] == 0 )
-		{
-			state = 0;
-			if ( typepress == 0 )  state = 3;	/* bouton pour le joueur */
-			DrawButton(GetButtonPos(rang), 0, state);
-			DrawReste(GetButtonPos(rang), 999);
-		}
-		else
-		{
-			state = 0;
-			if ( rang == press  )  state = 1;	/* bouton enfonc */
-			if ( typepress == 0 )  state = 3;	/* bouton pour le joueur */
-			DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], state);
-			DrawF1toF4(rang);
-			DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
-			DrawTriangle(rang);
-		}
-	}
+  for (rang = 0; rang < MAXICONY; rang++)
+  {
+    if (ticon[rang][tspal[rang]] == 0)
+    {
+      state = 0;
+      if (typepress == 0)
+        state = 3; /* bouton pour le joueur */
+      DrawButton (GetButtonPos (rang), 0, state);
+      DrawReste (GetButtonPos (rang), 999);
+    }
+    else
+    {
+      state = 0;
+      if (rang == press)
+        state = 1; /* bouton enfoncé */
+      if (typepress == 0)
+        state = 3; /* bouton pour le joueur */
+      DrawButton (GetButtonPos (rang), ticon[rang][tspal[rang]], state);
+      DrawF1toF4 (rang);
+      DrawReste (GetButtonPos (rang), trest[rang][tspal[rang]]);
+      DrawTriangle (rang);
+    }
+  }
 }
-
-
 
 /* ------------- */
 /* GetSButtonPos */
 /* ------------- */
 
 /*
-	Donne la position d'un bouton d'une sous-palette.
+    Donne la position d'un bouton d'une sous-palette.
  */
 
-Pt GetSButtonPos (short rang, short srang)
+Pt
+GetSButtonPos (short rang, short srang)
 {
-	Pt		pos;
+  Pt pos;
 
-	if ( srang < 0 || srang > MAXICONX ||
-		 ticon[rang][srang] == 0 )
-	{
-		pos.x = -1;
-		pos.y = -1;
-		return pos;
-	}
+  if (srang < 0 || srang > MAXICONX || ticon[rang][srang] == 0)
+  {
+    pos.x = -1;
+    pos.y = -1;
+    return pos;
+  }
 
-	pos = GetButtonPos(rang);
-	pos.x += LXICO/2+12+4 + srang*(LXICO/2+4);
-	return pos;
+  pos = GetButtonPos (rang);
+  pos.x += LXICO / 2 + 12 + 4 + srang * (LXICO / 2 + 4);
+  return pos;
 }
-
 
 /* -------------- */
 /* GetSButtonRang */
 /* -------------- */
 
 /*
-	Donne le sous-rang du bouton cliqu par la souris.
-	Retourne -1 si la souris n'est pas sur un sous-bouton.
+    Donne le sous-rang du bouton cliqué par la souris.
+    Retourne -1 si la souris n'est pas sur un sous-bouton.
  */
 
-short GetSButtonRang (short rang, Pt pos)
+short
+GetSButtonRang (short rang, Pt pos)
 {
-	short		i;
-	Pt			pb;
+  short i;
+  Pt    pb;
 
-	pb = GetButtonPos(rang);
-	if ( pos.y < pb.y ||
-		 pos.y > pb.y+LYICO/2 )  return -1;
+  pb = GetButtonPos (rang);
+  if (pos.y < pb.y || pos.y > pb.y + LYICO / 2)
+    return -1;
 
-	for ( i=0 ; i<MAXICONX ; i++ )
-	{
-		if ( ticon[rang][i] == 0 )  continue;
+  for (i = 0; i < MAXICONX; i++)
+  {
+    if (ticon[rang][i] == 0)
+      continue;
 
-		pb = GetSButtonPos(rang, i);
-		if ( pos.x >= pb.x &&
-			 pos.x <= pb.x+LXICO/2 )  return i;
-	}
-	return -1;
+    pb = GetSButtonPos (rang, i);
+    if (pos.x >= pb.x && pos.x <= pb.x + LXICO / 2)
+      return i;
+  }
+  return -1;
 }
-
 
 /* ----------------- */
 /* SPaletteGetPosDim */
 /* ----------------- */
 
 /*
-	Donne la position et les dimensions d'une sous-palette
+    Donne la position et les dimensions d'une sous-palette
  */
 
-void SPaletteGetPosDim (short rang, Pt *ppos, Pt *pdim)
+void
+SPaletteGetPosDim (short rang, Pt * ppos, Pt * pdim)
 {
-	short		i;
+  short i;
 
-	*ppos = GetButtonPos(rang);
-	(*ppos).x += LXICO/2+12;
-	(*ppos).y -= 4;
+  *ppos = GetButtonPos (rang);
+  (*ppos).x += LXICO / 2 + 12;
+  (*ppos).y -= 4;
 
-	(*pdim).x = 4;
-	for ( i=0 ; i<MAXICONX ; i++ )
-	{
-		if ( ticon[rang][i] == 0 )  break;
-		(*pdim).x += LXICO/2+4;
-	}
-	(*pdim).y = 4+LYICO/2+4;
+  (*pdim).x = 4;
+  for (i = 0; i < MAXICONX; i++)
+  {
+    if (ticon[rang][i] == 0)
+      break;
+    (*pdim).x += LXICO / 2 + 4;
+  }
+  (*pdim).y = 4 + LYICO / 2 + 4;
 }
 
-void SPaletteRedraw(short rang)
+void
+SPaletteRedraw (short rang)
 {
-  	short		i, state;
+  short i, state;
 
-  	for ( i=0 ; i<MAXICONX ; i++ )
-	{
-		if ( ticon[rang][i] == 0 )  break;
+  for (i = 0; i < MAXICONX; i++)
+  {
+    if (ticon[rang][i] == 0)
+      break;
 
-		state = 0;
-		if ( i == tspal[rang] )  state = 1;
-		DrawButton(GetSButtonPos(rang, i), ticon[rang][i], state);
-	}
+    state = 0;
+    if (i == tspal[rang])
+      state = 1;
+    DrawButton (GetSButtonPos (rang, i), ticon[rang][i], state);
+  }
 }
-
 
 /* ------------ */
 /* SPaletteOpen */
 /* ------------ */
 
 /*
-	Dessine une sous-palette.
+    Dessine une sous-palette.
  */
 
-short SPaletteOpen (short rang, Pixmap *ppm)
+short
+SPaletteOpen (short rang, Pixmap * ppm)
 {
-	Pt			pos, dim;
-	Pt			p = {0, 0};
-	Rectangle	r;
+  Pt        pos, dim;
+  Pt        p = {0, 0};
+  Rectangle r;
 
-	SPaletteGetPosDim(rang, &pos, &dim);
+  SPaletteGetPosDim (rang, &pos, &dim);
 
-        Pt game;
-        game.x = LXIMAGE();
-        game.y = LYIMAGE();
-	if ( GetPixmap(ppm, game, 0, 2) != 0 )  return 1;
+  Pt game;
+  game.x = LXIMAGE ();
+  game.y = LYIMAGE ();
+  if (GetPixmap (ppm, game, 0, 2) != 0)
+    return 1;
 
-	CopyPixel(0, p, ppm, p, game);	/* sauve l'cran */
+  CopyPixel (0, p, ppm, p, game); /* sauve l'écran */
 
-        r.p1.x=pos.x;
-        r.p1.y=pos.y;
-        r.p2.x=pos.x+dim.x;
-        r.p2.y=pos.y+dim.y;
-	DrawFillRect
-	(
-		0, r,
-		COLORBLANC
-	);
+  r.p1.x = pos.x;
+  r.p1.y = pos.y;
+  r.p2.x = pos.x + dim.x;
+  r.p2.y = pos.y + dim.y;
+  DrawFillRect (0, r, COLORBLANC);
 
-        r.p1.x=pos.x;
-        r.p1.y=pos.y;
-        r.p2.x=pos.x+dim.x-1;
-        r.p2.y=pos.y+dim.y-1;
-	DrawRect
-	(
-		0, r,
-		COLORNOIR
-	);
+  r.p1.x = pos.x;
+  r.p1.y = pos.y;
+  r.p2.x = pos.x + dim.x - 1;
+  r.p2.y = pos.y + dim.y - 1;
+  DrawRect (0, r, COLORNOIR);
 
-        SPaletteRedraw(rang);
-	return 0;
+  SPaletteRedraw (rang);
+  return 0;
 }
-
 
 /* ------------- */
 /* SPaletteClose */
 /* ------------- */
 
 /*
-	Ferme une sous-palette.
+    Ferme une sous-palette.
  */
 
-void SPaletteClose (short rang, Pixmap *ppm)
+void
+SPaletteClose (short rang, Pixmap * ppm)
 {
-	Pt		dim;
-	Pt		p = {0, 0};
+  Pt dim;
+  Pt p = {0, 0};
 
-        dim.x = LXIMAGE();
-        dim.y = LYIMAGE();
-	CopyPixel(ppm, p, 0, p, dim);	/* restitue l'cran */
-	GivePixmap(ppm);
+  dim.x = LXIMAGE ();
+  dim.y = LYIMAGE ();
+  CopyPixel (ppm, p, 0, p, dim); /* restitue l'écran */
+  GivePixmap (ppm);
 }
-
 
 /* ---------------- */
 /* SPaletteTracking */
 /* ---------------- */
 
 /*
-	Ouvre la sous-palette, choix d'un bouton, puis ferme-la.
-	Retourne 1 si le bouton a t relch.
-	Retourne 0 si la souris s'est dplace vers la gauche.
+    Ouvre la sous-palette, choix d'un bouton, puis ferme-la.
+    Retourne 1 si le bouton a été relâché.
+    Retourne 0 si la souris s'est déplacée vers la gauche.
  */
 
-short SPaletteTracking (short rang, Pt pos, int key)
+short
+SPaletteTracking (short rang, Pt pos, int key)
 {
-	static Pixmap		pmsave = {0};
-        static SDL_bool open = SDL_FALSE;
-	Pt		limit;
-	short		old = -1, new;
-	short		type = -1;
-        static int currentRank = -1;
+  static Pixmap   pmsave = {0};
+  static SDL_bool open   = SDL_FALSE;
+  Pt              limit;
+  short           old         = -1, new;
+  short           type        = -1;
+  static int      currentRank = -1;
 
-        if (currentRank >= 0 && currentRank != rang)
-	{
-	  if ( typepress )  type = 0;
-	  else              type = 3;
-          goto next;
-	}
+  if (currentRank >= 0 && currentRank != rang)
+  {
+    if (typepress)
+      type = 0;
+    else
+      type = 3;
+    goto next;
+  }
 
-        if (open == SDL_FALSE)
-        {
-          if ( SPaletteOpen(rang, &pmsave) != 0 )  return 0;
-          open = SDL_TRUE;
-          g_subMenu = SDL_TRUE;
-          currentRank = rang;
-        }
-        else
-          SPaletteRedraw(rang);
+  if (open == SDL_FALSE)
+  {
+    if (SPaletteOpen (rang, &pmsave) != 0)
+      return 0;
+    open        = SDL_TRUE;
+    g_subMenu   = SDL_TRUE;
+    currentRank = rang;
+  }
+  else
+    SPaletteRedraw (rang);
 
-	if ( typepress )  type = 2;
-	else              type = 5;
-	DrawButton(GetButtonPos(rang), 1, type);		/* met la flche -> */
+  if (typepress)
+    type = 2;
+  else
+    type = 5;
+  DrawButton (GetButtonPos (rang), 1, type); /* met la flèche -> */
 
-	limit = GetButtonPos(rang);
-	limit.x += LXICO/2 + 12;
+  limit = GetButtonPos (rang);
+  limit.x += LXICO / 2 + 12;
 
-	old = tspal[rang];
+  old = tspal[rang];
 
-		if ( pos.y >= limit.y && pos.y <= limit.y+LYICO/2 )
-		{
-			if ( pos.x < limit.x - 12 )  goto next;
-		}
-		else
-		{
-			if ( pos.x < limit.x )  goto next;
-		}
+  if (pos.y >= limit.y && pos.y <= limit.y + LYICO / 2)
+  {
+    if (pos.x < limit.x - 12)
+      goto next;
+  }
+  else
+  {
+    if (pos.x < limit.x)
+      goto next;
+  }
 
-		new = GetSButtonRang(rang, pos);
+  new = GetSButtonRang (rang, pos);
 
-		DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 0);
-		old = new;
-		DrawButton(GetSButtonPos(rang, old), ticon[rang][old], 1);
+  DrawButton (GetSButtonPos (rang, old), ticon[rang][old], 0);
+  old = new;
+  DrawButton (GetSButtonPos (rang, old), ticon[rang][old], 1);
 
-		if ( key == KEYCLICREL )  goto next;
-		return 1;
+  if (key == KEYCLICREL)
+    goto next;
+  return 1;
 
 next:
-	if ( old >= 0 )  tspal[rang] = old;
+  if (old >= 0)
+    tspal[rang] = old;
 
-	SPaletteClose(rang, &pmsave);
-        open = SDL_FALSE;
-        g_subMenu = SDL_FALSE;
+  SPaletteClose (rang, &pmsave);
+  open      = SDL_FALSE;
+  g_subMenu = SDL_FALSE;
 
-	if (type != 0 && type != 3)
-	{
-	  if ( typepress )  type = 1;
-	  else              type = 3;
-	}
+  if (type != 0 && type != 3)
+  {
+    if (typepress)
+      type = 1;
+    else
+      type = 3;
+  }
 
-        DrawButton(GetButtonPos(currentRank), ticon[currentRank][tspal[currentRank]], type);
-	DrawF1toF4(currentRank);
-        currentRank = -1;
+  DrawButton (
+    GetButtonPos (currentRank), ticon[currentRank][tspal[currentRank]], type);
+  DrawF1toF4 (currentRank);
+  currentRank = -1;
 
-	DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], type);
-	DrawF1toF4(rang);
-	DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
+  DrawButton (GetButtonPos (rang), ticon[rang][tspal[rang]], type);
+  DrawF1toF4 (rang);
+  DrawReste (GetButtonPos (rang), trest[rang][tspal[rang]]);
 
-	if ( key == KEYCLICREL )
-          return 1;
+  if (key == KEYCLICREL)
+    return 1;
 
-	return 0;
+  return 0;
 }
-
-
 
 /* -------------- */
 /* SupprimeBouton */
 /* -------------- */
 
 /*
-	Supprime un bouton dont le compteur d'utilisation est arriv  zro.
+    Supprime un bouton dont le compteur d'utilisation est arrivé à zéro.
  */
 
-void SupprimeBouton (short rang, short spal)
+void
+SupprimeBouton (short rang, short spal)
 {
-	short		i;
+  short i;
 
-	for ( i=spal ; i<MAXICONX ; i++ )
-	{
-		ticon[rang][i] = ticon[rang][i+1];
-		trest[rang][i] = trest[rang][i+1];
-	}
-	ticon[rang][MAXICONX-1] = 0;
-	trest[rang][MAXICONX-1] = 0;
+  for (i = spal; i < MAXICONX; i++)
+  {
+    ticon[rang][i] = ticon[rang][i + 1];
+    trest[rang][i] = trest[rang][i + 1];
+  }
+  ticon[rang][MAXICONX - 1] = 0;
+  trest[rang][MAXICONX - 1] = 0;
 }
-
 
 /* ============= */
 /* PaletteUseObj */
 /* ============= */
 
 /*
-	Dcrmente le compteur d'utilisation d'un objet.
-	Si le bouton correspondant  l'objet tait enfonc et que le compteur
-	arrive  zro, enfonce un autre bouton automatiquement.
+    Décrémente le compteur d'utilisation d'un objet.
+    Si le bouton correspondant à l'objet était enfoncé et que le compteur
+    arrive à zéro, enfonce un autre bouton automatiquement.
  */
 
-void PaletteUseObj (short icon)
+void
+PaletteUseObj (short icon)
 {
-	short		rang, spal, type;
+  short rang, spal, type;
 
-	for ( rang=0 ; rang<MAXICONY ; rang++ )
-	{
-		for ( spal=0 ; spal<MAXICONX ; spal++ )
-		{
-			if ( icon == ticon[rang][spal] )  goto dec;
-		}
-	}
-	return;
+  for (rang = 0; rang < MAXICONY; rang++)
+  {
+    for (spal = 0; spal < MAXICONX; spal++)
+    {
+      if (icon == ticon[rang][spal])
+        goto dec;
+    }
+  }
+  return;
 
-	dec:
-	if ( trest[rang][spal] == 0 || trest[rang][spal] >= 999 )  return;
+dec:
+  if (trest[rang][spal] == 0 || trest[rang][spal] >= 999)
+    return;
 
-	trest[rang][spal] --;
-	DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);	/* affiche le nouveau reste */
+  trest[rang][spal]--;
+  DrawReste (
+    GetButtonPos (rang),
+    trest[rang][tspal[rang]]); /* affiche le nouveau reste */
 
-	if ( trest[rang][spal] > 0 )  return;
+  if (trest[rang][spal] > 0)
+    return;
 
-	/*	Si le bouton ne peut plus tre utilis et qu'il tait visible
-		et press, cherche un autre en remplacement. */
+  /* Si le bouton ne peut plus être utilisé et qu'il était visible
+      et pressé, cherche un autre en remplacement. */
 
-	if ( typepress )  type = 1;
-	else              type = 3;
+  if (typepress)
+    type = 1;
+  else
+    type = 3;
 
-	if ( spal == tspal[rang] )
-	{
-		DrawButton(GetButtonPos(rang), 0, type);	/* efface le bouton */
-	}
-	SupprimeBouton(rang, spal);						/* supprime le bouton dans les tables */
-	DrawTriangle(rang);								/* enlve v. le petit triangle */
+  if (spal == tspal[rang])
+  {
+    DrawButton (GetButtonPos (rang), 0, type); /* efface le bouton */
+  }
+  SupprimeBouton (rang, spal); /* supprime le bouton dans les tables */
+  DrawTriangle (rang);         /* enlève év. le petit triangle */
 
-	if ( spal != tspal[rang] )  return;
-	if ( rang != press )        return;
+  if (spal != tspal[rang])
+    return;
+  if (rang != press)
+    return;
 
-	for ( spal=0 ; spal<MAXICONX ; spal++ )
-	{
-		if ( trest[rang][spal] > 0 )
-		{
-			tspal[rang] = spal;
-			DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], type);
-			DrawF1toF4(rang);
-			DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
-			return;
-		}
-	}
-	for ( rang=0 ; rang<MAXICONY ; rang++ )
-	{
-		for ( spal=0 ; spal<MAXICONX ; spal++ )
-		{
-			if ( trest[rang][spal] > 0 )
-			{
-				press = rang;
-				tspal[rang] = spal;
-				DrawButton(GetButtonPos(rang), ticon[rang][tspal[rang]], type);
-				DrawF1toF4(rang);
-				DrawReste(GetButtonPos(rang), trest[rang][tspal[rang]]);
-				return;
-			}
-		}
-	}
-	press = 0;
+  for (spal = 0; spal < MAXICONX; spal++)
+    if (trest[rang][spal] > 0)
+    {
+      tspal[rang] = spal;
+      DrawButton (GetButtonPos (rang), ticon[rang][tspal[rang]], type);
+      DrawF1toF4 (rang);
+      DrawReste (GetButtonPos (rang), trest[rang][tspal[rang]]);
+      return;
+    }
+
+  for (rang = 0; rang < MAXICONY; rang++)
+    for (spal = 0; spal < MAXICONX; spal++)
+      if (trest[rang][spal] > 0)
+      {
+        press       = rang;
+        tspal[rang] = spal;
+        DrawButton (GetButtonPos (rang), ticon[rang][tspal[rang]], type);
+        DrawF1toF4 (rang);
+        DrawReste (GetButtonPos (rang), trest[rang][tspal[rang]]);
+        return;
+      }
+
+  press = 0;
 }
-
 
 /* ============= */
 /* PaletteStatus */
 /* ============= */
 
 /*
-	Donne l'tat d'un bouton de la palette.
+    Donne l'état d'un bouton de la palette.
  */
 
-short PaletteStatus (short rang)
+short
+PaletteStatus (short rang)
 {
-	return tspal[rang];
+  return tspal[rang];
 }
-
 
 /* =============== */
 /* PaletteGetPress */
 /* =============== */
 
 /*
-	Donne l'icne presse dans la palette.
+    Donne l'icône pressée dans la palette.
  */
 
-short PaletteGetPress (void)
+short
+PaletteGetPress (void)
 {
-	if ( trest[press][tspal[press]] == 0 )  return -1;
-	return ticon[press][tspal[press]];
+  if (trest[press][tspal[press]] == 0)
+    return -1;
+  return ticon[press][tspal[press]];
 }
-
 
 /* ---------- */
 /* SpecButton */
 /* ---------- */
 
 /*
-	Retourne un bouton spcial cliqu.
+    Retourne un bouton spécial cliqué.
  */
 
-short SpecButton (Pt pos)
+short
+SpecButton (Pt pos)
 {
-	short		*pt;
+  short * pt;
 
-	static short table0[] =				/* table si jeu avec flches */
-	{
-		25,92,17,17,	KEYUP,
-		7,75,17,17,		KEYLEFT,
-		43,75,17,17,	KEYRIGHT,
-		25,58,17,17,	KEYDOWN,
-		29,71,9,9,		KEYCENTER,
+  static short table0[] =       /* table si jeu avec flèches */
+    {25, 92, 17, 17, KEYUP,     //
+     7,  75, 17, 17, KEYLEFT,   //
+     43, 75, 17, 17, KEYRIGHT,  //
+     25, 58, 17, 17, KEYDOWN,   //
+     29, 71, 9,  9,  KEYCENTER, //
 
-		6,28,18,18,		KEYHOME,
-		26,28,18,18,	KEYPAUSE,
-		46,27,16,16,	KEYIO,
-		0
-	};
+     6,  28, 18, 18, KEYHOME,  //
+     26, 28, 18, 18, KEYPAUSE, //
+     46, 27, 16, 16, KEYIO,    //
 
-	static short table1[] =				/* table si jeu avec tlcommande */
-	{
-		7,68,24,9,		KEYGOFRONT,
-		7,59,24,9,		KEYGOBACK,
-		36,76,8,26,		KEYGOLEFT,
-		44,76,8,26,		KEYGORIGHT,
+     0};
 
-		6,28,18,18,		KEYHOME,
-		26,28,18,18,	KEYPAUSE,
-		46,27,16,16,	KEYIO,
-		0
-	};
+  static short table1[] =        /* table si jeu avec télécommande */
+    {7,  68, 24, 9,  KEYGOFRONT, //
+     7,  59, 24, 9,  KEYGOBACK,  //
+     36, 76, 8,  26, KEYGOLEFT,  //
+     44, 76, 8,  26, KEYGORIGHT, //
 
-	if ( g_typejeu == 0 || g_pause )  pt = table0;
-	else                          pt = table1;
+     6,  28, 18, 18, KEYHOME,  //
+     26, 28, 18, 18, KEYPAUSE, //
+     46, 27, 16, 16, KEYIO,    //
 
-	while ( *pt != 0 )
-	{
-		if ( pos.x >= pt[0] &&
-			 pos.x <= pt[0]+pt[2] &&
-			 pos.y >= LYIMAGE()-pt[1] &&
-			 pos.y <= LYIMAGE()-pt[1]+pt[3] )  return pt[4];
-		pt += 5;
-	}
+     0};
 
-	return 0;
+  if (g_typejeu == 0 || g_pause)
+    pt = table0;
+  else
+    pt = table1;
+
+  while (*pt != 0)
+  {
+    if (
+      pos.x >= pt[0] && pos.x <= pt[0] + pt[2] && pos.y >= LYIMAGE () - pt[1] &&
+      pos.y <= LYIMAGE () - pt[1] + pt[3])
+      return pt[4];
+    pt += 5;
+  }
+
+  return 0;
 }
 
 /* ============ */
@@ -767,782 +787,788 @@ short SpecButton (Pt pos)
 /* ============ */
 
 /*
-	Ventilation d'un vnement pour la palette.
-	Retourne un vnement (KEY*) lors d'une action directe.
-	Retourne 1 si l'vnement n'tait pas pour la palette.
-	Retourne 0 si l'vnement a t trait.
+    Ventilation d'un événement pour la palette.
+    Retourne un événement (KEY*) lors d'une action directe.
+    Retourne 1 si l'événement n'était pas pour la palette.
+    Retourne 0 si l'événement a été traité.
  */
 
-short PaletteEvent (short event, Pt pos)
+short
+PaletteEvent (short event, Pt pos)
 {
-	short		rang;
-	short		typep, typer;
-        static int _rang = -1;
+  short      rang;
+  short      typep, typer;
+  static int _rang = -1;
 
-	if ( typepress )
-	{
-		typep = 1;		/* bouton pressé */
-		typer = 0;		/* bouton relâché */
-	}
-	else
-	{
-		typep = 4;		/* bouton pressé */
-		typer = 3;		/* bouton relâché */
-	}
+  if (typepress)
+  {
+    typep = 1; /* bouton pressé */
+    typer = 0; /* bouton relâché */
+  }
+  else
+  {
+    typep = 4; /* bouton pressé */
+    typer = 3; /* bouton relâché */
+  }
 
-	if ( event >= KEYF4 && event <= KEYF1 )
-	{
-		if (typepress == 0)
-		{
-		    rang = -event+KEYF1;
-		    if ( ticon[rang][tspal[rang]] )
-		    {
-			    DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-			    DrawF1toF4(press);
-			    press = rang;
-			    DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
-			    return 2;
-		    }
-		}
-		return 1;
+  if (event >= KEYF4 && event <= KEYF1)
+  {
+    if (typepress == 0)
+    {
+      rang = -event + KEYF1;
+      if (ticon[rang][tspal[rang]])
+      {
+        DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+        DrawF1toF4 (press);
+        press = rang;
+        DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typep);
+        return 2;
+      }
+    }
+    return 1;
+  }
 
-	}
+  if (typepress == 0 && g_keyFunctionUp)
+  {
+    if (ticon[press][tspal[press]])
+    {
+      DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+      DrawF1toF4 (press);
+    }
+    g_keyFunctionUp = SDL_FALSE;
+    return 0;
+  }
 
-	if (typepress == 0 && g_keyFunctionUp)
-	{
-		if ( ticon[press][tspal[press]] )
-		{
-		   DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-		   DrawF1toF4(press);
-		}
-		g_keyFunctionUp = SDL_FALSE;
-		return 0;
-	}
+  rang = SpecButton (pos);
+  if (rang != 0)
+  {
+    if (event == KEYCLICREL)
+      goto end;
+    return rang;
+  }
 
-	rang = SpecButton(pos);
-	if ( rang != 0 )
-        {
-          if (event == KEYCLICREL)
-            goto end;
-          return rang;
-        }
+  rang = GetButtonRang (pos);
 
-	rang = GetButtonRang(pos);
+  if (rang == -1 && !g_subMenu)
+    return 1;
 
-        if (rang == -1 && !g_subMenu)
-          return 1;
+  if (rang != -1)
+    _rang = rang;
 
-        if (rang != -1)
-          _rang = rang;
+  if (_rang == -1)
+    return 1;
 
-        if (_rang == -1)
-          return 1;
+  if (event == KEYCLIC)
+    PlaySound (SOUND_CLIC, NULL);
 
-        if (event == KEYCLIC)
-          PlaySound(SOUND_CLIC, NULL);
+  DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+  DrawF1toF4 (press);
+  press = _rang;
+  DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typep);
 
-	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-	DrawF1toF4(press);
-	press = _rang;
-	DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
+  if (_rang != -1 && _rang < MAXICONY && ticon[_rang][1] != 0)
+  {
+    press            = _rang;
+    SDL_bool subMenu = g_subMenu;
+    if (SPaletteTracking (_rang, pos, event)) /* action dans sous-palette ... */
+    {
+      if (typepress)
+        return 0;
+      return !subMenu && event == KEYCLICREL ? 2 : 1;
+    }
+  }
 
-		if (
-			 _rang != -1 &&
-			 _rang < MAXICONY &&
-			 ticon[_rang][1] != 0 )
-		{
-			press = _rang;
-                        SDL_bool subMenu = g_subMenu;
-			if ( SPaletteTracking(_rang, pos, event) )			/* action dans sous-palette ... */
-			{
-				if ( typepress )
-                                  return 0;
-				return !subMenu && event == KEYCLICREL ? 2 : 1;
-			}
-		}
-
-		rang = GetButtonRang(pos);
-		//if ( rang != press && rang < MAXICONY )
-		{
-			DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-			DrawF1toF4(press);
-			press = rang;
-                        if (event != KEYCLICREL || typepress != 0)
-                          DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typep);
-		}
-		return event == KEYCLICREL ? 2 : 1;
+  rang = GetButtonRang (pos);
+  // if ( rang != press && rang < MAXICONY )
+  {
+    DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+    DrawF1toF4 (press);
+    press = rang;
+    if (event != KEYCLICREL || typepress != 0)
+      DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typep);
+  }
+  return event == KEYCLICREL ? 2 : 1;
 
 end:
-	if ( typepress == 0 )
-	{
-		DrawButton(GetButtonPos(press), ticon[press][tspal[press]], typer);
-		if ( ticon[press][tspal[press]] )
-		  DrawF1toF4(press);
-	}
-	return event == KEYCLICREL ? 1 : 0;
+  if (typepress == 0)
+  {
+    DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+    if (ticon[press][tspal[press]])
+      DrawF1toF4 (press);
+  }
+  return event == KEYCLICREL ? 1 : 0;
 }
-
 
 /* ========== */
 /* PaletteNew */
 /* ========== */
 
 /*
-	Initialise et dessine une nouvelle palette d'icnes.
+    Initialise et dessine une nouvelle palette d'icônes.
  */
 
-void PaletteNew (short *pdesc, short type)
+void
+PaletteNew (short * pdesc, short type)
 {
-	short		rang, spal;
+  short rang, spal;
 
-	typepress = type;
+  typepress = type;
 
-	for ( rang=0 ; rang<MAXICONY ; rang++ )
-	{
-		for ( spal=0 ; spal<MAXICONX ; spal++ )
-		{
-			if ( *pdesc == 0 || *pdesc == -1 )
-			{
-				ticon[rang][spal] = 0;
-				trest[rang][spal] = 0;
-			}
-			else
-			{
-				ticon[rang][spal] = *pdesc++;
-				trest[rang][spal] = *pdesc++;
-			}
-		}
-		if ( *pdesc == -1 )  pdesc++;
-		tspal[rang] = 0;
-	}
+  for (rang = 0; rang < MAXICONY; rang++)
+  {
+    for (spal = 0; spal < MAXICONX; spal++)
+    {
+      if (*pdesc == 0 || *pdesc == -1)
+      {
+        ticon[rang][spal] = 0;
+        trest[rang][spal] = 0;
+      }
+      else
+      {
+        ticon[rang][spal] = *pdesc++;
+        trest[rang][spal] = *pdesc++;
+      }
+    }
+    if (*pdesc == -1)
+      pdesc++;
+    tspal[rang] = 0;
+  }
 
-	press = 0;
-	PaletteDraw();
+  press = 0;
+  PaletteDraw ();
 
-	laststatus = -1;
+  laststatus = -1;
 }
 
-
-
-
-
-
-/* Gestion de l'dition d'une palette (PHASE_PARAM) */
+/* Gestion de l'édition d'une palette (PHASE_PARAM) */
 /* ------------------------------------------------ */
-
-
 
 /* Palette pour le choix des outils disponibles */
 /* -------------------------------------------- */
 
-static short tabpalette[] =
-{
-	ICO_OUTIL_TRACKSBAR, 999, ICO_OUTIL_TRACKS, 999,
-	-1,
-	ICO_OUTIL_BARRIERE, 999, ICO_OUTIL_MUR, 999,
-	ICO_OUTIL_PLANTE, 999, ICO_OUTIL_PLANTEBAS, 999,
-	ICO_OUTIL_ELECTRO, 999, ICO_OUTIL_ELECTROBAS, 999,
-	ICO_OUTIL_TECHNO, 999, ICO_OUTIL_MEUBLE, 999, ICO_OUTIL_OBSTACLE, 999,
-	-1,
-	ICO_OUTIL_VISION, 999, ICO_OUTIL_BOIT, 999,
-	ICO_OUTIL_AIMANT, 999,
-	ICO_OUTIL_LIVRE, 999, ICO_OUTIL_MAGIC, 999,
-	ICO_OUTIL_UNSEUL, 999,
-	-1,
-	ICO_OUTIL_TROU, 999, ICO_OUTIL_GLISSE, 999,
-	-1,
-	0
-};
+static short tabpalette[] = {
+  ICO_OUTIL_TRACKSBAR,
+  999,
+  ICO_OUTIL_TRACKS,
+  999,
+  -1,
 
+  ICO_OUTIL_BARRIERE,
+  999,
+  ICO_OUTIL_MUR,
+  999,
+  ICO_OUTIL_PLANTE,
+  999,
+  ICO_OUTIL_PLANTEBAS,
+  999,
+  ICO_OUTIL_ELECTRO,
+  999,
+  ICO_OUTIL_ELECTROBAS,
+  999,
+  ICO_OUTIL_TECHNO,
+  999,
+  ICO_OUTIL_MEUBLE,
+  999,
+  ICO_OUTIL_OBSTACLE,
+  999,
+  -1,
+
+  ICO_OUTIL_VISION,
+  999,
+  ICO_OUTIL_BOIT,
+  999,
+  ICO_OUTIL_AIMANT,
+  999,
+  ICO_OUTIL_LIVRE,
+  999,
+  ICO_OUTIL_MAGIC,
+  999,
+  ICO_OUTIL_UNSEUL,
+  999,
+  -1,
+
+  ICO_OUTIL_TROU,
+  999,
+  ICO_OUTIL_GLISSE,
+  999,
+  -1,
+
+  0};
 
 /* ------------ */
 /* DrawEditRest */
 /* ----------- */
 
 /*
-	Affiche l'indicateur de restes.
+    Affiche l'indicateur de restes.
  */
 
-void DrawEditRest (Pt pos, short reste, short etat)
+void
+DrawEditRest (Pt pos, short reste, short etat)
 {
-	Pt			p;
-	char		chaine[4];
-	Rectangle	rect;
+  Pt        p;
+  char      chaine[4];
+  Rectangle rect;
 
-	rect.p1.x = pos.x + LXICO/2;
-	rect.p1.y = pos.y;
-	rect.p2.x = pos.x + LXICO/2 + 16;
-	rect.p2.y = pos.y + LYICO/2;
-	DrawFillRect(0, rect, COLORBLANC);	/* efface l'indicateur prcdent */
+  rect.p1.x = pos.x + LXICO / 2;
+  rect.p1.y = pos.y;
+  rect.p2.x = pos.x + LXICO / 2 + 16;
+  rect.p2.y = pos.y + LYICO / 2;
+  DrawFillRect (0, rect, COLORBLANC); /* efface l'indicateur précédent */
 
-	if ( etat == 0 )  return;						/* si bouton relch -> pas d'indicateur */
+  if (etat == 0)
+    return; /* si bouton relâché -> pas d'indicateur */
 
-	p.x = pos.x + LXICO/2 + 3;
-	p.y = pos.y + TEXTSIZELIT + 2;
-	chaine[0] = 125;
-	chaine[1] = 0;
-	DrawText(0, p, chaine, TEXTSIZELIT);	/* dessine la flche ^ */
+  p.x       = pos.x + LXICO / 2 + 3;
+  p.y       = pos.y + TEXTSIZELIT + 2;
+  chaine[0] = 125;
+  chaine[1] = 0;
+  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine la flèche ^ */
 
-	p.x = pos.x + LXICO/2 + 3;
-	p.y = pos.y + LYICO/2 - 2;
-	chaine[0] = 126;
-	chaine[1] = 0;
-	DrawText(0, p, chaine, TEXTSIZELIT);	/* dessine la flche v */
+  p.x       = pos.x + LXICO / 2 + 3;
+  p.y       = pos.y + LYICO / 2 - 2;
+  chaine[0] = 126;
+  chaine[1] = 0;
+  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine la flèche v */
 
-	p.x = pos.x + LXICO/2 + 1;
-	p.y = pos.y + LYICO/4 + 5;
-	if ( reste > 99 )  reste = 99;
-	if ( reste < 10 )
-	{
-		p.x += 4;
-		chaine[0] = '0' + reste;
-		chaine[1] = 0;
-	}
-	else
-	{
-		chaine[0] = '0' + reste/10;
-		chaine[1] = '0' + reste%10;
-		chaine[2] = 0;
-	}
+  p.x = pos.x + LXICO / 2 + 1;
+  p.y = pos.y + LYICO / 4 + 5;
+  if (reste > 99)
+    reste = 99;
+  if (reste < 10)
+  {
+    p.x += 4;
+    chaine[0] = '0' + reste;
+    chaine[1] = 0;
+  }
+  else
+  {
+    chaine[0] = '0' + reste / 10;
+    chaine[1] = '0' + reste % 10;
+    chaine[2] = 0;
+  }
 
-	DrawText(0, p, chaine, TEXTSIZELIT);	/* dessine le chiffre */
+  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine le chiffre */
 }
-
 
 /* ---------- */
 /* GetEditPos */
 /* ---------- */
 
 /*
-	Donne la position d'un bouton.
+    Donne la position d'un bouton.
  */
 
-Pt GetEditPos (short x, short y)
+Pt
+GetEditPos (short x, short y)
 {
-	Pt		pos;
+  Pt pos;
 
-	if ( tediticon[y][x] == 0 )
-	{
-		pos.x = -1;
-		pos.y = -1;
-		return pos;
-	}
+  if (tediticon[y][x] == 0)
+  {
+    pos.x = -1;
+    pos.y = -1;
+    return pos;
+  }
 
-	pos.x = 20 + (LXICO/2+18)*x;
-	pos.y = 38 + (LYICO/2+10)*y;
+  pos.x = 20 + (LXICO / 2 + 18) * x;
+  pos.y = 38 + (LYICO / 2 + 10) * y;
 
-	return pos;
+  return pos;
 }
-
 
 /* ----------- */
 /* GetEditRang */
 /* ----------- */
 
 /*
-	Donne les rangs (rx;ry) du bouton cliqu par la souris.
-	Retourne 0 (false) si la souris n'est pas sur un bouton.
-	Le type vaut 0 si icne ou +/-1 si flche.
+    Donne les rangs (rx;ry) du bouton cliqué par la souris.
+    Retourne 0 (false) si la souris n'est pas sur un bouton.
+    Le type vaut 0 si icône ou +/-1 si flèche.
  */
 
-short GetEditRang (Pt pos, short *px, short *py, short *ptype)
+short
+GetEditRang (Pt pos, short * px, short * py, short * ptype)
 {
-	short		x, y;
-	Pt			pb;
+  short x, y;
+  Pt    pb;
 
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			pb = GetEditPos(x, y);
-			if ( pb.x < 0 )  continue;
+  for (y = 0; y < MAXEDITY; y++)
+  {
+    for (x = 0; x < MAXEDITX; x++)
+    {
+      pb = GetEditPos (x, y);
+      if (pb.x < 0)
+        continue;
 
-			if ( pos.x >= pb.x && pos.x <= pb.x+LXICO/2+14 &&
-				 pos.y >= pb.y && pos.y <= pb.y+LYICO/2 )
-			{
-				*px = x;
-				*py = y;
-				if ( pos.x <= pb.x+LXICO/2 )
-				{
-					*ptype = 0;			/* dans l'icne */
-				}
-				else
-				{
-					if ( teditetat[y][x] == 0 )  return 0;
-					if ( pos.y < pb.y+LYICO/4 )  *ptype = +1;	/* dans la flche suprieure */
-					else                         *ptype = -1;	/* dans la flche infrieure */
-				}
-				return 1;				/* trouv */
-			}
-		}
-	}
-	return 0;
+      if (
+        pos.x >= pb.x && pos.x <= pb.x + LXICO / 2 + 14 && pos.y >= pb.y &&
+        pos.y <= pb.y + LYICO / 2)
+      {
+        *px = x;
+        *py = y;
+        if (pos.x <= pb.x + LXICO / 2)
+        {
+          *ptype = 0; /* dans l'icône */
+        }
+        else
+        {
+          if (teditetat[y][x] == 0)
+            return 0;
+          if (pos.y < pb.y + LYICO / 4)
+            *ptype = +1; /* dans la flèche supérieure */
+          else
+            *ptype = -1; /* dans la flèche inférieure */
+        }
+        return 1; /* trouvé */
+      }
+    }
+  }
+  return 0;
 }
-
 
 /* -------------- */
 /* EditSearchIcon */
 /* -------------- */
 
 /*
-	Cherche les rangs (ry;rx) d'une icne.
-	Si l'icne n'est pas trouve, retourne 0 (false).
+    Cherche les rangs (ry;rx) d'une icône.
+    Si l'icône n'est pas trouvée, retourne 0 (false).
  */
 
-short EditSearchIcon (short icon, short *px, short *py)
+short
+EditSearchIcon (short icon, short * px, short * py)
 {
-	short		x, y;
+  short x, y;
 
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			if ( icon == tediticon[y][x] )
-			{
-				*px = x;
-				*py = y;
-				return 1;		/* trouv */
-			}
-		}
-	}
-	return 0;					/* pas trouv */
+  for (y = 0; y < MAXEDITY; y++)
+    for (x = 0; x < MAXEDITX; x++)
+      if (icon == tediticon[y][x])
+      {
+        *px = x;
+        *py = y;
+        return 1; /* trouvé */
+      }
+
+  return 0; /* pas trouvé */
 }
-
 
 /* =============== */
 /* PaletteEditOpen */
 /* =============== */
 
 /*
-	Dessine la palette d'icnes  diter.
+    Dessine la palette d'icônes à éditer.
  */
 
-void PaletteEditOpen (short palette[])
+void
+PaletteEditOpen (short palette[])
 {
-	short		i;
-	short		x, y;
-	short		*pdesc;
-	Pt			pos;
+  short   i;
+  short   x, y;
+  short * pdesc;
+  Pt      pos;
 
-	/*	Met dans les tables tedit*[] les icnes de tabpalette dans
-		l'ordre standard. */
+  /* Met dans les tables tedit*[] les icônes de tabpalette dans
+      l'ordre standard. */
 
-	pdesc = tabpalette;
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			if ( *pdesc == 0 || *pdesc == -1 )
-			{
-				tediticon[y][x] = 0;
-			}
-			else
-			{
-				tediticon[y][x] = *pdesc;
-				pdesc += 2;
-			}
-			teditetat[y][x] = 0;				/* bouton relch */
-			teditrest[y][x] = 0;
-		}
-		if ( *pdesc == -1 )  pdesc++;
-	}
+  pdesc = tabpalette;
+  for (y = 0; y < MAXEDITY; y++)
+  {
+    for (x = 0; x < MAXEDITX; x++)
+    {
+      if (*pdesc == 0 || *pdesc == -1)
+      {
+        tediticon[y][x] = 0;
+      }
+      else
+      {
+        tediticon[y][x] = *pdesc;
+        pdesc += 2;
+      }
+      teditetat[y][x] = 0; /* bouton relâché */
+      teditrest[y][x] = 0;
+    }
+    if (*pdesc == -1)
+      pdesc++;
+  }
 
-	/*	Met dans les tables tedit*[] les informations contenue dans
-		la table donne en entre. */
+  /* Met dans les tables tedit*[] les informations contenue dans
+      la table donnée en entrée. */
 
-	i = 0;
-	while ( palette[i] != 0 )
-	{
-		if ( palette[i] == -1 )
-		{
-			i ++;
-			continue;
-		}
+  i = 0;
+  while (palette[i] != 0)
+  {
+    if (palette[i] == -1)
+    {
+      i++;
+      continue;
+    }
 
-		if ( EditSearchIcon(palette[i], &x, &y) )
-		{
-			teditetat[y][x] = 1;				/* bouton press */
-			teditrest[y][x] = palette[i+1];
-		}
-		i += 2;
-	}
+    if (EditSearchIcon (palette[i], &x, &y))
+    {
+      teditetat[y][x] = 1; /* bouton pressé */
+      teditrest[y][x] = palette[i + 1];
+    }
+    i += 2;
+  }
 
-	/*	Affiche toutes les icnes. */
+  /* Affiche toutes les icônes. */
 
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			if ( tediticon[y][x] != 0 )
-			{
-				pos = GetEditPos(x, y);
-				if ( pos.x >= 0 )
-				{
-					DrawButton(pos, tediticon[y][x], teditetat[y][x]);
-					DrawEditRest(pos, teditrest[y][x], teditetat[y][x]);
-				}
-			}
-		}
-	}
+  for (y = 0; y < MAXEDITY; y++)
+    for (x = 0; x < MAXEDITX; x++)
+      if (tediticon[y][x] != 0)
+      {
+        pos = GetEditPos (x, y);
+        if (pos.x >= 0)
+        {
+          DrawButton (pos, tediticon[y][x], teditetat[y][x]);
+          DrawEditRest (pos, teditrest[y][x], teditetat[y][x]);
+        }
+      }
 }
-
 
 /* ================ */
 /* PaletteEditEvent */
 /* ================ */
 
 /*
-	Gestion d'un vnement pour diter la palette d'icnes.
-	Retourne 0 si l'vnement a t trait.
+    Gestion d'un événement pour éditer la palette d'icônes.
+    Retourne 0 si l'événement a été traité.
  */
 
-short PaletteEditEvent (short palette[], short event, Pt pos)
+short
+PaletteEditEvent (short palette[], short event, Pt pos)
 {
-	short		x, y, type;
-	Pt			pb;
+  short x, y, type;
+  Pt    pb;
 
-	if ( event != KEYCLIC )  return 1;
+  if (event != KEYCLIC)
+    return 1;
 
-	if ( !GetEditRang(pos, &x, &y, &type) )  return 1;
+  if (!GetEditRang (pos, &x, &y, &type))
+    return 1;
 
-	pb = GetEditPos(x, y);
+  pb = GetEditPos (x, y);
 
-	if ( type == 0 )							/* clic dans l'icne ? */
-	{
-		PlaySound(SOUND_CLIC, NULL);
+  if (type == 0) /* clic dans l'icône ? */
+  {
+    PlaySound (SOUND_CLIC, NULL);
 
-		teditetat[y][x] ^= 1;					/* inverse l'tat du bouton */
-		DrawButton(pb, tediticon[y][x], teditetat[y][x]);
-		if ( teditetat[y][x] == 1 && teditrest[y][x] == 0 )
-		{
-			teditrest[y][x] = 1;
-		}
-		DrawEditRest(pb, teditrest[y][x], teditetat[y][x]);
-	}
-	else										/* clic dans une flche ? */
-	{
-		teditrest[y][x] += type;				/* modifie le nombre restant */
-		if ( teditrest[y][x] <  1 )  teditrest[y][x] =  1;
-		if ( teditrest[y][x] > 99 )  teditrest[y][x] = 99;
-		DrawEditRest(pb, teditrest[y][x], teditetat[y][x]);		/* affiche le nouveau nombre */
-	}
+    teditetat[y][x] ^= 1; /* inverse l'état du bouton */
+    DrawButton (pb, tediticon[y][x], teditetat[y][x]);
+    if (teditetat[y][x] == 1 && teditrest[y][x] == 0)
+    {
+      teditrest[y][x] = 1;
+    }
+    DrawEditRest (pb, teditrest[y][x], teditetat[y][x]);
+  }
+  else /* clic dans une flèche ? */
+  {
+    teditrest[y][x] += type; /* modifie le nombre restant */
+    if (teditrest[y][x] < 1)
+      teditrest[y][x] = 1;
+    if (teditrest[y][x] > 99)
+      teditrest[y][x] = 99;
+    DrawEditRest (
+      pb, teditrest[y][x], teditetat[y][x]); /* affiche le nouveau nombre */
+  }
 
-	return 0;
+  return 0;
 }
-
 
 /* ================ */
 /* PaletteEditClose */
 /* ================ */
 
 /*
-	Fin de l'dition d'une palette d'icnes.
-	Met  jour la palette de l'utilisateur.
+    Fin de l'édition d'une palette d'icônes.
+    Met à jour la palette de l'utilisateur.
  */
 
-void PaletteEditClose (short palette[])
+void
+PaletteEditClose (short palette[])
 {
-	short		x, y;
-	short		total, nb, rest;
-	short		i = 0;
+  short x, y;
+  short total, nb, rest;
+  short i = 0;
 
-	total = 0;
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			if ( tediticon[y][x] != 0 && teditetat[y][x] == 1 )  total ++;
-		}
-	}
+  total = 0;
+  for (y = 0; y < MAXEDITY; y++)
+    for (x = 0; x < MAXEDITX; x++)
+      if (tediticon[y][x] != 0 && teditetat[y][x] == 1)
+        total++;
 
-	for ( y=0 ; y<MAXEDITY ; y++ )
-	{
-		nb = 0;
-		for ( x=0 ; x<MAXEDITX ; x++ )
-		{
-			if ( tediticon[y][x] != 0 && teditetat[y][x] == 1 )
-			{
-				palette[i++] = tediticon[y][x];
-				rest = teditrest[y][x];
-				if ( rest >= 99 )  rest = 999;	/* infini */
-				palette[i++] = rest;
+  for (y = 0; y < MAXEDITY; y++)
+  {
+    nb = 0;
+    for (x = 0; x < MAXEDITX; x++)
+    {
+      if (tediticon[y][x] != 0 && teditetat[y][x] == 1)
+      {
+        palette[i++] = tediticon[y][x];
+        rest         = teditrest[y][x];
+        if (rest >= 99)
+          rest = 999; /* infini */
+        palette[i++] = rest;
 
-				if ( total <= MAXICONY )
-				{
-					palette[i++] = -1;			/* passe toujours  la ligne si peu d'icnes */
-				}
-				else
-				{
-					nb ++;
-				}
-			}
-		}
-		if ( nb > 0 )							/* au moins une icne dans cette ligne ? */
-		{
-			palette[i++] = -1;					/* passe  la ligne suivante */
-		}
-	}
-	palette[i] = 0;
+        if (total <= MAXICONY)
+          palette[i++] = -1; /* passe toujours à la ligne si peu d'icônes */
+        else
+          nb++;
+      }
+    }
+    if (nb > 0)          /* au moins une icône dans cette ligne ? */
+      palette[i++] = -1; /* passe à la ligne suivante */
+  }
+  palette[i] = 0;
 }
-
-
-
-
 
 /* Gestion des informations dans la palette */
 /* ---------------------------------------- */
 
-
-#define INFOPOSX		0
-#define INFOPOSY		(LYIMAGE()-155)
-#define INFODIMX		67
-#define INFODIMY		58
-
-
+#define INFOPOSX 0
+#define INFOPOSY (LYIMAGE () - 155)
+#define INFODIMX 67
+#define INFODIMY 58
 
 /* ======== */
 /* InfoDraw */
 /* ======== */
 
 /*
-	Dessine les informations sur un toto.
+    Dessine les informations sur un toto.
  */
 
-void InfoDraw (short status, short force, short vision, short mechant, short magic, short cles)
+void
+InfoDraw (
+  short status, short force, short vision, short mechant, short magic,
+  short cles)
 {
-	Pixmap		pm;
-	Pixmap		pminfo = {0};
-	Rectangle	rect;
-	Pt			p1, p2, dim;
+  Pixmap    pm;
+  Pixmap    pminfo = {0};
+  Rectangle rect;
+  Pt        p1, p2, dim;
 
-	if ( status  == laststatus  &&
-		 force   == lastforce   &&
-		 vision  == lastvision  &&
-		 mechant == lastmechant &&
-		 magic   == lastmagic   &&
-		 cles    == lastcles    )   return;
+  if (
+    status == laststatus && force == lastforce && vision == lastvision &&
+    mechant == lastmechant && magic == lastmagic && cles == lastcles)
+    return;
 
-	laststatus  = status;
-	lastforce   = force;
-	lastvision  = vision;
-	lastmechant = mechant;
-	lastmagic   = magic;
-	lastcles    = cles;
+  laststatus  = status;
+  lastforce   = force;
+  lastvision  = vision;
+  lastmechant = mechant;
+  lastmagic   = magic;
+  lastcles    = cles;
 
-	if ( status == 0 )
-	{
-		rect.p1.x = INFOPOSX;
-		rect.p1.y = INFOPOSY;
-		rect.p2.x = INFOPOSX+INFODIMX;
-		rect.p2.y = INFOPOSY+INFODIMY;
-		DrawFillRect(0, rect, COLORBLANC);	/* efface l'emplacement */
-		return;
-	}
+  if (status == 0)
+  {
+    rect.p1.x = INFOPOSX;
+    rect.p1.y = INFOPOSY;
+    rect.p2.x = INFOPOSX + INFODIMX;
+    rect.p2.y = INFOPOSY + INFODIMY;
+    DrawFillRect (0, rect, COLORBLANC); /* efface l'emplacement */
+    return;
+  }
 
-	if ( mechant )
-	{
-                p1.y = 1;
-                p1.x = 1;
-                p2.y = INFOPOSY;
-                p2.x = INFOPOSX;
-                dim.y = INFODIMY;
-                dim.x = INFODIMX;
-                DrawIcon(ICO_INFO+1, p1, p2, dim);
-		return;
-	}
+  if (mechant)
+  {
+    p1.y  = 1;
+    p1.x  = 1;
+    p2.y  = INFOPOSY;
+    p2.x  = INFOPOSX;
+    dim.y = INFODIMY;
+    dim.x = INFODIMX;
+    DrawIcon (ICO_INFO + 1, p1, p2, dim);
+    return;
+  }
 
-	p1.y = LYICO;
-        p1.x = LXICO;
-	GetPixmap(&pminfo, p1, 0, 1);
+  p1.y = LYICO;
+  p1.x = LXICO;
+  GetPixmap (&pminfo, p1, 0, 1);
 
-	GetIcon(&pm, ICO_INFO, 1);
-	DuplPixel(&pm, &pminfo);			/* copie l'icne dans pminfo pour pouvoir modifier */
+  GetIcon (&pm, ICO_INFO, 1);
+  DuplPixel (
+    &pm, &pminfo); /* copie l'icône dans pminfo pour pouvoir modifier */
 
-	rect.p1.y = 10;
-	rect.p2.y = 10+4;
-	if ( force < 30 )
-	{
-		rect.p1.x = 7+(force*8)/5;
-		rect.p2.x = 55;
-		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface l'ascenseur */
-	}
-	if ( force <= 30 )
-	{
-		rect.p1.x = 61;
-		rect.p2.x = 61+4;
-		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la lumire overflow */
-	}
+  rect.p1.y = 10;
+  rect.p2.y = 10 + 4;
+  if (force < 30)
+  {
+    rect.p1.x = 7 + (force * 8) / 5;
+    rect.p2.x = 55;
+    DrawFillRect (&pminfo, rect, COLORBLANC); /* efface l'ascenseur */
+  }
+  if (force <= 30)
+  {
+    rect.p1.x = 61;
+    rect.p2.x = 61 + 4;
+    DrawFillRect (&pminfo, rect, COLORBLANC); /* efface la lumière overflow */
+  }
 
-	rect.p1.y = 23;
-	rect.p2.y = 40;
+  rect.p1.y = 23;
+  rect.p2.y = 40;
 
-	if ( vision == 0 )
-	{
-                p1.y = 62;
-                p1.x = 1;
-                p2.y = 23;
-                p2.x = 1;
-                dim.y = 40-23;
-                dim.x = 26-1;
-		CopyPixel									/* met les yeux ferms */
-		(
-			&pminfo, p1,
-			&pminfo, p2,
-			dim
-		);
-	}
+  if (vision == 0)
+  {
+    p1.y  = 62;
+    p1.x  = 1;
+    p2.y  = 23;
+    p2.x  = 1;
+    dim.y = 40 - 23;
+    dim.x = 26 - 1;
+    /* met les yeux fermés */
+    CopyPixel (&pminfo, p1, &pminfo, p2, dim);
+  }
 
-	if ( force < 5 ||
-		 vision == 0 )
-	{
-		rect.p1.x = 26;
-		rect.p2.x = 49;
-		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface le saut */
-	}
+  if (force < 5 || vision == 0)
+  {
+    rect.p1.x = 26;
+    rect.p2.x = 49;
+    DrawFillRect (&pminfo, rect, COLORBLANC); /* efface le saut */
+  }
 
-	if ( magic == 0 )
-	{
-		rect.p1.x = 49;
-		rect.p2.x = 67;
-		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface le passe-muraille */
-	}
+  if (magic == 0)
+  {
+    rect.p1.x = 49;
+    rect.p2.x = 67;
+    DrawFillRect (&pminfo, rect, COLORBLANC); /* efface le passe-muraille */
+  }
 
-	rect.p1.y = 42;
-	rect.p2.y = 54;
-	if ( cles == 0 )
-	{
-		rect.p1.x = 1;
-		rect.p2.x = 54;
-		DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl + ABC */
-	}
-	else
-	{
-		if ( (cles & (1<<0)) == 0 )
-		{
-			rect.p1.x = 28;
-			rect.p2.x = 38;
-			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl A */
-		}
-		if ( (cles & (1<<1)) == 0 )
-		{
-			rect.p1.x = 38;
-			rect.p2.x = 46;
-			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl B */
-		}
-		if ( (cles & (1<<2)) == 0 )
-		{
-			rect.p1.x = 46;
-			rect.p2.x = 54;
-			DrawFillRect(&pminfo, rect, COLORBLANC);	/* efface la cl C */
-		}
-	}
+  rect.p1.y = 42;
+  rect.p2.y = 54;
+  if (cles == 0)
+  {
+    rect.p1.x = 1;
+    rect.p2.x = 54;
+    DrawFillRect (&pminfo, rect, COLORBLANC); /* efface la clé + ABC */
+  }
+  else
+  {
+    if ((cles & (1 << 0)) == 0)
+    {
+      rect.p1.x = 28;
+      rect.p2.x = 38;
+      DrawFillRect (&pminfo, rect, COLORBLANC); /* efface la clé A */
+    }
+    if ((cles & (1 << 1)) == 0)
+    {
+      rect.p1.x = 38;
+      rect.p2.x = 46;
+      DrawFillRect (&pminfo, rect, COLORBLANC); /* efface la clé B */
+    }
+    if ((cles & (1 << 2)) == 0)
+    {
+      rect.p1.x = 46;
+      rect.p2.x = 54;
+      DrawFillRect (&pminfo, rect, COLORBLANC); /* efface la clé C */
+    }
+  }
 
-                p1.y = 1;
-                p1.x = 1;
-                p2.y = INFOPOSY;
-                p2.x = INFOPOSX;
-                dim.y = INFODIMY;
-                dim.x = INFODIMX;
-	CopyPixel								/* affiche les informations */
-	(
-		&pminfo, p1,
-		0, p2,
-		dim
-	);
+  p1.y  = 1;
+  p1.x  = 1;
+  p2.y  = INFOPOSY;
+  p2.x  = INFOPOSX;
+  dim.y = INFODIMY;
+  dim.x = INFODIMX;
+  CopyPixel /* affiche les informations */
+    (&pminfo, p1, 0, p2, dim);
 
-	GivePixmap(&pminfo);
+  GivePixmap (&pminfo);
 }
-
-
-
 
 /* =========== */
 /* PalPartieLg */
 /* =========== */
 
 /*
-	Retourne la longueur ncessaire pour sauver les variables de la partie en cours.
+    Retourne la longueur nécessaire pour sauver les variables de la partie en
+   cours.
  */
 
-int PalPartieLg (void)
+int
+PalPartieLg (void)
 {
-	return
-		sizeof(short)*MAXICONY*MAXICONX +
-		sizeof(short)*MAXICONY*MAXICONX +
-		sizeof(short)*MAXICONY +
-		sizeof(Partie);
+  return sizeof (short) * MAXICONY * MAXICONX +
+         sizeof (short) * MAXICONY * MAXICONX + sizeof (short) * MAXICONY +
+         sizeof (Partie);
 }
-
 
 /* ============== */
 /* PalPartieWrite */
 /* ============== */
 
 /*
-	Sauve les variables de la partie en cours.
+    Sauve les variables de la partie en cours.
  */
 
-short PalPartieWrite (int pos, char file)
+short
+PalPartieWrite (int pos, char file)
 {
-	short		err;
-	Partie		partie;
+  short  err;
+  Partie partie;
 
-	err = FileWrite(&ticon, pos, sizeof(short)*MAXICONY*MAXICONX, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY*MAXICONX;
+  err = FileWrite (&ticon, pos, sizeof (short) * MAXICONY * MAXICONX, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY * MAXICONX;
 
-	err = FileWrite(&trest, pos, sizeof(short)*MAXICONY*MAXICONX, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY*MAXICONX;
+  err = FileWrite (&trest, pos, sizeof (short) * MAXICONY * MAXICONX, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY * MAXICONX;
 
-	err = FileWrite(&tspal, pos, sizeof(short)*MAXICONY, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY;
+  err = FileWrite (&tspal, pos, sizeof (short) * MAXICONY, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY;
 
-	memset(&partie, 0, sizeof(Partie));
-	partie.typepress = typepress;
+  memset (&partie, 0, sizeof (Partie));
+  partie.typepress = typepress;
 
-	err = FileWrite(&partie, pos, sizeof(Partie), file);
-	return err;
+  err = FileWrite (&partie, pos, sizeof (Partie), file);
+  return err;
 }
-
 
 /* ============= */
 /* PalPartieRead */
 /* ============= */
 
 /*
-	Lit les variables de la partie en cours.
+    Lit les variables de la partie en cours.
  */
 
-short PalPartieRead (int pos, char file)
+short
+PalPartieRead (int pos, char file)
 {
-	short		err;
-	Partie		partie;
+  short  err;
+  Partie partie;
 
-	err = FileRead(&ticon, pos, sizeof(short)*MAXICONY*MAXICONX, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY*MAXICONX;
+  err = FileRead (&ticon, pos, sizeof (short) * MAXICONY * MAXICONX, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY * MAXICONX;
 
-	err = FileRead(&trest, pos, sizeof(short)*MAXICONY*MAXICONX, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY*MAXICONX;
+  err = FileRead (&trest, pos, sizeof (short) * MAXICONY * MAXICONX, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY * MAXICONX;
 
-	err = FileRead(&tspal, pos, sizeof(short)*MAXICONY, file);
-	if ( err )  return err;
-	pos += sizeof(short)*MAXICONY;
+  err = FileRead (&tspal, pos, sizeof (short) * MAXICONY, file);
+  if (err)
+    return err;
+  pos += sizeof (short) * MAXICONY;
 
-	err = FileRead(&partie, pos, sizeof(Partie), file);
-	if ( err )  return err;
+  err = FileRead (&partie, pos, sizeof (Partie), file);
+  if (err)
+    return err;
 
-	typepress = partie.typepress;
+  typepress = partie.typepress;
 
-	press = 0;
-	PaletteDraw();					/* redessine la palette d'icnes */
+  press = 0;
+  PaletteDraw (); /* redessine la palette d'icônes */
 
-	laststatus = -1;
-
-	return 0;
+  laststatus = -1;
+  return 0;
 }
-
-
