@@ -618,18 +618,30 @@ SDLEventToSmakyKey (const SDL_Event * event)
     case SDLK_F12:
       key = KEYIO;
       break;
+    case SDLK_KP_7:
+      if (g_pause || g_typejeu != 1 || g_modetelecom == 1)
+        break;
     case SDLK_LEFT:
     case SDLK_KP_4:
       key = KEYLEFT;
       break;
+    case SDLK_KP_3:
+      if (g_pause || g_typejeu != 1 || g_modetelecom == 1)
+        break;
     case SDLK_RIGHT:
     case SDLK_KP_6:
       key = KEYRIGHT;
       break;
+    case SDLK_KP_9:
+      if (g_pause || g_typejeu != 1 || g_modetelecom == 1)
+        break;
     case SDLK_UP:
     case SDLK_KP_8:
       key = KEYUP;
       break;
+    case SDLK_KP_1:
+      if (g_pause || g_typejeu != 1 || g_modetelecom == 1)
+        break;
     case SDLK_DOWN:
     case SDLK_KP_2:
       key = KEYDOWN;
