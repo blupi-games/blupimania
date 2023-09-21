@@ -5154,6 +5154,9 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
       (g_typeedit == 0 && (key == KEYSAVE || key == KEYLOAD || key == KEYIO)))
     {
       PartieDisque (key, pos); /* prend/sauve la partie en cours ... */
+      DrawArrows (0);          /* dessine les manettes de la télécommande */
+      lastkey  = 0;
+      fromClic = SDL_FALSE;
       return 1;
     }
 
