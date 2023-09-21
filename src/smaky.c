@@ -594,6 +594,7 @@ SDLEventToSmakyKey (const SDL_Event * event)
       key = KEYRETURN;
       break;
     case SDLK_PAUSE:
+    case SDLK_KP_PERIOD:
       key = KEYPAUSE;
       break;
     case SDLK_F1:
