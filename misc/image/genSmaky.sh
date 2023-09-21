@@ -2,6 +2,7 @@
 
 INPUT_DIR="$1"
 OUTPUT_DIR="$2"
+ID="$3"
 TEMP_DIR="$1/.out"
 COLOR="#00ED18"
 
@@ -19,7 +20,7 @@ fi
 
 mkdir -p "$TEMP_DIR"
 
-for img in "$INPUT_DIR"/*.image.png; do
+for img in "$INPUT_DIR"/*"$ID".image.png; do
     mogrify -path "$TEMP_DIR" -format png -fill "$COLOR" -opaque white "$img"
     img="$(basename "$img")"
     gmic -input "$TEMP_DIR/$img" blur_bloom 1,1,2,+,1,0 -output "$OUTPUT_DIR/${img/.image./.smaky.}"
