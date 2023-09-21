@@ -11,6 +11,17 @@
 
 #include "config.h"
 
+#define BM_STRINGIFY(s) #s
+#define BM_TOSTRING(s) BM_STRINGIFY (s)
+#define BM_VERSION_INT(a, b, c) (a << 16 | b << 8 | c)
+#define BM_VERSION_DOT(a, b, c) a##.##b##.##c
+#define BM_VERSION(a, b, c) BM_VERSION_DOT (a, b, c)
+#define BLUPIMANIA_VERSION \
+  BM_VERSION (BM_VERSION_MAJOR, BM_VERSION_MINOR, BM_VERSION_PATCH)
+#define BLUPIMANIA_VERSION_INT \
+  BM_VERSION_INT (BM_VERSION_MAJOR, BM_VERSION_MINOR, BM_VERSION_PATCH)
+#define BLUPIMANIA_VERSION_STR BM_TOSTRING (BLUPIMANIA_VERSION)
+
 typedef unsigned short u_short;
 
 struct arguments {
@@ -471,14 +482,3 @@ void UnloadDecor ();
 #else /* _WIN32 */
 #define countof(a) (sizeof (a) / sizeof (*a))
 #endif /* !_WIN32 */
-
-#define BM_STRINGIFY(s) #s
-#define BM_TOSTRING(s) BM_STRINGIFY (s)
-#define BM_VERSION_INT(a, b, c) (a << 16 | b << 8 | c)
-#define BM_VERSION_DOT(a, b, c) a##.##b##.##c
-#define BM_VERSION(a, b, c) BM_VERSION_DOT (a, b, c)
-#define BLUPIMANIA_VERSION \
-  BM_VERSION (BM_VERSION_MAJOR, BM_VERSION_MINOR, BM_VERSION_PATCH)
-#define BLUPIMANIA_VERSION_INT \
-  BM_VERSION_INT (BM_VERSION_MAJOR, BM_VERSION_MINOR, BM_VERSION_PATCH)
-#define BLUPIMANIA_VERSION_STR BM_TOSTRING (BLUPIMANIA_VERSION)
