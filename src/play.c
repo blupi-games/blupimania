@@ -5260,6 +5260,7 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
     if (g_stopMenu || key == KEYQUIT || key == KEYHOME || key == KEYUNDO)
     {
       int stop = 0;
+      fromClic = SDL_FALSE;
       if (g_typeedit == 1 || (stop = StopPartie (key, pos)) == KEYHOME)
       {
         if (g_typeedit)
