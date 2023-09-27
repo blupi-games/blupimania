@@ -31,17 +31,6 @@ typedef struct {
   short update; /* 1 => toujours redessiner */
 } listreg;
 
-/* -------------------------------------- */
-/* Descripteur d'une bounding box d'icône */
-/* -------------------------------------- */
-
-typedef struct {
-  char left;
-  char right;
-  char up;
-  char down;
-} bbox;
-
 /* --------------------------- */
 /* Variables globales internes */
 /* --------------------------- */
