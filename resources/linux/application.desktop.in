@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=@BM_PRODUCT_NAME@
+GenericName=Video Game
+Comment=@BM_DESCRIPTION@
+Exec=@BM_EXEC@
+StartupWMClass=@BM_EXEC@
+Icon=@BM_ICON_REF@
+Categories=Game;LogicGame;

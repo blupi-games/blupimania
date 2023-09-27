@@ -45,7 +45,7 @@ endif ()
 if (NOT USE_APPIMAGE)
   configure_file (
     "${PROJECT_SOURCE_DIR}/resources/linux/application.desktop.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/${PB_PACKAGE_NAME}.desktop"
+    "${CMAKE_CURRENT_BINARY_DIR}/${BM_PACKAGE_NAME}.desktop"
     @ONLY
   )
 endif ()
@@ -92,19 +92,19 @@ else ()
 endif ()
 file (COPY resources/data DESTINATION share/blupimania)
 file (COPY resources/image DESTINATION share/blupimania)
-#file (COPY resources/sound DESTINATION share/blupimania)
-#file (COPY resources/music DESTINATION share/blupimania)
+file (COPY resources/sound DESTINATION share/blupimania)
+file (COPY resources/music DESTINATION share/blupimania)
 #file (COPY LICENSE.all DESTINATION share/doc/blupimania)
 #file (COPY COPYING DESTINATION share/doc/blupimania)
 #file (RENAME "${CMAKE_BINARY_DIR}/share/doc/blupimania/LICENSE.all"
 #             "${CMAKE_BINARY_DIR}/share/doc/blupimania/copyright")
 
 if (BUILD_LINUX)
-  #file (COPY resources/icon/hicolor DESTINATION share/icons)
-  #file (
-  #  COPY resources/linux/${PB_PACKAGE_NAME}.appdata.xml
-  #  DESTINATION share/metainfo
-  #)
+  file (COPY resources/icon/hicolor DESTINATION share/icons)
+  file (
+    COPY resources/linux/org.blupi.${BM_PACKAGE_NAME}.appdata.xml
+    DESTINATION share/metainfo
+  )
 endif ()
 
 # Windows stuff
@@ -134,18 +134,6 @@ if ("${STATIC_BUILD}")
   set (CMAKE_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib)
 endif ()
 
-find_package (Intl REQUIRED)
-include_directories (${Intl_INCLUDE_DIRS})
-
-find_package (Iconv REQUIRED)
-include_directories (${Iconv_INCLUDE_DIRS})
-
-find_package (Argagg REQUIRED)
-include_directories (${Argagg_INCLUDE_DIRS})
-
-find_package (SDLKitchensink REQUIRED)
-include_directories (${SDLKitchensink_INCLUDE_DIRS})
-
 find_package (PkgConfig REQUIRED)
 if (NOT BUILD_JS)
   pkg_search_module (SDL2 REQUIRED sdl2)
@@ -165,13 +153,6 @@ if (${PB_HTTP_VERSION_CHECK})
 endif ()
 
 if ("${STATIC_BUILD}")
-  # Static dependencies for SDL_kitchensink
-  pkg_search_module (AVCODEC REQUIRED libavcodec)
-  pkg_search_module (AVFORMAT REQUIRED libavformat)
-  pkg_search_module (AVUTIL REQUIRED libavutil)
-  pkg_search_module (SWSCALE REQUIRED libswscale)
-  pkg_search_module (SWRESAMPLE REQUIRED libswresample)
-
   if (NOT BUILD_JS)
     pkg_search_module (PNG REQUIRED libpng)
     set (blupimania_DEPS ${blupimania_DEPS} ${PNG_STATIC_LIBRARIES})
@@ -184,11 +165,6 @@ if ("${STATIC_BUILD}")
       pkg_search_module (ALSA REQUIRED alsa)
       pkg_search_module (PULSE REQUIRED libpulse)
     endif ()
-
-    set (blupimania_DEPS ${blupimania_DEPS}
-      ${Intl_LIBRARIES}
-      ${Iconv_LIBRARIES}
-    )
   endif ()
 
   if (${PB_HTTP_VERSION_CHECK})
@@ -244,43 +220,6 @@ endif ()
 
 target_link_libraries (${blupimania_OUTPUT} PUBLIC ${blupimania_DEPS})
 
-##########
-## GetText
-##########
-
-find_package (Gettext)
-
-set (_potFile ${CMAKE_CURRENT_SOURCE_DIR}/resources/po/${PROJECT_NAME}.pot)
-
-add_custom_command (OUTPUT ${_potFile}
-  COMMAND xgettext --no-location --keyword=translate -o ${_potFile} ${sources}
-  DEPENDS ${sources}
-  COMMENT "Extract translatable messages to ${_potFile}"
-)
-
-add_custom_target (pot_file ALL ${_all}
-  DEPENDS ${_potFile}
-)
-
-gettext_create_translations (${_potFile} ALL ${po})
-
-## Put mo files to appropriate directory
-foreach (file ${_gmoFiles})
-  get_filename_component (_lang ${file} NAME_WE)
-  set (_out "share/locale/${_lang}/LC_MESSAGES")
-
-  add_custom_command (OUTPUT ${_out}/blupimania.mo
-    COMMAND ${CMAKE_COMMAND} -E copy ${file} ${_out}/blupimania.mo
-    DEPENDS translations ${file}
-  )
-
-  add_custom_target ("po-${_lang}" ALL ${_all}
-    DEPENDS ${_out}/blupimania.mo
-  )
-
-  add_dependencies (${blupimania_OUTPUT} "po-${_lang}")
-endforeach (file)
-
 #########
 # manpage
 #########
@@ -307,16 +246,16 @@ if (NOT BUILD_JS)
   #install (FILES COPYING DESTINATION share/doc/blupimania)
 
   if (BUILD_LINUX)
-    #install (DIRECTORY resources/icon/hicolor DESTINATION share/icons)
-    #install (
-    #  FILES resources/linux/${PB_PACKAGE_NAME}.appdata.xml
-    #  DESTINATION share/metainfo
-    #)
+    install (DIRECTORY resources/icon/hicolor DESTINATION share/icons)
+    install (
+      FILES resources/linux/org.blupi.${BM_PACKAGE_NAME}.appdata.xml
+      DESTINATION share/metainfo
+    )
   endif ()
 
   if (NOT USE_APPIMAGE)
     install (
-      FILES ${CMAKE_CURRENT_BINARY_DIR}/${PB_PACKAGE_NAME}.desktop
+      FILES ${CMAKE_CURRENT_BINARY_DIR}/${BM_PACKAGE_NAME}.desktop
       DESTINATION share/applications
     )
   endif ()
@@ -336,22 +275,22 @@ endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
   # set (CPACK_STRIP_FILES TRUE)
-  set (CPACK_PACKAGE_NAME ${PB_PACKAGE_NAME})
+  set (CPACK_PACKAGE_NAME ${BM_PACKAGE_NAME})
   set (CPACK_PACKAGE_VENDOR "blupi.org")
-  set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PB_DESCRIPTION})
+  set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${BM_DESCRIPTION})
   set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
   # set (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README-user.md")
-  set (CPACK_PACKAGE_FILE_NAME ${PB_PACKAGE_NAME})
+  set (CPACK_PACKAGE_FILE_NAME ${BM_PACKAGE_NAME})
   set (CPACK_PACKAGE_VERSION "${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
-  set (CPACK_PACKAGE_INSTALL_DIRECTORY ${PB_PRODUCT_NAME})
+  set (CPACK_PACKAGE_INSTALL_DIRECTORY ${BM_PRODUCT_NAME})
   set (CPACK_PACKAGE_EXECUTABLES "blupimania;Blupimania")
 
   if (USE_APPIMAGE)
     include (LinuxAppImageBuild)
     set (CMAKE_PACKAGED_OUTPUT_PREFIX ${CMAKE_INSTALL_PREFIX})
-    APPIMAGE_PACKAGE (blupimania ${PB_PACKAGE_NAME} ${PB_PRODUCT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/resources/linux" "${CMAKE_BINARY_DIR}/share" "" "" ${PB_ICON_REF} SIGN_APP)
+    APPIMAGE_PACKAGE (blupimania ${BM_PACKAGE_NAME} ${BM_PRODUCT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/resources/linux" "${CMAKE_BINARY_DIR}/share" "" "" ${BM_ICON_REF} SIGN_APP)
   elseif (MINGW)
-    set (INSTALLER_FILE_NAME "${PB_PACKAGE_NAME}-${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
+    set (INSTALLER_FILE_NAME "${BM_PACKAGE_NAME}-${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
     set (CPACK_PACKAGE_FILE_NAME "${INSTALLER_FILE_NAME}")
     set (CPACK_GENERATOR "NSIS64")
     set (CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\resources\\\\nsis\\\\installer.bmp")
@@ -388,7 +327,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
   elseif (APPLE)
     set (CPACK_GENERATOR "Bundle")
     set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/icon.icns")
-    set (CPACK_BUNDLE_NAME ${PB_PRODUCT_NAME})
+    set (CPACK_BUNDLE_NAME ${BM_PRODUCT_NAME})
     set (CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Info.plist")
     set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/Planet Blupi")
     if (SIGN_APP)

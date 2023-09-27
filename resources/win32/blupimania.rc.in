@@ -1,0 +1,25 @@
+id ICON "blupi.ico"
+
+1 VERSIONINFO
+FILEVERSION     @BM_VERSION_MAJOR@,@BM_VERSION_MINOR@,0,@BM_VERSION_PATCH@
+PRODUCTVERSION  @BM_VERSION_MAJOR@,@BM_VERSION_MINOR@,0,@BM_VERSION_PATCH@
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "Epsitec SA"
+      VALUE "FileDescription", "@BM_DESCRIPTION@"
+      VALUE "FileVersion", "@BM_VERSION_MAJOR@.@BM_VERSION_MINOR@.@BM_VERSION_PATCH@@BM_VERSION_EXTRA@"
+      VALUE "InternalName", "@BM_PACKAGE_NAME@"
+      VALUE "LegalCopyright", "Epsitec SA, Daniel Roux and Mathieu Schroeter"
+      VALUE "OriginalFilename", "@BM_PACKAGE_NAME@.exe"
+      VALUE "ProductName", "@BM_PRODUCT_NAME@"
+      VALUE "ProductVersion", "@BM_VERSION_MAJOR@.@BM_VERSION_MINOR@.@BM_VERSION_PATCH@@BM_VERSION_EXTRA@"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END
