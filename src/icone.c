@@ -35,7 +35,7 @@ typedef struct {
 /* Variables globales internes */
 /* --------------------------- */
 
-#define MAXICONDRAW 20 /* nb max d'icônes dans une image */
+#define MAXICONDRAW 30 /* nb max d'icônes dans une image */
 #define MAXREGION 40   /* nb max de régions dans une image */
 
 static Pixmap pmwork = {0}; /* pixmap temporaire de travail */
