@@ -391,17 +391,8 @@ IconDrawOne (
 void
 IconDrawAll (void)
 {
-  short i;
-
-  for (i = 0; i < MAXREGION; i++)
-  {
-    ListRegNew[i].reg.r.p1.y = 0;
-    ListRegNew[i].reg.r.p1.x = 0;
-    ListRegNew[i].reg.r.p2.y = 0;
-    ListRegNew[i].reg.r.p2.x = 0;
-    /* libère toute la table */
-    ListRegNew[i].update = 0;
-  }
+  /* libère toute la table */
+  memset (ListRegNew, 0, sizeof (ListRegNew));
 
   ListRegNew[0].reg.r.p1.y = 0;
   ListRegNew[0].reg.r.p1.x = 0;
@@ -421,10 +412,8 @@ IconDrawAll (void)
 void
 IconDrawFlush (void)
 {
-  short i;
-
-  for (i = 0; i < MAXICONDRAW; i++)
-    ListIconDrawNew[i].icon = 0; /* libère toute la table */
+  memset (
+    ListIconDrawNew, 0, sizeof (ListIconDrawNew)); /* libère toute la table */
 }
 
 /* ============ */
@@ -441,23 +430,15 @@ IconDrawFlush (void)
 void
 IconDrawOpen (void)
 {
-  short i;
+  /* table old <-- new */
+  memcpy (ListIconDrawOld, ListIconDrawNew, sizeof (ListIconDrawOld));
+  /* libère toute la table */
+  memset (ListIconDrawNew, 0, sizeof (ListIconDrawNew));
 
-  for (i = 0; i < MAXICONDRAW; i++)
-  {
-    ListIconDrawOld[i]      = ListIconDrawNew[i]; /* table old <-- new */
-    ListIconDrawNew[i].icon = 0;                  /* libère toute la table */
-  }
-
-  for (i = 0; i < MAXREGION; i++)
-  {
-    ListRegOld[i]            = ListRegNew[i]; /* table old <-- new */
-    ListRegNew[i].reg.r.p1.y = 0;
-    ListRegNew[i].reg.r.p1.x = 0;
-    ListRegNew[i].reg.r.p2.y = 0;
-    ListRegNew[i].reg.r.p2.x = 0; /* libère toute la table */
-    ListRegNew[i].update     = 0;
-  }
+  /* table old <-- new */
+  memcpy (ListRegOld, ListRegNew, sizeof (ListRegOld));
+  /* libère toute la table */
+  memset (ListRegNew, 0, sizeof (ListRegNew));
 }
 
 /* =========== */
@@ -524,24 +505,22 @@ IconDrawIfMove (listreg lrg)
   /* Cherche l'icône dans la région, seulement s'il a en a une seule. */
 
   n = 0;
-  for (i = 0; i < MAXICONDRAW; i++)
-    if (ListIconDrawNew[i].icon != 0)
-      if (IfSectRegion (ListIconDrawNew[i].bbox, lrg.reg))
-      {
-        n++;
-        if (n > 1)
-          return 1; /* dessin car plusieurs icônes dans région */
-        j = i;
-      }
+  for (i = 0; i < MAXICONDRAW && ListIconDrawNew[i].icon; i++)
+    if (IfSectRegion (ListIconDrawNew[i].bbox, lrg.reg))
+    {
+      n++;
+      if (n > 1)
+        return 1; /* dessin car plusieurs icônes dans région */
+      j = i;
+    }
 
   if (n == 0)
     return 1; /* dessin si rien trouvé */
 
   /* Cherche si l'icône était déjà là lors du dessin précédent. */
 
-  for (i = 0; i < MAXICONDRAW; i++)
+  for (i = 0; i < MAXICONDRAW && ListIconDrawOld[i].icon; i++)
     if (
-      ListIconDrawOld[i].icon != 0 &&
       ListIconDrawOld[i].icon == ListIconDrawNew[j].icon &&
       ListIconDrawOld[i].pos.x == ListIconDrawNew[j].pos.x &&
       ListIconDrawOld[i].pos.y == ListIconDrawNew[j].pos.y)
@@ -553,14 +532,13 @@ IconDrawIfMove (listreg lrg)
 
 next:
   n = 0;
-  for (i = 0; i < MAXICONDRAW; i++)
-    if (ListIconDrawOld[i].icon != 0)
-      if (IfSectRegion (ListIconDrawOld[i].bbox, lrg.reg))
-      {
-        n++;
-        if (n > 1)
-          return 1; /* dessin car plusieurs icônes avant */
-      }
+  for (i = 0; i < MAXICONDRAW && ListIconDrawOld[i].icon; i++)
+    if (IfSectRegion (ListIconDrawOld[i].bbox, lrg.reg))
+    {
+      n++;
+      if (n > 1)
+        return 1; /* dessin car plusieurs icônes avant */
+    }
 
   return 0; /* dessin superflu */
 }
@@ -613,21 +591,16 @@ IconDrawClose (short bdraw)
     CopyPixel /* met le décor de fond */
       (ppmdecor, ListRegOld[i].reg.r.p1, &pmwork, ListRegOld[i].reg.r.p1, p1);
 
-    for (j = 0; j < MAXICONDRAW; j++)
-    {
-      if (ListIconDrawNew[j].icon > 0)
+    for (j = 0; j < MAXICONDRAW && ListIconDrawNew[j].icon; j++)
+      if (IfSectRegion (ListRegOld[i].reg, ListIconDrawNew[j].bbox))
       {
-        if (IfSectRegion (ListRegOld[i].reg, ListIconDrawNew[j].bbox))
-        {
-          SuperCelHover _hover = IconDrawOne /* dessine l'icône */
-            (ListIconDrawNew[j].icon, ListIconDrawNew[j].btransp,
-             ListIconDrawNew[j].pos, ListIconDrawNew[j].posz,
-             ListIconDrawNew[j].cel, ListIconDrawNew[j].clip, &pmwork);
-          if (_hover.icon)
-            hover = _hover;
-        }
+        SuperCelHover _hover = IconDrawOne /* dessine l'icône */
+          (ListIconDrawNew[j].icon, ListIconDrawNew[j].btransp,
+           ListIconDrawNew[j].pos, ListIconDrawNew[j].posz,
+           ListIconDrawNew[j].cel, ListIconDrawNew[j].clip, &pmwork);
+        if (_hover.icon)
+          hover = _hover;
       }
-    }
 
     if (hover.icon)
     {
