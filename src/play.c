@@ -5212,9 +5212,6 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
     if (g_typejeu == 1 && fj.modetelecom == 1 && g_pause == 0 && !fromClic)
     {
-      // if ( key == KEYLEFT   )  key = KEYGOLEFT;
-      // if ( key == KEYRIGHT  )  key = KEYGORIGHT;
-
       keystatus = GetKeyStatus ();
       if (keystatus != 0)
       {
@@ -5252,8 +5249,7 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
 
     if (g_typejeu == 1 && g_pause == 0)
     {
-      if (lastkey) // && (key == KEYGOLEFT || key == KEYGORIGHT || key ==
-                   // KEYGOFRONT || key == KEYGOBACK))
+      if (lastkey)
         key = lastkey;
     }
 
@@ -5317,9 +5313,7 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
       last = g_typejeu;
       MoveScroll (fj.scroll); /* décale év. selon le toto du joueur */
       if (last != g_typejeu)  /* type de jeu changé ? */
-      {
         DrawArrows (0); /* oui -> remet les flèches/télécommande */
-      }
     }
 
     if (key == KEYPAUSE && g_typeedit == 0)
