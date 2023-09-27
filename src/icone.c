@@ -346,11 +346,8 @@ IconDrawOne (
 
   /* Redessine des éléments de décors qui doivent apparaître devant les "toto"
    */
-  for (int j = 0; j < 21 * 22; ++j)
+  for (int j = 0; list[j].icon; ++j)
   {
-    if (!list[j].icon)
-      continue;
-
     Pixmap pmicon2;
     GetIcon (&pmicon2, list[j].icon, 1);
 

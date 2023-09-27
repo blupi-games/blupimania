@@ -307,7 +307,7 @@ DecorPutInitCel (Pt cel, short icon)
 const ImageStack *
 DecorIconMask (Pt pos, short posz, Pt cel)
 {
-  static ImageStack list[21 * 22]; //[sizeof(table)/sizeof(*table)/2];
+  static ImageStack list[(MAXCELY + 1) * (MAXCELX + 2)];
   memset (list, 0, sizeof (list));
 
   short icon;
@@ -325,16 +325,17 @@ DecorIconMask (Pt pos, short posz, Pt cel)
   int i0 = cel.y > 0 ? cel.y - 1 : 0;
   int j0 = cel.x > 0 ? cel.x - 1 : 0;
 
-  for (int i = i0; i <= MAXCELY; i++, k++)
+  for (int i = i0; i <= MAXCELY; i++)
   {
     Pt ph = pv;
-    for (int j = j0; j <= MAXCELX; j++, k++)
+    for (int j = j0; j <= MAXCELX; j++)
     {
+      int superSet = -1;
+
       if (i < cel.y && j - cel.x < 1)
         continue;
       if (j < cel.x && i - cel.y < 1)
         continue;
-
       if (IfHideIcon (ph, zone))
         continue;
 
@@ -344,7 +345,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
       if (c.x < MAXCELX && c.y < MAXCELY)
         icon = pmonde->tmonde[c.y][c.x];
       else
-        icon = 0;
+        continue; //icon = 0;
 
       if (superCel.x > -1 && c.x == superCel.x && c.y == superCel.y)
       {
@@ -356,6 +357,8 @@ DecorIconMask (Pt pos, short posz, Pt cel)
         list[k].off.x += PLXICO * (ovisu.x);
         list[k].off.y += PRYICO * (ovisu.y);
         list[k].dim = dim;
+        superSet = k;
+        k++;
       }
 
       if (
@@ -380,6 +383,8 @@ DecorIconMask (Pt pos, short posz, Pt cel)
          * necessary here in orer to redraw properly the ballon part.
          */
         dim.y = 51;
+        if (superSet >= 0)
+          list[superSet].dim = dim;
       }
 
       if (
@@ -394,6 +399,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
         list[k].off.x += PLXICO * (ovisu.x);
         list[k].off.y += PRYICO * (ovisu.y);
         list[k].dim = dim;
+        k++;
       }
       else if (
         posz > 0 && /* icône en dessous du sol ? */
@@ -407,6 +413,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
         list[k].off.x += PLXICO * (ovisu.x);
         list[k].off.y += PRYICO * (ovisu.y);
         list[k].dim = dim;
+        k++;
       }
     }
   }
