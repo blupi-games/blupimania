@@ -5040,17 +5040,22 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
             g_passnice   = 0;
             g_passhole   = 0;
           }
+
           PlaySound (SOUND_MAGIE, NULL);
+
           for (max = 0; max < 10; max++)
           {
-            rect.p1.x = 0;
-            rect.p1.y = 0;
-            rect.p2.x = LXIMAGE ();
-            rect.p2.y = LYIMAGE ();
-            DrawFillRect (0, rect, COLORNOIR); /* flash */
-            for (delai = 0; delai < 20000; delai++)
-              ;
+            /* flash */
+            if (max % 2)
+              SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
+            else
+              SDL_RenderClear (g_renderer);
+            SDL_RenderPresent (g_renderer);
+            SDL_Delay (30);
           }
+
+          ChangePhase (PHASE_INIT);
+          return 1;
         }
       }
       else
