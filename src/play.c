@@ -2063,6 +2063,7 @@ DrawNumMonde (void)
 
   if (phase == PHASE_DEPLACE)
     return;
+
   DrawStatusBar (g_monde, maxmonde - 1); /* dessine la barre d'avance */
 }
 
@@ -5314,7 +5315,7 @@ PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
       last = g_typejeu;
       MoveScroll (fj.scroll); /* décale év. selon le toto du joueur */
       if (last != g_typejeu)  /* type de jeu changé ? */
-        DrawArrows (0); /* oui -> remet les flèches/télécommande */
+        DrawArrows (0);       /* oui -> remet les flèches/télécommande */
     }
 
     if (key == KEYPAUSE && g_typeedit == 0)

@@ -375,7 +375,7 @@ DrawPercent (
 /*
     Retourne le rectangle englobant une chaîne de caractères.
     N'affiche rien du tout.
-        pos			->	départ sur la ligne de base
+        pos		->	départ sur la ligne de base
         pstring		->	chaîne terminée par zéro
         size		->	taille des caractères
  */

@@ -1472,8 +1472,8 @@ InfoDraw (
   p2.x  = INFOPOSX;
   dim.y = INFODIMY;
   dim.x = INFODIMX;
-  CopyPixel /* affiche les informations */
-    (&pminfo, p1, 0, p2, dim);
+  /* affiche les informations */
+  CopyPixel (&pminfo, p1, 0, p2, dim);
 
   GivePixmap (&pminfo);
 }
