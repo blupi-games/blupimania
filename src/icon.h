@@ -9,7 +9,7 @@
 
 #define ICO_STOPOUI (128 + 76)
 #define ICO_STOPNON (128 + 77)
-#define ICO_POTMUSIQUE (128 + 78)
+#define ICO_CHAR_LITW (128 + 78)
 
 #define ICO_SOLMASK (128 + 124)
 #define ICO_SOLDALLE3 (128 + 125)

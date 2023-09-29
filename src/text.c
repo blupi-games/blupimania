@@ -147,11 +147,11 @@ static char taccent[] = {
  */
 
 void
-DrawChar (Pixmap * ppm, Pt * ppos, char c)
+DrawChar (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
 {
   Pixmap * ppmchar;
   Pixmap   pmchar;
-  Pt       src, dst, dim;
+  Pt       src, dst, dim, oDim;
   short    icon;
 
   if (c < 32)
@@ -208,11 +208,39 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c)
     GetIcon (&pmchar, ICO_CHAR_MID + icon, 1);
     ppmchar = &pmchar;
   }
-  /*src.x += ppmchar->orig.x;
-      src.y += ppmchar->orig.y;*/
+
+  oDim = dim;
+
+  /* This clipping stuff manages only necessary cases
+   * like the one for printing the percentage.
+   */
+  if (clip)
+  {
+
+    if (dst.x < clip->p1.x)
+    {
+      short diff = clip->p1.x - dst.x;
+      dim.x -= diff;
+      dst.x = clip->p1.x;
+      src.x += diff;
+    }
+    else if (dst.x + dim.x > clip->p2.x)
+      dim.x = clip->p2.x - dst.x;
+
+    if (dst.y < clip->p1.y)
+    {
+      short diff = clip->p1.y - dst.y;
+      dim.y -= diff;
+      dst.y = clip->p1.y;
+      src.y += diff;
+    }
+    else if (dst.y + dim.y > clip->p2.y)
+      dim.y = clip->p2.y - dst.y;
+  }
+
   CopyPixel (ppmchar, src, ppm, dst, dim);
 
-  (*ppos).x += dim.x;
+  (*ppos).x += oDim.x;
 }
 
 /* ---------- */
@@ -223,8 +251,8 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c)
     Dessine un caractère accentué ou autre.
  */
 
-void
-DrawAccent (Pixmap * ppm, Pt * ppos, char c)
+static void
+DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
 {
   char * paccent;
   Pt     pnext, pacc;
@@ -239,12 +267,12 @@ DrawAccent (Pixmap * ppm, Pt * ppos, char c)
         pnext = *ppos;
         pacc  = *ppos;
         DrawChar (
-          ppm, &pnext, paccent[1]); /* dessine la lettre sous l'accent */
+          ppm, &pnext, paccent[1], clip); /* dessine la lettre sous l'accent */
         if (charsize == TEXTSIZELIT)
           pacc.x += paccent[3];
         else
           pacc.x += paccent[4];
-        DrawChar (ppm, &pacc, paccent[2]); /* dessine l'accent flottant */
+        DrawChar (ppm, &pacc, paccent[2], clip); /* dessine l'accent flottant */
         *ppos = pnext;
         break;
       }
@@ -254,8 +282,8 @@ DrawAccent (Pixmap * ppm, Pt * ppos, char c)
   else
   {
     if (c == '\n')
-      c = 127;               /* petit triangle ">" */
-    DrawChar (ppm, ppos, c); /* dessine le caractère */
+      c = 127;                     /* petit triangle ">" */
+    DrawChar (ppm, ppos, c, clip); /* dessine le caractère */
   }
 }
 
@@ -286,7 +314,56 @@ DrawText (Pixmap * ppm, Pt pos, char * pstring, short size)
   }
 
   while ((c = *pstring++, c != 0))
-    DrawAccent (ppm, &pos, c); /* dessine le caractère */
+    DrawAccent (ppm, &pos, c, NULL); /* dessine le caractère */
+
+  return pos;
+}
+
+/**
+ * DrawPercent
+ *
+ * Draw a percentage with "color" inversion.
+ */
+
+Pt
+DrawPercent (
+  Pixmap * ppm, Pt pos, char * pstring, Rectangle * clipLeft,
+  Rectangle * clipRight)
+{
+  char   c;
+  Pt     pOrig = pos;
+  char * sOrig = pstring;
+  short  leftColor, rightColor;
+
+  charsize = TEXTSIZELIT;
+
+  if (IfColor ())
+  {
+    leftColor  = ICO_CHAR_LIT;
+    rightColor = ICO_CHAR_LITW;
+  }
+  else
+  {
+    leftColor  = ICO_CHAR_LITW;
+    rightColor = ICO_CHAR_LIT;
+  }
+
+  /* Draw in white (on the left) */
+  GetIcon (&pmchar1, leftColor + 0, 1);
+  GetIcon (&pmchar2, leftColor + 1, 1);
+
+  while ((c = *pstring++, c != 0))
+    DrawAccent (ppm, &pos, c, clipLeft); /* draw one char */
+
+  pos     = pOrig;
+  pstring = sOrig;
+
+  /* Draw in black (on the right) */
+  GetIcon (&pmchar1, rightColor + 0, 1);
+  GetIcon (&pmchar2, rightColor + 1, 1);
+
+  while ((c = *pstring++, c != 0))
+    DrawAccent (ppm, &pos, c, clipRight); /* draw one char */
 
   return pos;
 }
@@ -410,7 +487,7 @@ DrawParagraph (Pixmap * ppm, Rectangle rect, const char * pstring, short size)
   {
     pos.x = rect.p2.x - LgChar (126);
     pos.y = rect.p2.y - under;
-    DrawChar (ppm, &pos, 126); /* affiche petit triangle v */
+    DrawChar (ppm, &pos, 126, NULL); /* affiche petit triangle v */
   }
 }
 
@@ -500,7 +577,7 @@ EditAff (void)
   {
     if (pos.x >= chrect.p2.x - 10)
       break;
-    DrawAccent (0, &pos, pchaine[i]); /* affiche un caractère */
+    DrawAccent (0, &pos, pchaine[i], NULL); /* affiche un caractère */
   }
 
   if (begin > 0)
@@ -509,13 +586,13 @@ EditAff (void)
     rect      = chrect;
     rect.p2.x = rect.p1.x + LgChar (127);
     DrawFillRect (0, rect, COLORBLANC);
-    DrawChar (0, &pos, 96); /* met le triangle < */
+    DrawChar (0, &pos, 96, NULL); /* met le triangle < */
   }
 
   if (pchaine[i] != 0)
   {
     pos.x = chrect.p2.x - LgChar (127);
-    DrawChar (0, &pos, 127); /* met le triangle > */
+    DrawChar (0, &pos, 127, NULL); /* met le triangle > */
   }
 }
 

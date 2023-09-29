@@ -401,7 +401,10 @@ void     IconClose (void);
 #define TEXTSIZELIT 10 /* petite taille */
 #define TEXTSIZEMID 21 /* taille moyenne */
 
-Pt        DrawText (Pixmap * ppm, Pt pos, char * pstring, short size);
+Pt DrawText (Pixmap * ppm, Pt pos, char * pstring, short size);
+Pt DrawPercent (
+  Pixmap * ppm, Pt pos, char * pstring, Rectangle * clipLeft,
+  Rectangle * clipRight);
 Rectangle GetRectText (Pt pos, char * pstring, short size);
 void
 DrawParagraph (Pixmap * ppm, Rectangle rect, const char * pstring, short size);

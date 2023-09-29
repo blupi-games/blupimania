@@ -1919,7 +1919,7 @@ void
 DrawStatusBar (short avance, short max)
 {
   short     pos;
-  Rectangle rect, part;
+  Rectangle rect, partLeft, partRight;
   Pt        pgra;
   char      lcolor, rcolor;
   char      chaine[6];
@@ -1947,13 +1947,14 @@ DrawStatusBar (short avance, short max)
     rcolor = COLORBLANC;
   }
 
-  part      = rect;
-  part.p2.x = part.p1.x + ((part.p2.x - part.p1.x) * pos) / 100;
-  DrawFillRect (0, part, lcolor); /* dessine le rectangle gauche */
+  partLeft      = rect;
+  partLeft.p2.x = partLeft.p1.x + ((partLeft.p2.x - partLeft.p1.x) * pos) / 100;
+  DrawFillRect (0, partLeft, lcolor); /* dessine le rectangle gauche */
 
-  part.p1.x = part.p2.x;
-  part.p2.x = rect.p2.x;
-  DrawFillRect (0, part, rcolor); /* dessine le rectangle droite */
+  partRight      = partLeft;
+  partRight.p1.x = partRight.p2.x;
+  partRight.p2.x = rect.p2.x;
+  DrawFillRect (0, partRight, rcolor); /* dessine le rectangle droite */
 
   pgra.x = (rect.p2.x + rect.p1.x) / 2;
   pgra.y = rect.p1.y + TEXTSIZELIT + 1;
@@ -1986,7 +1987,7 @@ DrawStatusBar (short avance, short max)
     }
   }
 
-  DrawText (0, pgra, chaine, TEXTSIZELIT);
+  DrawPercent (0, pgra, chaine, &partLeft, &partRight);
 }
 
 /* --------------- */
