@@ -4971,13 +4971,12 @@ PlayInit (int argc, char * argv[])
  */
 
 static short
-PlayEvent (const SDL_Event * event, int key, Pt pos, SDL_bool next)
+PlayEvent (int key, Pt pos, SDL_bool next)
 {
   char      ev;
   Pt        ovisu;
   short     term = 1, max, delai, last;
   KeyStatus keystatus;
-  Rectangle rect;
 
   static char * pass[] = {"petitblupi",  "enigmeblupi", "totalblupi",
                           "gentilblupi", "sauteblupi",  "megablupi"};
@@ -5620,7 +5619,7 @@ main (int argc, char * argv[])
 
     Render ();
 
-    err = PlayEvent (&event, key, g_lastmouse, next); /* fait évoluer le jeu */
+    err = PlayEvent (key, g_lastmouse, next); /* fait évoluer le jeu */
     if (err == 2)
       break; /* quitte si terminé */
     if (event.type == SDL_QUIT)
