@@ -162,14 +162,12 @@ PutRegion (listreg * listregion, Reg region, short update)
       listregion[i].update = update;
       return 0;
     }
-    else
+
+    if (IfSectRegion (*pr, clip))
     {
-      if (IfSectRegion (*pr, clip))
-      {
-        *pr = OrRegion (*pr, clip); /* agrandit la région existante */
-        listregion[i].update |= update;
-        return 0;
-      }
+      *pr = OrRegion (*pr, clip); /* agrandit la région existante */
+      listregion[i].update |= update;
+      return 0;
     }
   }
   return 1; /* erreur, plus de place libre */
