@@ -1734,10 +1734,10 @@ DrawArrows (char mode)
 
   if (g_typeedit)
   {
-    rect.p1.x = 26;
-    rect.p1.y = LYIMAGE () - 1 - 28;
+    rect.p1.x = 26 - 1;
+    rect.p1.y = LYIMAGE () - 1 - 28 - 2;
     rect.p2.x = 26 + 36;
-    rect.p2.y = LYIMAGE () - 1 - 28 + 18;
+    rect.p2.y = LYIMAGE () - 1 - 28 + 18 + 2;
     DrawFillRect (0, rect, COLORBLANC); /* efface pause + disquette */
   }
 }
