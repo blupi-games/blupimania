@@ -136,15 +136,28 @@ endif ()
 
 find_package (PkgConfig REQUIRED)
 if (NOT BUILD_JS)
-  pkg_search_module (SDL2 REQUIRED sdl2)
-  include_directories (${SDL2_INCLUDE_DIRS})
-  set (blupimania_DEPS ${blupimania_DEPS} ${SDL2_STATIC_LIBRARIES})
-  pkg_search_module (SDL2_IMAGE REQUIRED SDL2_image)
-  include_directories (${SDL2_IMAGE_INCLUDE_DIRS})
-  set (blupimania_DEPS ${blupimania_DEPS} ${SDL2_IMAGE_STATIC_LIBRARIES})
-  pkg_search_module (SDL2_MIXER REQUIRED SDL2_mixer)
-  include_directories (${SDL2_MIXER_INCLUDE_DIRS})
-  set (blupimania_DEPS ${blupimania_DEPS} ${SDL2_MIXER_STATIC_LIBRARIES})
+  set (SDL2_DIR       "${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2")
+  set (SDL2_image_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2_image")
+  set (SDL2_mixer_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2_mixer")
+
+  if ("${STATIC_BUILD}")
+    find_package (SDL2 REQUIRED NO_DEFAULT_PATH)
+    include_directories (${SDL2_INCLUDE_DIRS})
+    set (blupimania_DEPS ${blupimania_DEPS} ${SDL2_STATIC_LIBRARIES})
+    find_package (SDL2_image REQUIRED NO_DEFAULT_PATH)
+    include_directories (${SDL2_IMAGE_INCLUDE_DIRS})
+    set (blupimania_DEPS ${blupimania_DEPS} SDL2_image::SDL2_image-static)
+    find_package (SDL2_mixer REQUIRED NO_DEFAULT_PATH)
+    include_directories (${SDL2_MIXER_INCLUDE_DIRS})
+    set (blupimania_DEPS ${blupimania_DEPS} SDL2_mixer::SDL2_mixer-static)
+  else ()
+    find_package (SDL2 REQUIRED)
+    include_directories (${SDL2_INCLUDE_DIRS})
+    find_package (SDL2_image REQUIRED)
+    include_directories (${SDL2_IMAGE_INCLUDE_DIRS})
+    find_package (SDL2_mixer REQUIRED)
+    include_directories (${SDL2_MIXER_INCLUDE_DIRS})
+  endif ()
 endif ()
 
 if (${PB_HTTP_VERSION_CHECK})
@@ -179,15 +192,6 @@ endif ()
 add_executable (${blupimania_OUTPUT} ${sources})
 
 if ("${STATIC_BUILD}")
-  set (blupimania_DEPS ${blupimania_DEPS}
-    ${SDLKitchensink_STATIC_LIBRARIES}
-    ${AVCODEC_STATIC_LIBRARIES}
-    ${AVFORMAT_STATIC_LIBRARIES}
-    ${AVUTIL_STATIC_LIBRARIES}
-    ${SWSCALE_STATIC_LIBRARIES}
-    ${SWRESAMPLE_STATIC_LIBRARIES}
-  )
-
   if (${PB_HTTP_VERSION_CHECK})
     list (APPEND blupimania_DEPS
       ${CURL_STATIC_LIBRARIES}
@@ -200,6 +204,13 @@ if ("${STATIC_BUILD}")
       ${PULSE_STATIC_LIBRARIES} -lrt
     )
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${CMAKE_INSTALL_PREFIX}/lib/pulseaudio")
+  endif ()
+
+  if (BUILD_WINDOWS)
+    # Missing SDL2 static dependencies
+    list (APPEND blupimania_DEPS
+      -lwinmm -limm32 -lsetupapi -lversion
+    )
   endif ()
 else ()
   set (blupimania_DEPS
@@ -224,8 +235,8 @@ target_link_libraries (${blupimania_OUTPUT} PUBLIC ${blupimania_DEPS})
 # manpage
 #########
 
-#add_manpage_target ()
-#manpage(${PROJECT_NAME} 6)
+add_manpage_target ()
+manpage(${PROJECT_NAME} 6)
 
 ##############
 # Installation
@@ -242,8 +253,8 @@ if (NOT BUILD_JS)
   install (DIRECTORY resources/image DESTINATION share/blupimania)
   install (DIRECTORY resources/sound DESTINATION share/blupimania)
   install (DIRECTORY resources/music DESTINATION share/blupimania)
-  #install (FILES LICENSE.all DESTINATION share/doc/blupimania RENAME copyright)
-  #install (FILES COPYING DESTINATION share/doc/blupimania)
+  install (FILES LICENSE.all DESTINATION share/doc/blupimania RENAME copyright)
+  install (FILES COPYING DESTINATION share/doc/blupimania)
 
   if (BUILD_LINUX)
     install (DIRECTORY resources/icon/hicolor DESTINATION share/icons)
@@ -332,6 +343,9 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
     set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/Planet Blupi")
     if (SIGN_APP)
       set (CPACK_BUNDLE_APPLE_CERT_APP "Developer ID Application: Mathieu Schroeter")
+      set (CPACK_BUNDLE_APPLE_CODESIGN_PARAMETER "--deep -f --options runtime --timestamp")
+      set (CPACK_BUNDLE_APPLE_CODESIGN_FILES "/Contents/Resources/bin/blupimania")
+      set (CPACK_APPLE_BUNDLE_ID "blupimania")
     endif ()
     set (CPACK_PACKAGE_FILE_NAME "blupimania-${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
 
