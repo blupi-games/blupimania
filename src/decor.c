@@ -1222,8 +1222,9 @@ SuperCelClip (Pt * ppos, Pt * pdim)
 void
 SuperCelSet (SDL_bool invalid)
 {
-  Pt  src, dst, dim;
-  Reg rg;
+  Pt    src, dst, dim;
+  Reg   rg;
+  short icon;
 
   g_superInvalid = invalid;
 
@@ -1246,8 +1247,13 @@ SuperCelSet (SDL_bool invalid)
   rg.r.p1.y = superpos.y;
   rg.r.p2.x = superpos.x + LXICO;
   rg.r.p2.y = superpos.y + LYICO;
-  IconDrawPut (DecorGetCel (supercel), 0, superpos, 0, supercel, rg);
-  IconDrawUpdate (rg); /* faudra redessiner cette partie */
+
+  icon = DecorGetCel (supercel);
+  if (icon >= 0)
+  {
+    IconDrawPut (icon, 0, superpos, 0, supercel, rg);
+    IconDrawUpdate (rg); /* faudra redessiner cette partie */
+  }
 }
 
 /* ------------- */
@@ -1261,8 +1267,9 @@ SuperCelSet (SDL_bool invalid)
 void
 SuperCelClear (void)
 {
-  Pt  dst, dim;
-  Reg rg;
+  Pt    dst, dim;
+  Reg   rg;
+  short icon;
 
   if (superpos.x == -1 && superpos.y == -1)
     return;
@@ -1276,8 +1283,13 @@ SuperCelClear (void)
   rg.r.p1.y = superpos.y;
   rg.r.p2.x = superpos.x + LXICO;
   rg.r.p2.y = superpos.y + LYICO;
-  IconDrawPut (DecorGetCel (supercel), 0, superpos, 0, supercel, rg);
-  IconDrawUpdate (rg); /* faudra redessiner cette partie */
+
+  icon = DecorGetCel (supercel);
+  if (icon >= 0)
+  {
+    IconDrawPut (icon, 0, superpos, 0, supercel, rg);
+    IconDrawUpdate (rg); /* faudra redessiner cette partie */
+  }
 }
 
 /* ============= */
