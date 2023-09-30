@@ -2078,7 +2078,7 @@ DrawNumMonde (void)
 void
 TrackingStatusBar (Pt pos)
 {
-  Rectangle rect;
+  Rectangle rect     = {0};
   short     newmonde = g_monde;
 
   RectStatusBar (&rect);

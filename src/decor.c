@@ -1766,7 +1766,7 @@ GetIconCaisseSSol (Pt cel)
 void
 DecorModif (Pt cel, short newicon)
 {
-  short  icon;
+  short  icon       = 0;
   Pixmap pmnewdecor = {0};
   Pixmap pmmask     = {0};
   Pixmap pmissol;

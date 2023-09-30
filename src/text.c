@@ -152,7 +152,7 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
   Pixmap * ppmchar;
   Pixmap   pmchar;
   Pt       src, dst, dim, oDim;
-  short    icon;
+  short    icon = 0;
 
   if (c < 32)
     c = 32;

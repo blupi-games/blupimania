@@ -1625,7 +1625,7 @@ SpecAction (short i, short obstacle, Pt testcel)
 {
   Action orientation, nextaction;
   Pt     cel, cel2;
-  short  icon, rang;
+  short  icon, rang = 0;
 
   orientation = GetOrientation (toto[i].action);
 
