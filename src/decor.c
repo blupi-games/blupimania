@@ -1678,6 +1678,9 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   if (outil == ICO_OUTIL_PORTE) /* porte ? */
   {
     init = DecorGetCel (cel);
+    if (init < 0)
+      goto termine;
+
     MurBuild (cel, 1); /* met une barrière (modifie murs alentours) */
     DecorModif (cel, init);
     con   = MurGetConnex (cel);
