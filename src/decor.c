@@ -345,7 +345,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
       if (c.x < MAXCELX && c.y < MAXCELY)
         icon = pmonde->tmonde[c.y][c.x];
       else
-        continue; //icon = 0;
+        continue; // icon = 0;
 
       if (superCel.x > -1 && c.x == superCel.x && c.y == superCel.y)
       {
@@ -357,7 +357,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
         list[k].off.x += PLXICO * (ovisu.x);
         list[k].off.y += PRYICO * (ovisu.y);
         list[k].dim = dim;
-        superSet = k;
+        superSet    = k;
         k++;
       }
 
