@@ -18,7 +18,7 @@ set (BM_VERSION_EXTRA "")
 set (BM_PRODUCT_NAME "Blupimania")
 set (BM_PACKAGE_NAME "blupimania")
 set (BM_EXEC         "blupimania")
-set (BM_ICON_REF     "blupi")
+set (BM_ICON_REF     "blupimania")
 set (BM_DESCRIPTION "Blupimania - A delirious spell-binding game")
 
 option (BM_HTTP_VERSION_CHECK "Run a version check over HTTP (with CURL)" OFF)
