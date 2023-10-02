@@ -4826,7 +4826,7 @@ MusicBackground (void)
   short * ptable = tmusic;
   short   sound;
 
-  if (musique == 0 || !IfPlayReady ())
+  if (musique == 0)
     return;
 
   for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)

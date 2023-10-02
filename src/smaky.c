@@ -269,10 +269,7 @@ MusicStoppedOnDemand (void)
 void
 PlayNoiseVolume (short volume)
 {
-  if (volume == 0)
-    soundon = 0;
-  else
-    soundon = 1;
+  soundon       = volume == 0 ? 0 : 1;
   g_soundVolume = volume * 10;
 }
 
@@ -289,22 +286,6 @@ PlayMusicVolume (short volume)
 {
   g_musicVolume = volume * 10;
   Mix_VolumeMusic (g_musicVolume);
-}
-
-/* =========== */
-/* IfPlayReady */
-/* =========== */
-
-/*
-    Test s'il est possible de donner un nouveau son à entendre.
-    Si oui, retourne 1 (true).
- */
-
-short
-IfPlayReady (void)
-{
-  /*if ( filsson == 0 )*/ return 1;
-  return 0;
 }
 
 /* ============= */
