@@ -16,35 +16,6 @@
 #include "blupimania.h"
 #include <SDL2/SDL_mixer.h>
 
-#define GCTEXT          \
-  {                     \
-    'N', 'E' + 0x80, 11 \
-  } /* NEF11 */
-
-/* ---------------------------- */
-/* Constantes globales internes */
-/* ---------------------------- */
-
-#define MEMBW 820000       /* mémoire nécessaire pour noir-blanc */
-#define MEMCOLOR 2048000   /* mémoire nécessaire pour couleur */
-#define MEMRUNBW 273000    /* mémoire nécessaire pour variables */
-#define MEMRUNCOLOR 385000 /* mémoire nécessaire pour variables */
-#define MEMAUDIO 200000    /* mémoire nécessaire pour audio */
-#define MEMBRUIT 390000    /* mémoire nécessaire pour BLUPIX01.AUDIO */
-#define MEMMUSIC 290000    /* mémoire nécessaire pour BLUPIX02.AUDIO */
-
-#define KSHIFT (1 << 5) /* valeur à ajouter si SHIFT */
-
-/* ----------------------------- */
-/* Structure d'une image chargée */
-/* ----------------------------- */
-
-typedef struct {
-  void * head; /* pointe l'en-tête */
-  char * clut; /* pointe la clut */
-  char * data; /* pointe l'image codée */
-} ImageSmaky;
-
 /* --------------------------- */
 /* Variables globales internes */
 /* --------------------------- */
@@ -113,7 +84,6 @@ static const SDL_Color g_colorsSmaky100[] = {
 /* --------------------------- */
 
 const SDL_Color * g_colors;
-
 const SDL_Color * g_colorsTheme[2] = {g_colorsDOS, g_colorsSmaky100};
 
 /* ========= */
@@ -146,9 +116,7 @@ InitRandomEx (short g, short min, short max, char * pex)
   short i;
 
   for (i = 0; i < (max - min); i++)
-  {
     pex[i] = 0; /* met tout le tableau à zéro */
-  }
 }
 
 /* =========== */
@@ -200,14 +168,8 @@ GetRandomEx (short g, short min, short max, char * pex)
 void
 StartRandom (short g, short mode)
 {
-  if (mode == 0)
-  {
-    nextrand[g] = 33554393; /* grand nombre premier */
-  }
-  else
-  {
-    nextrand[g] = time (NULL);
-  }
+  /* grand nombre premier ou l'heure */
+  nextrand[g] = mode == 0 ? 33554393 : time (NULL);
 }
 
 /* ========== */
