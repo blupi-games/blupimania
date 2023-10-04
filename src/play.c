@@ -5177,16 +5177,18 @@ PlayEvent (int key, Pt pos, SDL_bool next)
 
     if (phase == PHASE_INIT && !!g_updateVersion[0])
     {
-      Pt dest = {POSYDRAW + DIMYDRAW - 13, POSXDRAW};
+      static SDL_bool clear = SDL_FALSE;
+      Pt              dest  = {POSYDRAW + DIMYDRAW - 13, POSXDRAW};
 
-      if (g_updateBlinking++ % 80 < 40)
+      if (g_updateBlinking % 80 < 40)
       {
         Pt pos = dest;
         pos.x += 5;
         pos.y += 10;
         DrawUpdate (g_updateVersion, pos);
+        clear = SDL_TRUE;
       }
-      else
+      else if (clear)
       {
         Pixmap pixmap = {0};
         int    image  = ConvPhaseToNumImage (phase);
@@ -5197,7 +5199,10 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         Pt dim = {13, 400};
         CopyPixel (&pixmap, dest, 0, dest, dim);
         GivePixmap (&pixmap);
+        clear = SDL_FALSE;
       }
+
+      g_updateBlinking++;
     }
 
     if (
