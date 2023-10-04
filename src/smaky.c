@@ -1942,6 +1942,14 @@ CloseMachine (void)
 {
   UnloadIcon ();
   UnloadSounds ();
+
+  if (g_renderer)
+    SDL_DestroyRenderer (g_renderer);
+
+  if (g_window)
+    SDL_DestroyWindow (g_window);
+
+  SDL_Quit ();
 }
 
 /* =============== */
