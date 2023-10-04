@@ -12,6 +12,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef USE_CURL
+#include <curl/curl.h>
+#endif /* USE_CURL */
+
 #include "actions.h"
 #include "blupimania.h"
 #include "icon.h"
@@ -21,7 +25,20 @@
 #endif
 
 static struct arguments arguments;
-int                     g_settingsOverload;
+
+int                      g_settingsOverload;
+static volatile SDL_bool g_updateAbort       = SDL_FALSE;
+static SDL_Thread *      g_updateThread      = NULL;
+static char              g_updateVersion[16] = {0};
+static int               g_updateBlinking    = 0;
+
+#ifdef USE_CURL
+struct url_data {
+  CURLcode status;
+  char *   buffer;
+  size_t   size;
+};
+#endif /* USE_CURL */
 
 /* Fichiers sur disque */
 /* ------------------- */
@@ -2065,6 +2082,20 @@ DrawNumMonde (void)
     return;
 
   DrawStatusBar (g_monde, maxmonde - 1); /* dessine la barre d'avance */
+}
+
+static void
+DrawUpdate (const char * version, Pt pos)
+{
+  char                text[256] = {0};
+  static const char * format[3] = {
+    "New version available for download on blupi.org (v%s)",
+    "Une nouvelle version est disponible sur blupi.org (v%s)",
+    "Neue Version (v%s) auf blupi.org zum Download verf\247gbar"};
+
+  snprintf (text, sizeof (text), format[g_langue], version);
+
+  DrawText (0, pos, text, TEXTSIZELIT);
 }
 
 /* ----------------- */
@@ -4915,6 +4946,83 @@ UnloadTextures ()
   GivePixmap (&pmtemp);
 }
 
+#ifdef USE_CURL
+static size_t
+updateCallback (void * ptr, size_t size, size_t nmemb, void * data)
+{
+  size_t            realsize = size * nmemb;
+  struct url_data * mem      = data;
+
+  mem->buffer = (char *) (realloc (mem->buffer, mem->size + realsize + 1));
+  if (mem->buffer)
+  {
+    memcpy (&(mem->buffer[mem->size]), ptr, realsize);
+    mem->size += realsize;
+    mem->buffer[mem->size] = 0;
+  }
+
+  return realsize;
+}
+
+static int
+progressCallback (
+  void * userData, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+  return g_updateAbort ? 1 : 0;
+}
+#endif /* USE_CURL */
+
+#ifdef USE_CURL
+static int
+CheckForUpdates (void * data)
+{
+  struct url_data chunk;
+
+  chunk.buffer = NULL; /* we expect realloc(NULL, size) to work */
+  chunk.size   = 0;    /* no data at this point */
+  chunk.status = CURLE_FAILED_INIT;
+
+  CURL * curl = curl_easy_init ();
+  if (!curl)
+    return 0;
+
+  curl_easy_setopt (curl, CURLOPT_NOSIGNAL, 1);
+  curl_easy_setopt (curl, CURLOPT_FAILONERROR, 1);
+  curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
+  curl_easy_setopt (curl, CURLOPT_TIMEOUT, 20);
+  curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, 5);
+
+  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, updateCallback);
+
+  curl_easy_setopt (curl, CURLOPT_URL, "http://blupi.org/update/mania.txt");
+  curl_easy_setopt (curl, CURLOPT_WRITEDATA, (void *) &chunk);
+
+  curl_easy_setopt (curl, CURLOPT_NOPROGRESS, 0);
+  curl_easy_setopt (curl, CURLOPT_PROGRESSDATA, NULL);
+  curl_easy_setopt (curl, CURLOPT_PROGRESSFUNCTION, progressCallback);
+
+  chunk.status = curl_easy_perform (curl);
+
+  if (chunk.status)
+  {
+    const char * err = curl_easy_strerror (chunk.status);
+    SDL_LogError (
+      SDL_LOG_CATEGORY_APPLICATION, "Check for updates, error: %s", err);
+  }
+  else
+  {
+    char * res = strndup (chunk.buffer, chunk.size);
+    PushUserEvent (CHECKUPDATE, res);
+  }
+
+  if (chunk.buffer)
+    free (chunk.buffer);
+
+  curl_easy_cleanup (curl);
+  return 0;
+}
+#endif /* USE_CURL */
+
 /* ======== */
 /* PlayInit */
 /* ======== */
@@ -4956,6 +5064,10 @@ PlayInit (int argc, char * argv[])
   MondeVide ();
 
   BlackScreen (); /* efface l'écran */
+
+#ifdef USE_CURL
+  g_updateThread = SDL_CreateThread (CheckForUpdates, "CheckForUpdates", NULL);
+#endif /* USE_CURL */
 
   return ChangePhase (PHASE_GENERIC); /* première phase du jeu */
 }
@@ -5060,6 +5172,31 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       else
       {
         passindex = 0;
+      }
+    }
+
+    if (phase == PHASE_INIT && !!g_updateVersion[0])
+    {
+      Pt dest = {POSYDRAW + DIMYDRAW - 13, POSXDRAW};
+
+      if (g_updateBlinking++ % 80 < 40)
+      {
+        Pt pos = dest;
+        pos.x += 5;
+        pos.y += 10;
+        DrawUpdate (g_updateVersion, pos);
+      }
+      else
+      {
+        Pixmap pixmap = {0};
+        int    image  = ConvPhaseToNumImage (phase);
+        int    err    = GetImage (&pixmap, image);
+        if (err)
+          FatalBreak (err);
+
+        Pt dim = {13, 400};
+        CopyPixel (&pixmap, dest, 0, dest, dim);
+        GivePixmap (&pixmap);
       }
     }
 
@@ -5432,9 +5569,18 @@ PlayRelease (void)
   pmimageNum = -1;
 
   UnloadTextures ();
-  DecorClose ();   /* fermeture des décors */
-  IconClose ();    /* fermeture des icônes */
-  MoveClose ();    /* fermeture des objets en mouvement */
+  DecorClose (); /* fermeture des décors */
+  IconClose ();  /* fermeture des icônes */
+  MoveClose ();  /* fermeture des objets en mouvement */
+
+  if (g_updateThread)
+  {
+    g_updateAbort = SDL_TRUE;
+
+    int threadReturnValue;
+    SDL_WaitThread (g_updateThread, &threadReturnValue);
+  }
+
   CloseMachine (); /* fermeture générale */
 }
 
@@ -5578,6 +5724,30 @@ main (int argc, char * argv[])
       SDL_MouseMotionEvent * _event = (SDL_MouseMotionEvent *) &event;
       g_lastmouse.x                 = _event->x;
       g_lastmouse.y                 = _event->y;
+      continue;
+    }
+
+    if (event.type == SDL_USEREVENT && event.user.code == CHECKUPDATE)
+    {
+      int          res;
+      int          v1, v2, v3;
+      const char * update = event.user.data1;
+
+      if (!update)
+        continue;
+
+      res = sscanf (update, "%d.%d.%d", &v1, &v2, &v3);
+      if (res != 3)
+        continue;
+
+      if (
+        (!!BM_VERSION_EXTRA[0] &&
+         BM_VERSION_INT (v1, v2, v3) >= BLUPIMANIA_VERSION_INT) ||
+        BM_VERSION_INT (v1, v2, v3) > BLUPIMANIA_VERSION_INT)
+        snprintf (
+          g_updateVersion, sizeof (g_updateVersion), "%d.%d.%d", v1, v2, v3);
+
+      free ((char *) update);
       continue;
     }
 

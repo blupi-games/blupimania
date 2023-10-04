@@ -149,9 +149,10 @@ extern int g_settingsOverload;
 #define MAXTOTO (10 + 2) /* nb max de toto animés simultanés */
 
 typedef enum {
-  FRAME_TICK = 1,
-  MUSIC_STOP = 2,
-  RESET      = 3,
+  FRAME_TICK  = 1,
+  MUSIC_STOP  = 2,
+  RESET       = 3,
+  CHECKUPDATE = 4
 } UserEvent;
 
 /* --------- */
