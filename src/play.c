@@ -5182,11 +5182,14 @@ PlayEvent (int key, Pt pos, SDL_bool next)
 
       if (g_updateBlinking % 80 < 40)
       {
-        Pt pos = dest;
-        pos.x += 5;
-        pos.y += 10;
-        DrawUpdate (g_updateVersion, pos);
-        clear = SDL_TRUE;
+        if (!clear)
+        {
+          Pt pos = dest;
+          pos.x += 5;
+          pos.y += 10;
+          DrawUpdate (g_updateVersion, pos);
+          clear = SDL_TRUE;
+        }
       }
       else if (clear)
       {
