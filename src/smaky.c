@@ -1899,6 +1899,19 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
     return EXIT_FAILURE;
   }
 
+#ifdef __linux__
+  {
+    char iconFile[4096] = {0};
+    snprintf (
+      iconFile, sizeof (iconFile),
+      "%s../share/icons/hicolor/256x256/apps/blupimania.png",
+      SDL_GetBasePath ());
+    SDL_Surface * icon = IMG_Load (iconFile);
+    SDL_SetWindowIcon (g_window, icon);
+    SDL_FreeSurface (icon);
+  }
+#endif /* __linux__ */
+
   g_renderer = SDL_CreateRenderer (
     g_window, -1,
     g_rendererType | SDL_RENDERER_TARGETTEXTURE /*| SDL_RENDERER_SOFTWARE*/);
