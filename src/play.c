@@ -47,13 +47,13 @@ struct url_data {
 /*
     BLUPIX?.DAT		banque	contenu
     ---------------------------------------------------------------------
-    1..8			A..H	énigmes niveaux 1A, 1T, 2A, 2T, ... 4T
-    E..H			I..L	énigmes niveaux 5 (privé) pour les 4 joueurs
-    I..P			A..H	énigmes mode démo
-    W						parties sauvées (démo)
-    X						joueurs (démo)
-    Y						parties sauvées (normal)
-    Z						joueurs (normal)
+    1..8		A..H	énigmes niveaux 1A, 1T, 2A, 2T, ... 4T
+    E..H		I..L	énigmes niveaux 5 (privé) pour les 4 joueurs
+    I..P		A..H	énigmes mode démo
+    W				parties sauvées (démo)
+    X				joueurs (démo)
+    Y				parties sauvées (normal)
+    Z				joueurs (normal)
  */
 
 /* ------------- */
