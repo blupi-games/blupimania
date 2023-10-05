@@ -24,6 +24,7 @@
 #define DEMONC 1 /* si version demo -> pas de construction */
 #endif
 
+static SDL_bool         g_standby = SDL_FALSE;
 static struct arguments arguments;
 
 int                      g_settingsOverload;
@@ -5759,9 +5760,32 @@ main (int argc, char * argv[])
       continue;
     }
 
+    if (event.type == SDL_WINDOWEVENT)
+    {
+#ifndef DEBUG
+      static const char * stop[3] = {
+        "Blupimania -- stop", "Blupimania -- arrêt", "Blupimania -- Halt"};
+
+      switch (event.window.event)
+      {
+      case SDL_WINDOWEVENT_FOCUS_GAINED:
+        g_standby = SDL_FALSE;
+        SDL_SetWindowTitle (g_window, "Blupimania");
+        MusicResume ();
+        continue;
+
+      case SDL_WINDOWEVENT_FOCUS_LOST:
+        g_standby = SDL_TRUE;
+        SDL_SetWindowTitle (g_window, stop[g_langue]);
+        MusicPause ();
+        continue;
+      }
+#endif /* !DEBUG */
+    }
+
     if (
       event.type == SDL_USEREVENT && event.user.code == FRAME_TICK &&
-      !(skip++ % g_timerSkip))
+      !(skip++ % g_timerSkip) && !g_standby)
     {
       next        = SDL_TRUE;
       key         = nextKeys[0];
@@ -5776,7 +5800,7 @@ main (int argc, char * argv[])
         MusicStart (4);
       continue;
     }
-    else
+    else if (!g_standby)
     {
       key = SDLEventToSmakyKey (&event);
       /* Ensure that the action is done on the next (game) frame */

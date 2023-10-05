@@ -426,6 +426,8 @@ short PrintScreen (Pt p1, Pt p2);
 
 void     MusicStart (short song);
 void     MusicStop (void);
+void     MusicPause (void);
+void     MusicResume (void);
 SDL_bool MusicStoppedOnDemand (void);
 void     PlayNoiseVolume (short volume);
 void     PlayMusicVolume (short volume);

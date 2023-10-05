@@ -252,6 +252,24 @@ MusicStop (void)
   g_musicStopped = SDL_TRUE;
 }
 
+void
+MusicPause (void)
+{
+  Mix_PauseMusic ();
+
+  for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)
+    Mix_Pause (i);
+}
+
+void
+MusicResume (void)
+{
+  Mix_ResumeMusic ();
+
+  for (int i = SOUND_MUSIC11; i < SOUND_MAX; ++i)
+    Mix_Resume (i);
+}
+
 SDL_bool
 MusicStoppedOnDemand (void)
 {
