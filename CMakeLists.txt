@@ -94,10 +94,10 @@ file (COPY resources/data DESTINATION share/blupimania)
 file (COPY resources/image DESTINATION share/blupimania)
 file (COPY resources/sound DESTINATION share/blupimania)
 file (COPY resources/music DESTINATION share/blupimania)
-#file (COPY LICENSE.all DESTINATION share/doc/blupimania)
-#file (COPY COPYING DESTINATION share/doc/blupimania)
-#file (RENAME "${CMAKE_BINARY_DIR}/share/doc/blupimania/LICENSE.all"
-#             "${CMAKE_BINARY_DIR}/share/doc/blupimania/copyright")
+file (COPY LICENSE.all DESTINATION share/doc/blupimania)
+file (COPY COPYING DESTINATION share/doc/blupimania)
+file (RENAME "${CMAKE_BINARY_DIR}/share/doc/blupimania/LICENSE.all"
+             "${CMAKE_BINARY_DIR}/share/doc/blupimania/copyright")
 
 if (BUILD_LINUX)
   file (COPY resources/icon/hicolor DESTINATION share/icons)
