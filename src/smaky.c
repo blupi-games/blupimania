@@ -1879,7 +1879,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
 
 #ifdef _WIN32
   /* Fix laggy sounds on Windows by not using winmm driver. */
-  SDL_setenv ("SDL_AUDIODRIVER", "directsound", true);
+  SDL_setenv ("SDL_AUDIODRIVER", "directsound", SDL_TRUE);
 #endif /* _WIN32 */
 
   int res = SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
