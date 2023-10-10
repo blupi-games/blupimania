@@ -301,16 +301,16 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
     set (CMAKE_PACKAGED_OUTPUT_PREFIX ${CMAKE_INSTALL_PREFIX})
     APPIMAGE_PACKAGE (blupimania ${BM_PACKAGE_NAME} ${BM_PRODUCT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/resources/linux" "${CMAKE_BINARY_DIR}/share" "" "" ${BM_ICON_REF} SIGN_APP)
   elseif (MINGW)
-    set (INSTALLER_FILE_NAME "${BM_PACKAGE_NAME}-${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
+    set (INSTALLER_FILE_NAME "${BM_PACKAGE_NAME}-${BM_VERSION_MAJOR}.${BM_VERSION_MINOR}.${BM_VERSION_PATCH}${BM_VERSION_EXTRA}")
     set (CPACK_PACKAGE_FILE_NAME "${INSTALLER_FILE_NAME}")
     set (CPACK_GENERATOR "NSIS64")
     set (CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\resources\\\\nsis\\\\installer.bmp")
     set (CPACK_NSIS_COMPRESSOR "/SOLID lzma")
     set (CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\blupimania.exe")
-    set (CPACK_NSIS_URL_INFO_ABOUT "http://www.blupi.org")
+    set (CPACK_NSIS_URL_INFO_ABOUT "https://www.blupi.org")
     set (CPACK_NSIS_MUI_FINISHPAGE_RUN "blupimania")
     if (SIGN_APP)
-      set (CPACK_NSIS_SIGN_UNINSTALLER "sign -a -fd sha1 -t http://time.certum.pl -v")
+      set (CPACK_NSIS_SIGN_UNINSTALLER "sign -a -fd sha256 -t http://time.certum.pl -v")
     endif ()
 
     include (CPack)
@@ -320,7 +320,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
       add_custom_command (TARGET blupimania
                           POST_BUILD
                           COMMAND ${SIGNTOOL_EXECUTABLE}
-                            sign -a -fd sha1 -t http://time.certum.pl -v
+                            sign -a -fd sha256 -t http://time.certum.pl -v
                             "${CMAKE_BINARY_DIR}/blupimania.exe")
     endif ()
 
@@ -332,7 +332,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
       add_custom_command (TARGET blupimania
                           POST_BUILD
                           COMMAND ${SIGNTOOL_EXECUTABLE}
-                            sign -a -fd sha1 -t http://time.certum.pl
+                            sign -a -fd sha256 -t http://time.certum.pl
                             "${CMAKE_BINARY_DIR}/${INSTALLER_FILE_NAME}.exe")
     endif ()
   elseif (APPLE)
@@ -340,19 +340,19 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
     set (CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/icon.icns")
     set (CPACK_BUNDLE_NAME ${BM_PRODUCT_NAME})
     set (CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Info.plist")
-    set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/Planet Blupi")
+    set (CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/Blupimania)
     if (SIGN_APP)
       set (CPACK_BUNDLE_APPLE_CERT_APP "Developer ID Application: Mathieu Schroeter")
       set (CPACK_BUNDLE_APPLE_CODESIGN_PARAMETER "--deep -f --options runtime --timestamp")
       set (CPACK_BUNDLE_APPLE_CODESIGN_FILES "/Contents/Resources/bin/blupimania")
       set (CPACK_APPLE_BUNDLE_ID "blupimania")
     endif ()
-    set (CPACK_PACKAGE_FILE_NAME "blupimania-${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
+    set (CPACK_PACKAGE_FILE_NAME "blupimania-${BM_VERSION_MAJOR}.${BM_VERSION_MINOR}.${BM_VERSION_PATCH}${BM_VERSION_EXTRA}")
 
     set (CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/background.tiff")
     set (CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/resources/darwin/dmgsetup.scpt")
 
-    set (BUNDLE_VERSION "${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
+    set (BUNDLE_VERSION "${BM_VERSION_MAJOR}.${BM_VERSION_MINOR}.${BM_VERSION_PATCH}${BM_VERSION_EXTRA}")
     set (BUNDLE_IDENTIFIER "org.blupi.mania")
     set (BUNDLE_ICON_REF "Blupimania")
 
