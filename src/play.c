@@ -5031,7 +5031,7 @@ CheckForUpdates (void * data)
   }
   else
   {
-    char * res = strndup (chunk.buffer, chunk.size);
+    char * res = SDL_strdup (chunk.buffer);
     PushUserEvent (CHECKUPDATE, res);
   }
 
