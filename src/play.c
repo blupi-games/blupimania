@@ -5703,8 +5703,8 @@ Render ()
 int
 main (int argc, char * argv[])
 {
-  int   err; /* condition de sortie */
-  short key; /* touche pressée  */
+  int   err;     /* condition de sortie */
+  short key = 0; /* touche pressée  */
 
   int rc = PlayInit (argc, argv); /* initialise le jeu */
   if (rc)
