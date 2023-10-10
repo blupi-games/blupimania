@@ -455,7 +455,6 @@ short CopyPixel (Pixmap * ppms, Pt os, Pixmap * ppmd, Pt od, Pt dim);
 void  DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color);
 void  DrawRect (Pixmap * ppm, Rectangle rect, int color);
 void  DrawFillRect (Pixmap * ppm, Rectangle rect, int color);
-char  GetPixel (Pixmap * ppm, Pt pos);
 void  BlackScreen (void);
 short SavePixmap (Pixmap * ppm);
 short RestorePixmap (Pixmap * ppm);
