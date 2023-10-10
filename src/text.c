@@ -205,7 +205,7 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
       src.y = 26 * 2;
     }
 
-    GetIcon (&pmchar, ICO_CHAR_MID + icon, 1);
+    GetSprite (&pmchar, ICO_CHAR_MID + icon, 1);
     ppmchar = &pmchar;
   }
 
@@ -309,8 +309,8 @@ DrawString (Pixmap * ppm, Pt pos, char * pstring, short size)
 
   if (size == TEXTSIZELIT)
   {
-    GetIcon (&pmchar1, ICO_CHAR_LIT + 0, 1);
-    GetIcon (&pmchar2, ICO_CHAR_LIT + 1, 1);
+    GetSprite (&pmchar1, ICO_CHAR_LIT + 0, 1);
+    GetSprite (&pmchar2, ICO_CHAR_LIT + 1, 1);
   }
 
   while ((c = *pstring++, c != 0))
@@ -348,8 +348,8 @@ DrawPercent (
   }
 
   /* Draw in white (on the left) */
-  GetIcon (&pmchar1, leftColor + 0, 1);
-  GetIcon (&pmchar2, leftColor + 1, 1);
+  GetSprite (&pmchar1, leftColor + 0, 1);
+  GetSprite (&pmchar2, leftColor + 1, 1);
 
   while ((c = *pstring++, c != 0))
     DrawAccent (ppm, &pos, c, clipLeft); /* draw one char */
@@ -358,8 +358,8 @@ DrawPercent (
   pstring = sOrig;
 
   /* Draw in black (on the right) */
-  GetIcon (&pmchar1, rightColor + 0, 1);
-  GetIcon (&pmchar2, rightColor + 1, 1);
+  GetSprite (&pmchar1, rightColor + 0, 1);
+  GetSprite (&pmchar2, rightColor + 1, 1);
 
   while ((c = *pstring++, c != 0))
     DrawAccent (ppm, &pos, c, clipRight); /* draw one char */
@@ -564,8 +564,8 @@ EditAff (void)
   Pt    pos;
   Rect  rect;
 
-  GetIcon (&pmchar1, ICO_CHAR_LIT + 0, 1);
-  GetIcon (&pmchar2, ICO_CHAR_LIT + 1, 1);
+  GetSprite (&pmchar1, ICO_CHAR_LIT + 0, 1);
+  GetSprite (&pmchar2, ICO_CHAR_LIT + 1, 1);
 
   pos.x = chrect.p1.x;
   pos.y = chrect.p1.y + (chrect.p2.y - chrect.p1.y) / 2 + charsize / 2 - 1;

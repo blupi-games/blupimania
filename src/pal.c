@@ -149,7 +149,7 @@ DrawButton (Pt pos, short icon, short state)
   if (icon == 0)
     return;
 
-  DrawIcon (iconbutton, src, pos, dim); /* dessine le cadre du bouton */
+  DrawSprite (iconbutton, src, pos, dim); /* dessine le cadre du bouton */
 
   if (icon == 1)
     return;
@@ -165,7 +165,7 @@ DrawButton (Pt pos, short icon, short state)
     pos.y += 2;
   }
 
-  DrawIcon (icon, p1, pos, p2); /* dessine le contenu du bouton */
+  DrawSprite (icon, p1, pos, p2); /* dessine le contenu du bouton */
 }
 
 /* ---------- */
@@ -196,7 +196,7 @@ DrawF1toF4 (short rang)
   dim.x = 8;
   dim.y = 7;
 
-  DrawIcon (ICO_BUTTON_PAUSE, src, dst, dim);
+  DrawSprite (ICO_BUTTON_PAUSE, src, dst, dim);
 }
 
 /* --------- */
@@ -1380,7 +1380,7 @@ InfoDraw (
     p2.x  = INFOPOSX;
     dim.y = INFODIMY;
     dim.x = INFODIMX;
-    DrawIcon (ICO_INFO + 1, p1, p2, dim);
+    DrawSprite (ICO_INFO + 1, p1, p2, dim);
     return;
   }
 
@@ -1388,7 +1388,7 @@ InfoDraw (
   p1.x = LXICO;
   GetPixmap (&pminfo, p1, 0, 1);
 
-  GetIcon (&pm, ICO_INFO, 1);
+  GetSprite (&pm, ICO_INFO, 1);
   DuplPixel (
     &pm, &pminfo); /* copie l'icône dans pminfo pour pouvoir modifier */
 

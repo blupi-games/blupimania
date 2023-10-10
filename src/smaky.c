@@ -1280,7 +1280,7 @@ error:
  */
 
 short
-GetIcon (Pixmap * ppm, short numero, short mode)
+GetSprite (Pixmap * ppm, short numero, short mode)
 {
   int no;
 

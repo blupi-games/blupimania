@@ -1380,18 +1380,18 @@ ChangeCouleur (void)
 }
 
 void
-DrawIcon (short num, Pt p1, Pt p2, Pt dim)
+DrawSprite (short num, Pt p1, Pt p2, Pt dim)
 {
   Pixmap pm = {0};
-  GetIcon (&pm, num, 1);
+  GetSprite (&pm, num, 1);
   CopyPixel (&pm, p1, 0, p2, dim);
 }
 
 void
-DrawIconTemp (short num, Pt p1, Pt p2, Pt dim)
+DrawSpriteTemp (short num, Pt p1, Pt p2, Pt dim)
 {
   Pixmap pm = {0};
-  GetIcon (&pm, num, 1);
+  GetSprite (&pm, num, 1);
   CopyPixel (&pm, p1, &pmtemp, p2, dim);
 }
 
@@ -1420,7 +1420,7 @@ DrawRadioButton (Pt pos, short state)
   else
     icon = ICO_BUTTON_ROND0;
 
-  DrawIcon (icon, src, pos, dim); /* dessine le bouton */
+  DrawSprite (icon, src, pos, dim); /* dessine le bouton */
 }
 
 /* ---------- */
@@ -1722,7 +1722,7 @@ DrawArrows (char mode)
   dim.x = 54;
   dim.y = 52;
 
-  DrawIcon (icon, src, dst, dim); /* dessine flèches ou télécommande */
+  DrawSprite (icon, src, dst, dim); /* dessine flèches ou télécommande */
 
   if (icon == ICO_TELECOM)
   {
@@ -1737,7 +1737,7 @@ DrawArrows (char mode)
       src.x = 15;
     if (mode == KEYGOBACK)
       src.x = 30;
-    DrawIcon (icon, src, dst, dim); /* dessine la manette avant/arrière */
+    DrawSprite (icon, src, dst, dim); /* dessine la manette avant/arrière */
 
     dst.x = 7 + 29;
     dst.y = LYIMAGE () - 92 - 1 + 26;
@@ -1747,7 +1747,7 @@ DrawArrows (char mode)
       src.y = 15;
     if (mode == KEYGORIGHT)
       src.y = 30;
-    DrawIcon (icon, src, dst, dim); /* dessine la manette gauche/droite */
+    DrawSprite (icon, src, dst, dim); /* dessine la manette gauche/droite */
   }
 
   if (g_typeedit)
@@ -1788,7 +1788,7 @@ DrawPause (void)
   dim.x = 18;
   dim.y = 18;
 
-  DrawIcon (ICO_BUTTON_PAUSE, src, dst, dim);
+  DrawSprite (ICO_BUTTON_PAUSE, src, dst, dim);
 }
 
 /* ------------ */
@@ -1812,7 +1812,7 @@ DrawBigDigit (Pt pos, short num)
   dim.x = 20;
   dim.y = 26;
 
-  DrawIcon (ICO_CHAR_BIG, src, pos, dim);
+  DrawSprite (ICO_CHAR_BIG, src, pos, dim);
 }
 
 /* ---------- */
@@ -2067,17 +2067,17 @@ DrawNumMonde (void)
   if (
     g_monde < maxmonde - 1 &&
     (g_construit || g_monde < fj.progres[fj.joueur][fj.niveau[fj.joueur]]))
-    DrawIcon (ICO_ARROWUP + 1, src, pos, dim);
+    DrawSprite (ICO_ARROWUP + 1, src, pos, dim);
   else
-    DrawIcon (ICO_ARROWUP, src, pos, dim);
+    DrawSprite (ICO_ARROWUP, src, pos, dim);
 
   pos.y = LYIMAGE () - 230 - 1;
 
   /* dessine la flèche inférieure (-) */
   if (g_monde > 0)
-    DrawIcon (ICO_ARROWDOWN + 1, src, pos, dim);
+    DrawSprite (ICO_ARROWDOWN + 1, src, pos, dim);
   else
-    DrawIcon (ICO_ARROWDOWN, src, pos, dim);
+    DrawSprite (ICO_ARROWDOWN, src, pos, dim);
 
   if (phase == PHASE_DEPLACE)
     return;
@@ -2525,13 +2525,13 @@ PartieDrawIcon (short key)
     pos.x += LXICO + 20;
 
   if (key == KEYSAVE)
-    DrawIcon (ICO_SAUVE, zero, pos, dim);
+    DrawSprite (ICO_SAUVE, zero, pos, dim);
   else if (key == KEYLOAD)
-    DrawIcon (ICO_PREND, zero, pos, dim);
+    DrawSprite (ICO_PREND, zero, pos, dim);
   else if (key == -KEYSAVE)
-    DrawIcon (ICO_ATTENTE + 0, zero, pos, dim);
+    DrawSprite (ICO_ATTENTE + 0, zero, pos, dim);
   else if (key == -KEYLOAD)
-    DrawIcon (ICO_ATTENTE + 1, zero, pos, dim);
+    DrawSprite (ICO_ATTENTE + 1, zero, pos, dim);
 }
 
 /* ----------------- */
@@ -2664,11 +2664,11 @@ StopDrawIcon (void)
   pos.x = POSXDRAW + 20;
   pos.y = POSYDRAW + DIMYDRAW - LYICO - 20;
 
-  DrawIcon (ICO_STOPOUI, p, pos, dim);
+  DrawSprite (ICO_STOPOUI, p, pos, dim);
 
   pos.x += LXICO + 20;
 
-  DrawIcon (ICO_STOPNON, p, pos, dim);
+  DrawSprite (ICO_STOPNON, p, pos, dim);
 }
 
 /* --------------- */
@@ -3840,7 +3840,7 @@ AnimIconAddBack (Pt pos, char bFront)
         ipos.y < pos.y + LYICO && ipos.y + LYICO > pos.y)
       {
         Pt _pos = {ipos.y - pos.y, ipos.x - pos.x};
-        DrawIconTemp (pt[5], orig, _pos, dim);
+        DrawSpriteTemp (pt[5], orig, _pos, dim);
       }
     }
     pt += 5 + pt[4];
@@ -3866,7 +3866,7 @@ AnimDrawIcon (Pixmap * ppm, short icon, Pt pos, char bOther)
   if (bOther)
     AnimIconAddBack (pos, 0); /* ajoute les autres icônes derrière */
 
-  DrawIconTemp (icon, orig, orig, dim);
+  DrawSpriteTemp (icon, orig, orig, dim);
 
   if (bOther)
     AnimIconAddBack (pos, 1); /* ajoute les autres icônes devant */

@@ -1109,7 +1109,7 @@ InvCel (Pt cel, short outil)
       return;
   }
 
-  DrawIcon (ICO_CROIX, src, dst, dim);
+  DrawSprite (ICO_CROIX, src, dst, dim);
 }
 
 /* ----------- */
@@ -1815,12 +1815,12 @@ DecorModif (Pt cel, short newicon)
           icon == ICO_TANK_EO || icon == ICO_TANK_NS || icon == ICO_JOUEUR ||
           (icon >= ICO_DETONATEUR_A && icon <= ICO_BOMBE_EX))
         {
-          GetIcon (&pmissol, GetIconCaisseSSol (c), 1);
+          GetSprite (&pmissol, GetIconCaisseSSol (c), 1);
           CopyPixel /* dessine le sol sous la boule */
             (&pmissol, zero, &pmnewdecor, dst, dim);
         }
 
-        GetIcon (&pm, icon, 1);
+        GetSprite (&pm, icon, 1);
         /* dessine la cellule */
         CopyPixel (&pm, zero, &pmnewdecor, dst, dim);
       }
@@ -2255,7 +2255,7 @@ DecorShift (Pt oldpos, Pt newpos, short bDraw)
 
       if (!IfHideIcon (ph, zone))
       {
-        GetIcon (&pmichair, icon, 1);
+        GetSprite (&pmichair, icon, 1);
 
         if (
           icon == ICO_LUNETTES || icon == ICO_MAGIC || icon == ICO_AIMANT ||
@@ -2270,7 +2270,7 @@ DecorShift (Pt oldpos, Pt newpos, short bDraw)
         {
           cel.x = j;
           cel.y = i;
-          GetIcon (&pmissol, GetIconCaisseSSol (cel), 1);
+          GetSprite (&pmissol, GetIconCaisseSSol (cel), 1);
           CopyIconDecor (&pmissol, ph, zone); /* dessine le sol sous la boule */
         }
 
