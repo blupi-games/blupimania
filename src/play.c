@@ -820,15 +820,15 @@ JoueurWrite (void)
   SDL_memcpy (&saveFj, &fj, sizeof (saveFj));
 
   err = FileRead (&diskFj, 0, sizeof (diskFj), 'z');
-  if (err)
-    return err;
-
-  if (g_settingsOverload & (SETTING_FULLSCREEN | SETTING_ZOOM))
-    saveFj.screen = diskFj.screen;
-  if (g_settingsOverload & SETTING_SPEEDRATE)
-    saveFj.vitesse = diskFj.vitesse;
-  if (g_settingsOverload & SETTING_THEME)
-    saveFj.theme = diskFj.theme;
+  if (!err)
+  {
+    if (g_settingsOverload & (SETTING_FULLSCREEN | SETTING_ZOOM))
+      saveFj.screen = diskFj.screen;
+    if (g_settingsOverload & SETTING_SPEEDRATE)
+      saveFj.vitesse = diskFj.vitesse;
+    if (g_settingsOverload & SETTING_THEME)
+      saveFj.theme = diskFj.theme;
+  }
 
   err = FileWrite (&saveFj, 0, sizeof (saveFj), 'z');
   return err;
