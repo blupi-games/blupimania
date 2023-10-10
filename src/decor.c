@@ -1364,7 +1364,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, GetSol (cel, 1));
     if (!g_typeedit)
-      PlaySound (SOUND_ACTION, &cel);
+      PlayAudio (SOUND_ACTION, &cel);
     goto termine;
   }
 
@@ -1458,7 +1458,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_UNSEUL);
     if (!g_typeedit)
-      PlaySound (SOUND_UNSEUL, &cel);
+      PlayAudio (SOUND_UNSEUL, &cel);
     goto termine;
   }
 
@@ -1466,7 +1466,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_AIMANT);
     if (!g_typeedit)
-      PlaySound (SOUND_AIMANT, &cel);
+      PlayAudio (SOUND_AIMANT, &cel);
     goto termine;
   }
 
@@ -1474,7 +1474,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_TROU);
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 
@@ -1482,7 +1482,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_GLISSE);
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 
@@ -1490,7 +1490,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     MurBuild (cel, 0); /* met un mur */
     if (!g_typeedit)
-      PlaySound (SOUND_CAISSE, &cel);
+      PlayAudio (SOUND_CAISSE, &cel);
     goto termine;
   }
 
@@ -1498,7 +1498,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     MurBuild (cel, 1); /* met une barrière */
     if (!g_typeedit)
-      PlaySound (SOUND_SAUT2, &cel);
+      PlayAudio (SOUND_SAUT2, &cel);
     goto termine;
   }
 
@@ -1518,7 +1518,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_PLANTEBAS, ICO_PLANTEBAS_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 
@@ -1526,7 +1526,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_PLANTEHAUT, ICO_PLANTEHAUT_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 
@@ -1568,7 +1568,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_ELECTROBAS, ICO_ELECTROBAS_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_CAISSEO, &cel);
+      PlayAudio (SOUND_CAISSEO, &cel);
     goto termine;
   }
 
@@ -1576,7 +1576,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_ELECTROHAUT, ICO_ELECTROHAUT_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_CAISSEO, &cel);
+      PlayAudio (SOUND_CAISSEO, &cel);
     goto termine;
   }
 
@@ -1585,7 +1585,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
     PutNewDecor (
       cel, ICO_TECHNO1, ICO_TECHNO1 + 10, 0, ICO_TECHNO1 + 5, 16 - 5);
     if (!g_typeedit)
-      PlaySound (SOUND_CAISSEV, &cel);
+      PlayAudio (SOUND_CAISSEV, &cel);
     goto termine;
   }
 
@@ -1593,7 +1593,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_OBSTACLE, ICO_OBSTACLE_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_SAUT2, &cel);
+      PlayAudio (SOUND_SAUT2, &cel);
     goto termine;
   }
 
@@ -1601,7 +1601,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     PutNewDecor (cel, ICO_MEUBLE, ICO_MEUBLE_D + 1, 0, 0, 0);
     if (!g_typeedit)
-      PlaySound (SOUND_SAUT2, &cel);
+      PlayAudio (SOUND_SAUT2, &cel);
     goto termine;
   }
 
@@ -1623,7 +1623,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_LUNETTES); /* met des lunettes */
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 
@@ -1638,7 +1638,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
       init = ICO_TABLEBOIT;
     DecorModif (cel, init); /* met une table avec bouteille */
     if (!g_typeedit)
-      PlaySound (SOUND_SAUT2, &cel);
+      PlayAudio (SOUND_SAUT2, &cel);
     goto termine;
   }
 
@@ -1646,7 +1646,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_LIVRE); /* met un livre */
     if (!g_typeedit)
-      PlaySound (SOUND_SAUT2, &cel);
+      PlayAudio (SOUND_SAUT2, &cel);
     goto termine;
   }
 
@@ -1714,7 +1714,7 @@ DecorEvent (Pt pos, short poscel, short outil, int key)
   {
     DecorModif (cel, ICO_MAGIC); /* met un chapeau de magicien */
     if (!g_typeedit)
-      PlaySound (SOUND_CLIC, &cel);
+      PlayAudio (SOUND_CLIC, &cel);
     goto termine;
   }
 

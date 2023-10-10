@@ -402,7 +402,7 @@ void     IconClose (void);
 #define TEXTSIZELIT 10 /* petite taille */
 #define TEXTSIZEMID 21 /* taille moyenne */
 
-Pt DrawText (Pixmap * ppm, Pt pos, char * pstring, short size);
+Pt DrawString (Pixmap * ppm, Pt pos, char * pstring, short size);
 Pt DrawPercent (
   Pixmap * ppm, Pt pos, char * pstring, Rectangle * clipLeft,
   Rectangle * clipRight);
@@ -432,7 +432,7 @@ SDL_bool MusicStoppedOnDemand (void);
 void     PlayNoiseVolume (short volume);
 void     PlayMusicVolume (short volume);
 void     PlaySoundLoop (short mode);
-void     PlaySound (short sound, const Pt * cel);
+void     PlayAudio (short sound, const Pt * cel);
 SDL_bool SoundPlaying (short sound);
 
 void      ClrEvents (void);
@@ -477,8 +477,8 @@ short MachinePartieRead (long pos, char file);
 void PushUserEvent (Sint32 code, void * data);
 void Render ();
 
-int  LoadIcon ();
-void UnloadIcon ();
+int  LoadSprites ();
+void UnloadSprites ();
 int  LoadDecor ();
 void UnloadDecor ();
 

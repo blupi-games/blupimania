@@ -243,7 +243,7 @@ DrawReste (Pt pos, short rest)
   }
 
   pos.y += TEXTSIZELIT;
-  DrawText (0, pos, chaine, TEXTSIZELIT);
+  DrawString (0, pos, chaine, TEXTSIZELIT);
 }
 
 /* ------------ */
@@ -281,7 +281,7 @@ DrawTriangle (short rang)
   chaine[0] = 127; /* code du petit triangle */
   chaine[1] = 0;
   pos.y += TEXTSIZELIT;
-  DrawText (0, pos, chaine, TEXTSIZELIT); /* dessine le petit triangle */
+  DrawString (0, pos, chaine, TEXTSIZELIT); /* dessine le petit triangle */
 }
 
 /* ----------- */
@@ -859,7 +859,7 @@ PaletteEvent (short event, Pt pos)
     return 1;
 
   if (event == KEYCLIC)
-    PlaySound (SOUND_CLIC, NULL);
+    PlayAudio (SOUND_CLIC, NULL);
 
   DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
   DrawF1toF4 (press);
@@ -1023,13 +1023,13 @@ DrawEditRest (Pt pos, short reste, short etat)
   p.y       = pos.y + TEXTSIZELIT + 2;
   chaine[0] = 125;
   chaine[1] = 0;
-  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine la flèche ^ */
+  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine la flèche ^ */
 
   p.x       = pos.x + LXICO / 2 + 3;
   p.y       = pos.y + LYICO / 2 - 2;
   chaine[0] = 126;
   chaine[1] = 0;
-  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine la flèche v */
+  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine la flèche v */
 
   p.x = pos.x + LXICO / 2 + 1;
   p.y = pos.y + LYICO / 4 + 5;
@@ -1048,7 +1048,7 @@ DrawEditRest (Pt pos, short reste, short etat)
     chaine[2] = 0;
   }
 
-  DrawText (0, p, chaine, TEXTSIZELIT); /* dessine le chiffre */
+  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine le chiffre */
 }
 
 /* ---------- */
@@ -1253,7 +1253,7 @@ PaletteEditEvent (short palette[], short event, Pt pos)
 
   if (type == 0) /* clic dans l'icône ? */
   {
-    PlaySound (SOUND_CLIC, NULL);
+    PlayAudio (SOUND_CLIC, NULL);
 
     teditetat[y][x] ^= 1; /* inverse l'état du bouton */
     DrawButton (pb, tediticon[y][x], teditetat[y][x]);

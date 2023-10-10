@@ -537,7 +537,7 @@ void
 PlayEvSound (short sound)
 {
   // if ( musique != 0 )  return;		/* rien si musique en cours */
-  PlaySound (sound, NULL);
+  PlayAudio (sound, NULL);
 }
 
 /* ------ */
@@ -2096,7 +2096,7 @@ DrawUpdate (const char * version, Pt pos)
 
   snprintf (text, sizeof (text), format[g_langue], version);
 
-  DrawText (0, pos, text, TEXTSIZELIT);
+  DrawString (0, pos, text, TEXTSIZELIT);
 }
 
 /* ----------------- */
@@ -2839,7 +2839,7 @@ DrawIdent (void)
       *p++ = ' ';
       *p++ = ' ';
       PutNum (&p, fj.progres[joueur][6] + 1, 0);
-      DrawText (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
+      DrawString (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
     }
     pos.y += 15;
 
@@ -2859,7 +2859,7 @@ DrawIdent (void)
       *p++ = ' ';
       *p++ = ' ';
       PutNum (&p, fj.progres[joueur][7] + 1, 0);
-      DrawText (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
+      DrawString (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
     }
     pos.y += 40 - 15;
   }
@@ -3097,7 +3097,7 @@ ChangePhase (Phase newphase)
   {
     JoueurRead (&arguments); /* lit le fichier des joueurs sur disque */
     JoueurWrite ();
-    LoadIcon (); /* charge l'image des icônes */
+    LoadSprites (); /* charge l'image des icônes */
   }
 
   ShowImage (); /* affiche l'image de base */
@@ -4757,7 +4757,7 @@ ExecuteAction (char event, Pt pos)
     fj.noisevolume++;
     PlayNoiseVolume (fj.noisevolume);
     DrawBruitage ();
-    PlaySound (SOUND_MAGIE, NULL);
+    PlayAudio (SOUND_MAGIE, NULL);
     return 0;
   }
 
@@ -4766,7 +4766,7 @@ ExecuteAction (char event, Pt pos)
     fj.noisevolume--;
     PlayNoiseVolume (fj.noisevolume);
     DrawBruitage ();
-    PlaySound (SOUND_MAGIE, NULL);
+    PlayAudio (SOUND_MAGIE, NULL);
     return 0;
   }
 
@@ -4884,7 +4884,7 @@ MusicBackground (void)
       if (sound != 0)
         sound--; /* accord de base plus souvent */
 
-      PlaySound (ptable[1] + sound, NULL);
+      PlayAudio (ptable[1] + sound, NULL);
       return;
     }
     ptable += 2;
@@ -5153,7 +5153,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
             g_passhole   = 0;
           }
 
-          PlaySound (SOUND_MAGIE, NULL);
+          PlayAudio (SOUND_MAGIE, NULL);
 
           for (max = 0; max < 10; max++)
           {
@@ -5570,7 +5570,7 @@ static void
 PlayRelease (void)
 {
   StartRandom (0, 1);
-  PlaySound (GetRandom (0, SOUND_SAUT1, SOUND_CAISSEG + 1), NULL);
+  PlayAudio (GetRandom (0, SOUND_SAUT1, SOUND_CAISSEG + 1), NULL);
 
   BlackScreen (); /* efface tout l'écran */
 
@@ -5708,11 +5708,11 @@ main (int argc, char * argv[])
     {
       BlackScreen ();
 
-      UnloadIcon ();
+      UnloadSprites ();
       UnloadTextures ();
       UnloadDecor ();
 
-      LoadIcon ();
+      LoadSprites ();
       LoadTextures ();
       LoadDecor ();
 

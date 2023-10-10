@@ -301,7 +301,7 @@ DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
  */
 
 Pt
-DrawText (Pixmap * ppm, Pt pos, char * pstring, short size)
+DrawString (Pixmap * ppm, Pt pos, char * pstring, short size)
 {
   char c;
 
@@ -470,7 +470,7 @@ DrawParagraph (Pixmap * ppm, Rectangle rect, const char * pstring, short size)
       lg    = GetWord (&pnext, word);
       if (pos.x + lg <= rect.p2.x)
       {
-        DrawText (ppm, pos, word, size); /* affiche un mot */
+        DrawString (ppm, pos, word, size); /* affiche un mot */
         pstring = pnext;
       }
       pos.x += lg;

@@ -179,7 +179,7 @@ AutoNext (Auto * p, short result[], const Pt * cel)
     if (c == OPSOUND)
     {
       p->offset++;
-      PlaySound (p->pdata[p->offset++], cel);
+      PlayAudio (p->pdata[p->offset++], cel);
       c = p->pdata[p->offset];
     }
 
@@ -1834,7 +1834,7 @@ SpecAction (short i, short obstacle, Pt testcel)
   {
     DecorModif (
       testcel, DecorGetInitCel (testcel)); /* enlève l'aimant du décor */
-    PlaySound (SOUND_AIMANT, &toto[i].poscel);
+    PlayAudio (SOUND_AIMANT, &toto[i].poscel);
     NewAction (i, orientation, 0);
     return 1;
   }
@@ -2085,12 +2085,12 @@ SpecAction (short i, short obstacle, Pt testcel)
             redraw          = 1; /* faudra tout redessiner */
           }
           if (GetRandom (1, 0, 5) == 0)
-            PlaySound (SOUND_POUSSE, &toto[i].poscel);
+            PlayAudio (SOUND_POUSSE, &toto[i].poscel);
         }
         else
         {
           if (obstacle == ICO_CAISSE && GetRandom (1, 0, 5) == 0)
-            PlaySound (SOUND_POUSSE, &toto[i].poscel);
+            PlayAudio (SOUND_POUSSE, &toto[i].poscel);
         }
 
         if (caisseocel.x == testcel.x && caisseocel.y == testcel.y)
@@ -2144,7 +2144,7 @@ SpecAction (short i, short obstacle, Pt testcel)
     if (toto[i].joueur)
     {
       NewAction (i, orientation + AC_NPOUSSE_E - AC_MARCHE_E, 0);
-      PlaySound (SOUND_POUSSE, &toto[i].poscel);
+      PlayAudio (SOUND_POUSSE, &toto[i].poscel);
       return 1;
     }
   nonpousse:
@@ -2212,7 +2212,7 @@ SpecAction (short i, short obstacle, Pt testcel)
     ((obstacle >= ICO_MURHAUT && obstacle <= ICO_MURHAUT_D) ||
      (obstacle >= ICO_MURBAS && obstacle <= ICO_MURBAS_D)))
   {
-    PlaySound (SOUND_PASSEMUR, &toto[i].poscel);
+    PlayAudio (SOUND_PASSEMUR, &toto[i].poscel);
     NewAction (i, orientation, 0); /* toto traverse les murs */
     return 1;
   }
@@ -2653,12 +2653,12 @@ SoundAmbiance (short obstacle, const Pt * cel)
     obstacle == ICO_TECHNO1 + 3 || obstacle == ICO_TECHNO2 + 1 ||
     obstacle == ICO_TECHNO2 + 2)
   {
-    PlaySound (SOUND_MACHINE, cel);
+    PlayAudio (SOUND_MACHINE, cel);
   }
 
   if (obstacle >= ICO_PLANTEHAUT && obstacle <= ICO_PLANTEHAUT_D)
   {
-    PlaySound (SOUND_OISEAUX, cel);
+    PlayAudio (SOUND_OISEAUX, cel);
   }
 }
 
@@ -3454,7 +3454,7 @@ NextAction (char event, short i)
           return; /* la machine continue */
         }
       }
-      PlaySound (SOUND_CAISSEV, &toto[i].poscel);
+      PlayAudio (SOUND_CAISSEV, &toto[i].poscel);
       DecorModif (toto[i].poscel, ICO_CAISSEG); /* remet la caisse fixe */
       toto[i].status = STVIDE;                  /* ce toto n'existe plus */
       nbtoto--;
@@ -3512,7 +3512,7 @@ NextAction (char event, short i)
   {
     DecorModif (
       testcel, DecorGetInitCel (testcel)); /* enlève l'aimant du décor */
-    PlaySound (SOUND_AIMANT, &toto[i].poscel);
+    PlayAudio (SOUND_AIMANT, &toto[i].poscel);
   }
 
   switch (GetOrientation (toto[i].action))

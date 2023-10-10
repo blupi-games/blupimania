@@ -332,7 +332,7 @@ PlaySoundLoop (short mode)
  */
 
 void
-PlaySound (short sound, const Pt * cel)
+PlayAudio (short sound, const Pt * cel)
 {
   if (soundon == 0)
     return;
@@ -1357,7 +1357,7 @@ data:
  */
 
 int
-LoadIcon (void)
+LoadSprites (void)
 {
   int err;
 
@@ -1381,7 +1381,7 @@ LoadIcon (void)
 }
 
 void
-UnloadIcon ()
+UnloadSprites ()
 {
   GivePixmap (&pmicon1c);
   GivePixmap (&pmicon2c);
@@ -1971,7 +1971,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
 void
 CloseMachine (void)
 {
-  UnloadIcon ();
+  UnloadSprites ();
   UnloadSounds ();
 
   if (g_renderer)
