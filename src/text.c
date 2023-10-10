@@ -15,16 +15,16 @@
 static Pixmap pmchar1; /* pixmap des caractères */
 static Pixmap pmchar2; /* pixmap des caractères */
 
-static char *    pchaine;  /* pointe chaîne éditée */
-static short     lgchaine; /* longueur de la chaîne */
-static short     lgmax;    /* longueur maximale */
-static short     curseur;  /* position du curseur (0..lgchaine) */
-static char      ifaccent; /* accent flottant en cours */
-static Rectangle chrect;   /* position et dimensions */
-static char      ifcx;     /* 1 -> curseur "|" présent */
-static short     cx;       /* position de curseur "|" en x */
-static short     begin;    /* début où afficher [car] */
-static short     charsize; /* taille des caractères */
+static char * pchaine;  /* pointe chaîne éditée */
+static short  lgchaine; /* longueur de la chaîne */
+static short  lgmax;    /* longueur maximale */
+static short  curseur;  /* position du curseur (0..lgchaine) */
+static char   ifaccent; /* accent flottant en cours */
+static Rect   chrect;   /* position et dimensions */
+static char   ifcx;     /* 1 -> curseur "|" présent */
+static short  cx;       /* position de curseur "|" en x */
+static short  begin;    /* début où afficher [car] */
+static short  charsize; /* taille des caractères */
 
 static char tchasselit[128 - 32] = {
   0x04, 0x04, 0x07, 0x0A, 0x08, 0x0A, 0x0A, 0x04, //
@@ -147,7 +147,7 @@ static char taccent[] = {
  */
 
 void
-DrawChar (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
+DrawChar (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
 {
   Pixmap * ppmchar;
   Pixmap   pmchar;
@@ -252,7 +252,7 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
  */
 
 static void
-DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rectangle * clip)
+DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
 {
   char * paccent;
   Pt     pnext, pacc;
@@ -327,8 +327,7 @@ DrawString (Pixmap * ppm, Pt pos, char * pstring, short size)
 
 Pt
 DrawPercent (
-  Pixmap * ppm, Pt pos, char * pstring, Rectangle * clipLeft,
-  Rectangle * clipRight)
+  Pixmap * ppm, Pt pos, char * pstring, Rect * clipLeft, Rect * clipRight)
 {
   char   c;
   Pt     pOrig = pos;
@@ -380,12 +379,12 @@ DrawPercent (
         size		->	taille des caractères
  */
 
-Rectangle
+Rect
 GetRectText (Pt pos, char * pstring, short size)
 {
-  Rectangle rect;
-  char      c;
-  short     lg = 0;
+  Rect  rect;
+  char  c;
+  short lg = 0;
 
   charsize = size;
 
@@ -415,9 +414,9 @@ GetRectText (Pt pos, char * pstring, short size)
 static short
 GetWord (const char ** ppnext, char * pword)
 {
-  char *    pt;
-  Pt        pos;
-  Rectangle rect;
+  char * pt;
+  Pt     pos;
+  Rect   rect;
 
   pt = pword;
   while (**ppnext != 0 && **ppnext != '\n' && **ppnext != ' ' &&
@@ -446,7 +445,7 @@ GetWord (const char ** ppnext, char * pword)
  */
 
 void
-DrawParagraph (Pixmap * ppm, Rectangle rect, const char * pstring, short size)
+DrawParagraph (Pixmap * ppm, Rect rect, const char * pstring, short size)
 {
   Pt           pos;
   char         word[50];
@@ -561,9 +560,9 @@ CalcJustif (void)
 void
 EditAff (void)
 {
-  short     i;
-  Pt        pos;
-  Rectangle rect;
+  short i;
+  Pt    pos;
+  Rect  rect;
 
   GetIcon (&pmchar1, ICO_CHAR_LIT + 0, 1);
   GetIcon (&pmchar2, ICO_CHAR_LIT + 1, 1);
@@ -912,7 +911,7 @@ ins:
  */
 
 short
-EditOpen (char * p, short max, Rectangle rect)
+EditOpen (char * p, short max, Rect rect)
 {
   pchaine  = p;
   lgchaine = strlen (p);

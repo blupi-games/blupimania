@@ -210,8 +210,8 @@ DrawF1toF4 (short rang)
 void
 DrawReste (Pt pos, short rest)
 {
-  Rectangle rect;
-  char      chaine[4];
+  Rect rect;
+  char chaine[4];
 
   if (pos.x < 0)
     return;
@@ -258,9 +258,9 @@ DrawReste (Pt pos, short rest)
 void
 DrawTriangle (short rang)
 {
-  Pt        pos;
-  Rectangle rect;
-  char      chaine[2];
+  Pt   pos;
+  Rect rect;
+  char chaine[2];
 
   pos = GetButtonPos (rang);
   if (pos.x < 0)
@@ -295,8 +295,8 @@ DrawTriangle (short rang)
 void
 PaletteDraw (void)
 {
-  Rectangle rect;
-  short     rang, state;
+  Rect  rect;
+  short rang, state;
 
   rect.p1.x = 6;
   rect.p1.y = LYIMAGE () - 1 - 332;
@@ -440,9 +440,9 @@ SPaletteRedraw (short rang)
 short
 SPaletteOpen (short rang, Pixmap * ppm)
 {
-  Pt        pos, dim;
-  Pt        p = {0, 0};
-  Rectangle r;
+  Pt   pos, dim;
+  Pt   p = {0, 0};
+  Rect r;
 
   SPaletteGetPosDim (rang, &pos, &dim);
 
@@ -1006,9 +1006,9 @@ static short tabpalette[] = {
 void
 DrawEditRest (Pt pos, short reste, short etat)
 {
-  Pt        p;
-  char      chaine[4];
-  Rectangle rect;
+  Pt   p;
+  char chaine[4];
+  Rect rect;
 
   rect.p1.x = pos.x + LXICO / 2;
   rect.p1.y = pos.y;
@@ -1345,10 +1345,10 @@ InfoDraw (
   short status, short force, short vision, short mechant, short magic,
   short cles)
 {
-  Pixmap    pm;
-  Pixmap    pminfo = {0};
-  Rectangle rect;
-  Pt        p1, p2, dim;
+  Pixmap pm;
+  Pixmap pminfo = {0};
+  Rect   rect;
+  Pt     p1, p2, dim;
 
   if (
     status == laststatus && force == lastforce && vision == lastvision &&

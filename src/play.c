@@ -950,7 +950,7 @@ ConvPhaseToNumImage (Phase ph)
 void
 ShowImage (void)
 {
-  Rectangle    rect;
+  Rect         rect;
   const char * ptx;
   short        image, err, nbessai, max;
 
@@ -1515,7 +1515,7 @@ DrawScroll (void)
 void
 DrawVolume (short pot, short volume)
 {
-  Rectangle rect;
+  Rect rect;
 
   if (pot == 0)
   {
@@ -1700,9 +1700,9 @@ DrawCouleur (void)
 void
 DrawArrows (char mode)
 {
-  short     icon;
-  Pt        src, dst, dim;
-  Rectangle rect;
+  short icon;
+  Pt    src, dst, dim;
+  Rect  rect;
 
   if (g_typejeu == 0 || g_pause)
   {
@@ -1858,7 +1858,7 @@ DrawBigNum (Pt pos, short num)
 void
 DrawObjectif (void)
 {
-  Rectangle           rect;
+  Rect                rect;
   const char *        ptext     = descmonde.text;
   static const char * tomake[3] = {
     "Puzzle to build ...", "Enigme \271 construire ...",
@@ -1903,7 +1903,7 @@ DrawObjectif (void)
  */
 
 void
-RectStatusBar (Rectangle * prect)
+RectStatusBar (Rect * prect)
 {
   switch (phase)
   {
@@ -1936,11 +1936,11 @@ RectStatusBar (Rectangle * prect)
 void
 DrawStatusBar (short avance, short max)
 {
-  short     pos;
-  Rectangle rect, partLeft, partRight;
-  Pt        pgra;
-  char      lcolor, rcolor;
-  char      chaine[6];
+  short pos;
+  Rect  rect, partLeft, partRight;
+  Pt    pgra;
+  char  lcolor, rcolor;
+  char  chaine[6];
 
   if (max != 0)
     pos = (avance * 100) / max;
@@ -2017,7 +2017,7 @@ DrawStatusBar (short avance, short max)
  */
 
 short
-DetectStatusBar (Pt pos, short max, Rectangle * prect)
+DetectStatusBar (Pt pos, short max, Rect * prect)
 {
   short monde, progres;
 
@@ -2110,8 +2110,8 @@ DrawUpdate (const char * version, Pt pos)
 void
 TrackingStatusBar (Pt pos)
 {
-  Rectangle rect     = {0};
-  short     newmonde = g_monde;
+  Rect  rect     = {0};
+  short newmonde = g_monde;
 
   RectStatusBar (&rect);
 
@@ -2769,7 +2769,7 @@ next:
 void
 JoueurEditOpen (void)
 {
-  Rectangle rect;
+  Rect rect;
 
   rect.p1.x = 299;
   rect.p1.y = LYIMAGE () - 297 + fj.joueur * 40;
@@ -2907,7 +2907,7 @@ PhaseEditClose (void)
 short
 RedrawPhase (Phase phase)
 {
-  Rectangle rect;
+  Rect rect;
 
   ShowImage (); /* affiche l'image de base */
 
@@ -3003,8 +3003,8 @@ RedrawPhase (Phase phase)
 short
 ChangePhase (Phase newphase)
 {
-  short     err, type;
-  Rectangle rect;
+  short err, type;
+  Rect  rect;
 
   /*	Ferme la phase de jeu en cours. */
 

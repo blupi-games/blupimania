@@ -783,7 +783,7 @@ DuplPixel (Pixmap * ppms, Pixmap * ppmd)
 
 void
 ScrollPixelRect (
-  Pixmap * ppm, Pt pos, Pt dim, Pt shift, char color, Rectangle * pzone)
+  Pixmap * ppm, Pt pos, Pt dim, Pt shift, char color, Rect * pzone)
 {
   Pt p1, p2, _dim;
 
@@ -870,7 +870,7 @@ fill:
  */
 
 void
-ScrollPixel (Pixmap * ppm, Pt shift, char color, Rectangle * pzone)
+ScrollPixel (Pixmap * ppm, Pt shift, char color, Rect * pzone)
 {
   Pt pos, dim;
 
@@ -1027,7 +1027,7 @@ DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color)
  */
 
 void
-DrawRect (Pixmap * ppm, Rectangle rect, int color)
+DrawRect (Pixmap * ppm, Rect rect, int color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;
@@ -1058,7 +1058,7 @@ DrawRect (Pixmap * ppm, Rectangle rect, int color)
  */
 
 void
-DrawFillRect (Pixmap * ppm, Rectangle rect, int color)
+DrawFillRect (Pixmap * ppm, Rect rect, int color)
 {
   SDL_Rect _rect;
   _rect.x = rect.p1.x;

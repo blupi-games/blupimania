@@ -40,7 +40,7 @@ typedef struct {
 } Partie;
 
 void         DecorShift (Pt oldpos, Pt newpos, short bDraw);
-static short IfHideIcon (Pt pos, Rectangle zone);
+static short IfHideIcon (Pt pos, Rect zone);
 
 /* ======== */
 /* GraToCel */
@@ -312,7 +312,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
 
   short icon;
 
-  Rectangle zone;
+  Rect zone;
   zone.p1.x = 0;
   zone.p1.y = 0;
   zone.p2.x = DIMXDRAW;
@@ -2144,7 +2144,7 @@ DecorSetOrigine (Pt origine, short quick)
  */
 
 static short
-IfHideIcon (Pt pos, Rectangle zone)
+IfHideIcon (Pt pos, Rect zone)
 {
   return (
     pos.x + LXICO < zone.p1.x || pos.x > zone.p2.x ||
@@ -2160,7 +2160,7 @@ IfHideIcon (Pt pos, Rectangle zone)
  */
 
 void
-CopyIconDecor (Pixmap * ppmicon, Pt pos, Rectangle zone)
+CopyIconDecor (Pixmap * ppmicon, Pt pos, Rect zone)
 {
   Pt src, dst, dim;
 
@@ -2213,12 +2213,12 @@ CopyIconDecor (Pixmap * ppmicon, Pt pos, Rectangle zone)
 void
 DecorShift (Pt oldpos, Pt newpos, short bDraw)
 {
-  Pixmap    pmissol, pmichair;
-  Rectangle zone;
-  Pt        shift;
-  Pt        pv, ph;
-  Pt        cel;
-  short     i, j, icon;
+  Pixmap pmissol, pmichair;
+  Rect   zone;
+  Pt     shift;
+  Pt     pv, ph;
+  Pt     cel;
+  short  i, j, icon;
 
   /* Si c'est possible, décale une partie du contenu actuel de pmdecor
       pour n'avoir à redessiner plus que la partie effectivement
@@ -2290,8 +2290,8 @@ DecorShift (Pt oldpos, Pt newpos, short bDraw)
 term:
   if (bDraw)
   {
-    Pt        src, dst, dim;
-    Rectangle szone;
+    Pt   src, dst, dim;
+    Rect szone;
 
     dst.x = POSXDRAW;
     dst.y = POSYDRAW;

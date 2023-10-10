@@ -219,14 +219,14 @@ typedef struct {
 typedef struct {
   Pt p1; /* coin sup/gauche */
   Pt p2; /* coin inf/droite */
-} Rectangle;
+} Rect;
 
 /* ------ */
 /* Région */
 /* ------ */
 
 typedef struct {
-  Rectangle r; /* rectangle de la région */
+  Rect r; /* rectangle de la région */
 } Reg;
 
 /* --------- */
@@ -404,14 +404,12 @@ void     IconClose (void);
 
 Pt DrawString (Pixmap * ppm, Pt pos, char * pstring, short size);
 Pt DrawPercent (
-  Pixmap * ppm, Pt pos, char * pstring, Rectangle * clipLeft,
-  Rectangle * clipRight);
-Rectangle GetRectText (Pt pos, char * pstring, short size);
-void
-DrawParagraph (Pixmap * ppm, Rectangle rect, const char * pstring, short size);
+  Pixmap * ppm, Pt pos, char * pstring, Rect * clipLeft, Rect * clipRight);
+Rect GetRectText (Pt pos, char * pstring, short size);
+void DrawParagraph (Pixmap * ppm, Rect rect, const char * pstring, short size);
 
 short EditEvent (short key, Pt pos);
-short EditOpen (char * p, short max, Rectangle rect);
+short EditOpen (char * p, short max, Rect rect);
 short EditClose (void);
 
 /* bm_smaky.c */
@@ -448,13 +446,13 @@ short     GetPixmap (Pixmap * ppm, Pt dim, short fill, short colormode);
 short     GetImage (Pixmap * ppm, short numero);
 short     GivePixmap (Pixmap * ppm);
 void      DuplPixel (Pixmap * ppms, Pixmap * ppmd);
-void      ScrollPixel (Pixmap * ppm, Pt shift, char color, Rectangle * pzone);
+void      ScrollPixel (Pixmap * ppm, Pt shift, char color, Rect * pzone);
 void      ScrollPixelRect (
-       Pixmap * ppm, Pt od, Pt dim, Pt shift, char color, Rectangle * pzone);
+       Pixmap * ppm, Pt od, Pt dim, Pt shift, char color, Rect * pzone);
 short CopyPixel (Pixmap * ppms, Pt os, Pixmap * ppmd, Pt od, Pt dim);
 void  DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color);
-void  DrawRect (Pixmap * ppm, Rectangle rect, int color);
-void  DrawFillRect (Pixmap * ppm, Rectangle rect, int color);
+void  DrawRect (Pixmap * ppm, Rect rect, int color);
+void  DrawFillRect (Pixmap * ppm, Rect rect, int color);
 void  BlackScreen (void);
 short SavePixmap (Pixmap * ppm);
 short RestorePixmap (Pixmap * ppm);
