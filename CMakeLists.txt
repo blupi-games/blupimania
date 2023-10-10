@@ -31,9 +31,9 @@ configure_file (
 include_directories ("${PROJECT_BINARY_DIR}/include")
 
 if (BUILD_JS)
-  file (GLOB sources src/*.c src/*.h src/json/* src/platform/*_js.*)
+  file (GLOB sources src/*.c src/*.h src/argtable3/* src/platform/*_js.*)
 else ()
-  file (GLOB sources src/*.c src/*.h src/json/* src/platform/*_sdl.*)
+  file (GLOB sources src/*.c src/*.h src/argtable3/* src/platform/*_sdl.*)
 endif ()
 
 file (GLOB_RECURSE po resources/po/*.po)

@@ -769,10 +769,10 @@ JoueurRead (struct arguments * arguments)
 {
   short err;
 
-  memset (&fj, 0, sizeof (Joueur)); /* met tout à zéro */
-  fj.vitesse = 1;                   /* vitesse normale */
+  memset (&fj, 0, sizeof (fj)); /* met tout à zéro */
+  fj.vitesse = 1;               /* vitesse normale */
 
-  err = FileRead (&fj, 0, sizeof (Joueur), 'z');
+  err = FileRead (&fj, 0, sizeof (fj), 'z');
   if (err)
   {
     fj.noisevolume = 10 - 3;
@@ -812,9 +812,25 @@ JoueurRead (struct arguments * arguments)
 short
 JoueurWrite (void)
 {
-  short err;
+  short  err;
+  Joueur diskFj, saveFj;
 
-  err = FileWrite (&fj, 0, sizeof (Joueur), 'z');
+  SDL_memset (&diskFj, 0, sizeof (diskFj));
+  diskFj.vitesse = 1;
+  SDL_memcpy (&saveFj, &fj, sizeof (saveFj));
+
+  err = FileRead (&diskFj, 0, sizeof (diskFj), 'z');
+  if (err)
+    return err;
+
+  if (g_settingsOverload & (SETTING_FULLSCREEN | SETTING_ZOOM))
+    saveFj.screen = diskFj.screen;
+  if (g_settingsOverload & SETTING_SPEEDRATE)
+    saveFj.vitesse = diskFj.vitesse;
+  if (g_settingsOverload & SETTING_THEME)
+    saveFj.theme = diskFj.theme;
+
+  err = FileWrite (&saveFj, 0, sizeof (saveFj), 'z');
   return err;
 }
 
@@ -3133,10 +3149,10 @@ ChangePhase (Phase newphase)
     break;
 
   case PHASE_IDENT:
-    JoueurRead (NULL); /* lit le fichier des joueurs sur disque */
-    DrawJoueur ();     /* affiche le joueur */
-    DrawIdent ();      /* affiche tous les noms */
-    JoueurEditOpen (); /* prépare l'édition du nom */
+    JoueurRead (&arguments); /* lit le fichier des joueurs sur disque */
+    DrawJoueur ();           /* affiche le joueur */
+    DrawIdent ();            /* affiche tous les noms */
+    JoueurEditOpen ();       /* prépare l'édition du nom */
     break;
 
   case PHASE_REGLAGE:
@@ -4723,6 +4739,7 @@ ExecuteAction (char event, Pt pos)
   if (action >= ACTION_VITESSE0 && action <= ACTION_VITESSE2)
   {
     fj.vitesse = action - ACTION_VITESSE0;
+    g_settingsOverload &= ~SETTING_SPEEDRATE;
     DrawVitesse ();
     return 0;
   }
@@ -4806,6 +4823,7 @@ ExecuteAction (char event, Pt pos)
   if (action >= ACTION_SCREEN_1 && action <= ACTION_SCREEN_FULL)
   {
     fj.screen = action - ACTION_SCREEN_1;
+    g_settingsOverload &= ~(SETTING_FULLSCREEN | SETTING_ZOOM);
     DrawScreen ();
     ChangeScreen (fj.screen);
     return 0;
@@ -4814,6 +4832,7 @@ ExecuteAction (char event, Pt pos)
   if (action >= ACTION_THEME_DOS && action <= ACTION_THEME_SMAKY100)
   {
     fj.theme = action - ACTION_THEME_DOS;
+    g_settingsOverload &= ~SETTING_THEME;
     DrawTheme ();
     ChangeTheme (fj.theme);
     PushUserEvent (RESET, NULL);
@@ -5038,7 +5057,7 @@ PlayInit (int argc, char * argv[])
 {
   int rc = OpenMachine (argc, argv, &arguments); /* ouverture générale */
   if (rc)
-    return rc;
+    return rc == -1 ? 0 : rc;
 
   LoadTextures ();
 
@@ -5590,7 +5609,7 @@ PlayRelease (void)
     SDL_WaitThread (g_updateThread, &threadReturnValue);
   }
 
-  CloseMachine (); /* fermeture générale */
+  CloseMachine (&arguments); /* fermeture générale */
 }
 
 void

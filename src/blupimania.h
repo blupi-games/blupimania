@@ -465,7 +465,7 @@ short FileRename (char oldfile, char newfile);
 
 void FatalError (short err);
 int  OpenMachine (int argc, char * argv[], struct arguments * arguments);
-void CloseMachine (void);
+void CloseMachine (struct arguments * arguments);
 
 long  MachinePartieLg (void);
 short MachinePartieWrite (long pos, char file);

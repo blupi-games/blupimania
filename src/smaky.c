@@ -3,7 +3,6 @@
 /* bm_smaky.c */
 /* ========== */
 
-#include <argp.h>
 #include <errno.h>
 #include <malloc.h>
 #include <math.h>
@@ -13,6 +12,7 @@
 #include <time.h>
 
 #include "actions.h"
+#include "argtable3/argtable3.h"
 #include "blupimania.h"
 #include <SDL2/SDL_mixer.h>
 
@@ -1734,74 +1734,139 @@ IfFileExist (char * pfilename)
   return 1;         /* fichier existe */
 }
 
-const char * argp_program_version     = "blupimania " BLUPIMANIA_VERSION_STR;
-const char * argp_program_bug_address = "<info@blupi.org>";
-static char  doc[]      = "A compelling game of brain-twisting logic.";
-static char  args_doc[] = "...";
-static struct argp_option options[] = {
-  {"speedrate", 's', "value", 0, "Change the speed rate [0;1;2] (default: 1)"},
-  {"timerinterval", 't', "value", 0,
-   "Set the timer interval (refresh) (default: 25)"},
-  {"fullscreen", 'f', 0, 0, "Load in fullscreen [on;off] (default: off)"},
-  {"zoom", 'z', "value", 0,
-   "Change the window scale (only if fullscreen is off) [1;2] (default: 2)"},
-  {"theme", 'm', "value", 0, "Change the theme [dos;smaky100] (default: dos)"},
-  {"renderer", 'r', "value", 0,
-   "Set a renderer [auto;software;accelerated] (default: auto)"},
-  {"driver", 'd', "value", 0,
-   "Set a driver [auto;direct3d;direct3d11;opengl;opengles2;opengles] "
-   "(default: auto, ignored with software renderer)"},
-  {0}};
-
-static error_t
-parse_opt (int key, char * arg, struct argp_state * state)
+static int
+parseOptions (int argc, char * argv[], struct arguments * arguments)
 {
-  struct arguments * arguments = state->input;
-  switch (key)
-  {
-  case 's':
-    arguments->speedrate = SDL_atoi (arg);
-    g_settingsOverload |= SETTING_SPEEDRATE;
-    if (arguments->speedrate < 0 || arguments->speedrate > 2)
-      return ARGP_ERR_UNKNOWN;
-    break;
-  case 't':
-    arguments->timerinterval = SDL_atoi (arg);
-    g_settingsOverload |= SETTING_TIMERINTERVAL;
-    if (arguments->timerinterval < 10)
-      return ARGP_ERR_UNKNOWN;
-    break;
-  case 'f':
-    arguments->fullscreen = SDL_TRUE;
-    g_settingsOverload |= SETTING_FULLSCREEN;
-    break;
-  case 'z':
-    arguments->zoom = SDL_atoi (arg);
-    g_settingsOverload |= SETTING_ZOOM;
-    if (arguments->zoom < 1 || arguments->zoom > 2)
-      return ARGP_ERR_UNKNOWN;
-    break;
-  case 'm':
-    arguments->theme = arg;
-    g_settingsOverload |= SETTING_THEME;
-    break;
-  case 'r':
-    arguments->renderer = arg;
-    g_settingsOverload |= SETTING_RENDERER;
-    break;
-  case 'd':
-    arguments->driver = arg;
-    g_settingsOverload |= SETTING_DRIVER;
-    break;
-  case ARGP_KEY_ARG:
-    return 0;
-  default:
-    return ARGP_ERR_UNKNOWN;
-  }
-  return 0;
-}
+  struct arg_int * s, *t, *z;
+  struct arg_lit * h, *v, *f;
+  struct arg_str * m, *r, *d;
+  struct arg_end * end;
 
-static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
+  void * argtable[] = {
+    h = arg_lit0 ("h", "help", "print this help message and exit"),
+    v = arg_lit0 ("V", "version", "print version and exit"),
+    s = arg_int0 (
+      "s", "speed-rate", NULL, "Change the speed rate [0;1;2] (default: 1)"),
+    t = arg_int0 (
+      "t", "timer-interval", NULL,
+      "set the timer interval (refresh) (default: 25)"),
+    f =
+      arg_lit0 ("f", "fullscreen", "load in fullscreen [on;off] (default: on)"),
+    z = arg_int0 (
+      "z", "zoom", NULL,
+      "change the window scale (only if fullscreen is off) [1;2] (default: 2)"),
+    m = arg_str0 (
+      "m", "theme", NULL, "change the theme [dos;smaky100] (default: dos)"),
+    r = arg_str0 (
+      "r", "renderer", NULL,
+      "set a renderer [auto;software;accelerated] (default: auto)"),
+    d = arg_str0 (
+      "d", "driver", NULL,
+      "set a driver [auto;direct3d;direct3d11;opengl;opengles2;opengles] "
+      "(default: auto, ignored with software renderer)"),
+    end = arg_end (2),
+  };
+
+  int  exitcode   = 0;
+  char progname[] = "blupimania";
+
+  int nerrors;
+  nerrors = arg_parse (argc, argv, argtable);
+
+  /* special case: '--help' takes precedence over error reporting */
+  if (h->count > 0)
+  {
+    printf ("Usage: %s", progname);
+    arg_print_syntax (stdout, argtable, "\n");
+    arg_print_glossary (stdout, argtable, "    %-25s\n        %s\n");
+    exitcode = -1;
+    goto exit;
+  }
+
+  /* special case: '--version' takes precedence error reporting */
+  if (v->count > 0)
+  {
+    printf (BLUPIMANIA_VERSION_STR);
+    exitcode = -1;
+    goto exit;
+  }
+
+  if (nerrors > 0)
+  {
+    /* Display the error details contained in the arg_end struct.*/
+    arg_print_errors (stdout, end, progname);
+    printf ("Try '%s --help' for more information.\n", progname);
+    exitcode = 1;
+    goto exit;
+  }
+
+  if (s->count > 0)
+  {
+    g_settingsOverload |= SETTING_SPEEDRATE;
+    if (*s->ival < 0 || *s->ival > 2)
+    {
+      fprintf (stderr, "speed-rate must be 0, 1 or 2");
+      exitcode = 1;
+      goto exit;
+    }
+    arguments->speedrate = *s->ival;
+  }
+
+  if (t->count > 0)
+  {
+    g_settingsOverload |= SETTING_TIMERINTERVAL;
+    if (*t->ival < 10)
+    {
+      fprintf (stderr, "timer-interval must be greater or equal to 10");
+      exitcode = 1;
+      goto exit;
+    }
+    arguments->timerinterval = *t->ival;
+  }
+
+  if (f->count > 0)
+  {
+    g_settingsOverload |= SETTING_FULLSCREEN;
+    arguments->fullscreen = SDL_TRUE;
+  }
+
+  if (z->count > 0)
+  {
+    g_settingsOverload |= SETTING_ZOOM;
+    if (*z->ival < 1 || *z->ival > 2)
+    {
+      fprintf (stderr, "zoom must be 1 or 2");
+      exitcode = 1;
+      goto exit;
+    }
+    arguments->zoom = *z->ival;
+  }
+
+  if (m->count > 0)
+  {
+    g_settingsOverload |= SETTING_THEME;
+    free (arguments->theme);
+    arguments->theme = SDL_strdup (*m->sval);
+  }
+
+  if (r->count > 0)
+  {
+    g_settingsOverload |= SETTING_RENDERER;
+    free (arguments->renderer);
+    arguments->renderer = SDL_strdup (*r->sval);
+  }
+
+  if (d->count > 0)
+  {
+    g_settingsOverload |= SETTING_DRIVER;
+    free (arguments->driver);
+    arguments->driver = SDL_strdup (*d->sval);
+  }
+
+exit:
+  arg_freetable (argtable, sizeof (argtable) / sizeof (argtable[0]));
+  return exitcode;
+}
 
 static int
 parseArgs (int argc, char * argv[], struct arguments * arguments)
@@ -1810,10 +1875,11 @@ parseArgs (int argc, char * argv[], struct arguments * arguments)
   arguments->timerinterval = g_timerInterval;
   arguments->fullscreen    = SDL_FALSE;
   arguments->zoom          = 2;
-  arguments->renderer      = "auto";
-  arguments->driver        = "auto";
+  arguments->renderer      = SDL_strdup ("auto");
+  arguments->driver        = SDL_strdup ("auto");
+  arguments->theme         = SDL_strdup ("dos");
 
-  int rc = argp_parse (&argp, argc, argv, 0, 0, arguments);
+  int rc = parseOptions (argc, argv, arguments);
   if (rc)
     return rc;
 
@@ -1969,7 +2035,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
  */
 
 void
-CloseMachine (void)
+CloseMachine (struct arguments * arguments)
 {
   UnloadSprites ();
   UnloadSounds ();
@@ -1981,6 +2047,13 @@ CloseMachine (void)
     SDL_DestroyWindow (g_window);
 
   SDL_Quit ();
+
+  if (arguments->theme)
+    free (arguments->theme);
+  if (arguments->renderer)
+    free (arguments->renderer);
+  if (arguments->driver)
+    free (arguments->driver);
 }
 
 /* =============== */
