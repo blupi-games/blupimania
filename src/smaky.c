@@ -1407,11 +1407,12 @@ data:
 int
 LoadSprites (Style style)
 {
-  static Style _style = -1;
-  static short _theme = -1;
+  static Style _style  = -1;
+  static short _theme  = -1;
+  static short _langue = -1;
   int          err;
 
-  if (_style == style && _theme == g_theme)
+  if (_style == style && _theme == g_theme && _langue == g_langue)
     return 0;
 
   _style = style;
