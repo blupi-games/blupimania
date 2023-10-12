@@ -14,7 +14,7 @@
 
 typedef struct {
   short icon;    /* icône */
-  short btransp; /* 1 -> transparent */
+  short btransp; /* 1 -> transparent, 2 -> invincible */
   Pt    pos;     /* coin sup/gauche de l'icône */
   short posz;    /* position verticale (selon l'axe z) */
   Pt    cel;     /* cellule charnière pour devant/derrière */
@@ -215,7 +215,7 @@ typedef struct {
 
 static SuperCelHover
 IconDrawOne (
-  short i, short m, Pt pos, short posz, Pt cel, Reg clip, Pixmap * ppm)
+  short i, short super, Pt pos, short posz, Pt cel, Reg clip, Pixmap * ppm)
 {
   Pixmap        pmicon; /* pixmap de l'icône à dessiner */
   Reg           use;    /* région à utiliser */
@@ -231,10 +231,18 @@ IconDrawOne (
     DecorIconMask (pos, posz, cel); /* fabrique le masque */
 
   GetSprite (&pmicon, i, 1); /* cherche le pixmap de la chair */
-  if (m == 1)
+  if (super == 1)
+    SDL_SetTextureAlphaMod (pmicon.texture, 150);
+  else if (super == 2)
   {
-    SDL_SetTextureAlphaMod (pmicon.texture, 128);
+    SDL_SetTextureAlphaMod (pmicon.texture, 200);
+    if (g_theme == 0)
+      SDL_SetTextureColorMod (pmicon.texture, 0x22, 0xE2, 0x58);
+    else
+      SDL_SetTextureColorMod (pmicon.texture, 0xFF, 0xAA, 0xFF);
   }
+  else
+    SDL_SetTextureAlphaMod (pmicon.texture, 255);
 
   p1.y  = use.r.p1.y - pos.y;
   p1.x  = use.r.p1.x - pos.x;
@@ -328,8 +336,11 @@ IconDrawOne (
        use.r.p1, dim);
   }
 
-  if (m == 1)
+  if (super > 0)
+  {
     SDL_SetTextureAlphaMod (pmicon.texture, 255);
+    SDL_SetTextureColorMod (pmicon.texture, 255, 255, 255);
+  }
 
   /* Redessine des éléments de décors qui doivent apparaître devant les "toto"
    */

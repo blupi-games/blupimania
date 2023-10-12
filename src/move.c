@@ -3831,10 +3831,10 @@ DrawOne (short i, Pt ovisu)
                                                    : toto[i].poscela.y;
 
   btransp = 0;
-  if (
-    toto[i].magic > 0 || /* toto transparent */
-    toto[i].invincible & 1)
-    btransp = 1; /* toto invisible un pas sur deux */
+  if (toto[i].magic > 0) /* toto transparent */
+    btransp = 1;
+  if (toto[i].invincible)
+    btransp = 2;
 
   if (toto[i].offz < LYICO + OFFZTOTO) /* si trop bas -> ne dessine pas */
   {
