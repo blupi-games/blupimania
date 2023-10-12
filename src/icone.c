@@ -318,10 +318,7 @@ IconDrawOne (
     SDL_SetTextureBlendMode (ppm->texture, SDL_BLENDMODE_BLEND);
 
     /* Dessine le "toto" */
-    CopyPixel   /* dessine la chair */
-      (&pmicon, /* source */
-       p1, ppm, /* destination */
-       use.r.p1, cropDim);
+    CopyPixel (&pmicon, p1, ppm, use.r.p1, cropDim);
 
     /* Utilise le "masque" par dessus */
     CopyPixel (&pmtemp, p2, ppm, holeCoords, maskDim);
@@ -330,10 +327,7 @@ IconDrawOne (
   else
   {
     /* Dessine le "toto" */
-    CopyPixel   /* dessine la chair */
-      (&pmicon, /* source */
-       p1, ppm, /* destination */
-       use.r.p1, dim);
+    CopyPixel (&pmicon, p1, ppm, use.r.p1, dim);
   }
 
   if (super > 0)
