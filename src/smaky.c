@@ -1408,12 +1408,14 @@ int
 LoadSprites (Style style)
 {
   static Style _style = -1;
+  static short _theme = -1;
   int          err;
 
-  if (_style == style)
+  if (_style == style && _theme == g_theme)
     return 0;
 
   _style = style;
+  _theme = g_theme;
 
   err =
     GetImage (&pmicon1c, IMAICON + 0, style); /* charge l'image des icônes */
