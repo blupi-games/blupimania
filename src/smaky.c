@@ -1190,7 +1190,7 @@ LoadImage (int numero, Pixmap * pim, Style style)
   {
     switch (style)
     {
-    case NORMAL:
+    default:
       break;
     case PASTEL:
       index = 3;
@@ -1407,7 +1407,13 @@ data:
 int
 LoadSprites (Style style)
 {
-  int err;
+  static Style _style = -1;
+  int          err;
+
+  if (_style == style)
+    return 0;
+
+  _style = style;
 
   err =
     GetImage (&pmicon1c, IMAICON + 0, style); /* charge l'image des icônes */

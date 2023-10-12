@@ -155,7 +155,14 @@ typedef enum {
   CHECKUPDATE = 4
 } UserEvent;
 
-typedef enum { NORMAL = 0, PASTEL = 1, DARK = 2, ROSY = 3, BLUISH = 4 } Style;
+typedef enum {
+  UNDEFINED = -1,
+  NORMAL    = 0,
+  PASTEL    = 1,
+  DARK      = 2,
+  ROSY      = 3,
+  BLUISH    = 4
+} Style;
 
 /* --------- */
 /* KeyStatus */
