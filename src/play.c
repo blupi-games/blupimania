@@ -755,6 +755,15 @@ MondeWrite (short monde, char banque)
   return err;
 }
 
+Style
+GetWorldStyle ()
+{
+  if (phase != PHASE_PLAY)
+    return NORMAL;
+
+  return descmonde.color;
+}
+
 /* ---------- */
 /* JoueurRead */
 /* ---------- */
@@ -1213,7 +1222,7 @@ ShowImage (void)
 
   image = ConvPhaseToNumImage (phase);
 
-  err        = GetImage (&pmimage, image);
+  err        = GetImage (&pmimage, image, descmonde.color);
   pmimageNum = image;
   if (err)
     FatalBreak (err); /* erreur fatale */
@@ -1280,91 +1289,6 @@ ShowImage (void)
   }
 }
 
-/* Table des couleurs pendant le jeu */
-/* --------------------------------- */
-
-static short tcolor[] = {0, 0,  0xFF, 0xFF, 0xFF, //
-                         0, 1,  0xFF, 0xFF, 0x00, //
-                         0, 2,  0xFF, 0xCC, 0x40, //
-                         0, 3,  0xFF, 0x00, 0x00, //
-                         0, 4,  0xDC, 0xDC, 0xDC, //
-                         0, 5,  0xBE, 0xBE, 0xBE, //
-                         0, 6,  0x00, 0xFF, 0xFF, //
-                         0, 7,  0x00, 0x00, 0xFF, //
-                         0, 8,  0x00, 0xFF, 0x00, //
-                         0, 9,  0x00, 0xCD, 0x00, //
-                         0, 10, 0xE0, 0xA1, 0xFF, //
-                         0, 11, 0xFF, 0x00, 0xFF, //
-                         0, 12, 0xDB, 0x95, 0x61, //
-                         0, 13, 0xB9, 0x6B, 0x34, //
-                         0, 14, 0xA9, 0xD8, 0xFF, //
-
-                         1, 0,  0xFF, 0xFF, 0xFF, //
-                         1, 1,  0xFF, 0xFF, 0x69, //
-                         1, 2,  0xFF, 0xCE, 0x49, //
-                         1, 3,  0xFF, 0x91, 0x91, //
-                         1, 4,  0xCD, 0xCD, 0xCD, //
-                         1, 5,  0xB4, 0xB4, 0xB4, //
-                         1, 6,  0x96, 0xFF, 0xFF, //
-                         1, 7,  0xB9, 0xB7, 0xFF, //
-                         1, 8,  0xAC, 0xFF, 0xAC, //
-                         1, 9,  0x8D, 0xCD, 0x8D, //
-                         1, 10, 0xE9, 0xB2, 0xFF, //
-                         1, 11, 0xFF, 0x98, 0xFA, //
-                         1, 12, 0xF2, 0xAE, 0x8C, //
-                         1, 13, 0xCD, 0x85, 0x85, //
-                         1, 14, 0xA7, 0xD3, 0xFF, //
-
-                         2, 0,  0xD0, 0xD0, 0xD0, //
-                         2, 1,  0xD3, 0xD3, 0x00, //
-                         2, 2,  0xCB, 0xA2, 0x33, //
-                         2, 3,  0xB9, 0x00, 0x00, //
-                         2, 4,  0xA0, 0xA0, 0xA0, //
-                         2, 5,  0x78, 0x78, 0x78, //
-                         2, 6,  0x00, 0xB7, 0xB7, //
-                         2, 7,  0x03, 0x00, 0xCB, //
-                         2, 8,  0x00, 0xD5, 0x00, //
-                         2, 9,  0x00, 0xA3, 0x00, //
-                         2, 10, 0xBA, 0x85, 0xD3, //
-                         2, 11, 0xBB, 0x00, 0xB8, //
-                         2, 12, 0xB1, 0x6B, 0x36, //
-                         2, 13, 0x8D, 0x3B, 0x00, //
-                         2, 14, 0x8D, 0xB4, 0xD5, //
-
-                         3, 0,  0xFF, 0xFF, 0xFF, //
-                         3, 1,  0xFF, 0xFF, 0x00, //
-                         3, 2,  0xFF, 0xD8, 0x6E, //
-                         3, 3,  0xFF, 0x00, 0xB7, //
-                         3, 4,  0xDC, 0xC7, 0xC7, //
-                         3, 5,  0xBE, 0xAD, 0xAD, //
-                         3, 6,  0xFF, 0xEE, 0xFF, //
-                         3, 7,  0xEB, 0x85, 0xFF, //
-                         3, 8,  0x00, 0xFF, 0x00, //
-                         3, 9,  0x00, 0xCD, 0x00, //
-                         3, 10, 0xF4, 0xDA, 0xFF, //
-                         3, 11, 0xFF, 0xA6, 0xFE, //
-                         3, 12, 0xD3, 0x97, 0x69, //
-                         3, 13, 0xD1, 0x6F, 0x0D, //
-                         3, 14, 0xD8, 0xB1, 0xFF, //
-
-                         4, 0,  0xFF, 0xFF, 0xFF, //
-                         4, 1,  0xE9, 0xFC, 0x3F, //
-                         4, 2,  0xED, 0xC7, 0x5E, //
-                         4, 3,  0xED, 0x00, 0x7B, //
-                         4, 4,  0xC6, 0xC6, 0xDC, //
-                         4, 5,  0xA8, 0xA5, 0xBE, //
-                         4, 6,  0xB9, 0xDD, 0xFF, //
-                         4, 7,  0x88, 0x83, 0xD4, //
-                         4, 8,  0x00, 0xFF, 0xD5, //
-                         4, 9,  0x00, 0xCD, 0xB2, //
-                         4, 10, 0xD0, 0xA1, 0xFF, //
-                         4, 11, 0xB6, 0x00, 0xED, //
-                         4, 12, 0xBE, 0x9A, 0x72, //
-                         4, 13, 0xC5, 0x5A, 0x1C, //
-                         4, 14, 0xAB, 0xAF, 0xFF, //
-
-                         -1};
-
 /* ------------- */
 /* ChangeCouleur */
 /* ------------- */
@@ -1376,23 +1300,10 @@ static short tcolor[] = {0, 0,  0xFF, 0xFF, 0xFF, //
 void
 ChangeCouleur (void)
 {
-  short i = 0;
-
   if (!IfColor ())
     return;
 
-  while (1)
-  {
-    if (tcolor[i] == -1)
-      break;
-
-    if (tcolor[i] == descmonde.color)
-    {
-      ModColor (tcolor[i + 1], tcolor[i + 2], tcolor[i + 3], tcolor[i + 4]);
-    }
-
-    i += 5;
-  }
+  LoadSprites (descmonde.color);
 }
 
 void
@@ -3113,8 +3024,10 @@ ChangePhase (Phase newphase)
   {
     JoueurRead (&arguments); /* lit le fichier des joueurs sur disque */
     JoueurWrite ();
-    LoadSprites (); /* charge l'image des icônes */
+    LoadSprites (NORMAL); /* charge l'image des icônes */
   }
+  else if (phase != PHASE_PLAY)
+    LoadSprites (NORMAL);
 
   ShowImage (); /* affiche l'image de base */
 
@@ -5731,14 +5644,16 @@ main (int argc, char * argv[])
       UnloadTextures ();
       UnloadDecor ();
 
-      LoadSprites ();
+      Style style = phase == PHASE_PLAY ? descmonde.color : NORMAL;
+
+      LoadSprites (style);
       LoadTextures ();
       LoadDecor ();
 
       GivePixmap (&pmimage);
       if (pmimageNum > -1)
       {
-        int err = GetImage (&pmimage, pmimageNum);
+        int err = GetImage (&pmimage, pmimageNum, style);
         if (err)
           FatalBreak (err);
       }

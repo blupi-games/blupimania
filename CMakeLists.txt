@@ -31,9 +31,9 @@ configure_file (
 include_directories ("${PROJECT_BINARY_DIR}/include")
 
 if (BUILD_JS)
-  file (GLOB sources src/*.c src/*.h src/argtable3/* src/platform/*_js.*)
+  file (GLOB sources src/*.c src/*.h src/argtable3/* src/sdl/* src/platform/*_js.*)
 else ()
-  file (GLOB sources src/*.c src/*.h src/argtable3/* src/platform/*_sdl.*)
+  file (GLOB sources src/*.c src/*.h src/argtable3/* src/sdl/* src/platform/*_sdl.*)
 endif ()
 
 file (GLOB_RECURSE po resources/po/*.po)
@@ -173,6 +173,10 @@ if ("${STATIC_BUILD}")
     # Static dependencies for SDL_mixer
     pkg_search_module (VORBIS REQUIRED vorbisfile)
     set (blupimania_DEPS ${blupimania_DEPS} ${VORBIS_STATIC_LIBRARIES})
+
+    # Static dependencies for SDL_image
+    pkg_search_module (WEBPDEMUX REQUIRED libwebpdemux)
+    set (blupimania_DEPS ${blupimania_DEPS} ${WEBPDEMUX_STATIC_LIBRARIES})
 
     if (BUILD_LINUX)
       pkg_search_module (ALSA REQUIRED alsa)

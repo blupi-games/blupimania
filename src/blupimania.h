@@ -155,6 +155,8 @@ typedef enum {
   CHECKUPDATE = 4
 } UserEvent;
 
+typedef enum { NORMAL = 0, PASTEL = 1, DARK = 2, ROSY = 3, BLUISH = 4 } Style;
+
 /* --------- */
 /* KeyStatus */
 /* --------- */
@@ -433,6 +435,7 @@ void     PlaySoundLoop (short mode);
 void     PlayAudio (short sound, const Pt * cel);
 SDL_bool SoundPlaying (short sound);
 
+Style     GetWorldStyle (void);
 void      ClrEvents (void);
 short     GetEvent (Pt * ppos);
 int       SDLEventToSmakyKey (const SDL_Event * event);
@@ -443,7 +446,7 @@ void      DrawSprite (short num, Pt p1, Pt p2, Pt dim);
 void      DrawSpriteTemp (short num, Pt p1, Pt p2, Pt dim);
 short     GetSprite (Pixmap * ppm, short numero, short mode);
 short     GetPixmap (Pixmap * ppm, Pt dim, short fill, short colormode);
-short     GetImage (Pixmap * ppm, short numero);
+short     GetImage (Pixmap * ppm, short numero, Style style);
 short     GivePixmap (Pixmap * ppm);
 void      DuplPixel (Pixmap * ppms, Pixmap * ppmd);
 void      ScrollPixel (Pixmap * ppm, Pt shift, char color, Rect * pzone);
@@ -474,7 +477,7 @@ short MachinePartieRead (long pos, char file);
 void PushUserEvent (Sint32 code, void * data);
 void Render ();
 
-int  LoadSprites ();
+int  LoadSprites (Style style);
 void UnloadSprites ();
 int  LoadDecor ();
 void UnloadDecor ();

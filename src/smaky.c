@@ -14,6 +14,7 @@
 #include "actions.h"
 #include "argtable3/argtable3.h"
 #include "blupimania.h"
+#include "sdl/SDL3_IMG.h"
 #include <SDL2/SDL_mixer.h>
 
 /* --------------------------- */
@@ -85,6 +86,25 @@ static const SDL_Color g_colorsSmaky100[] = {
 
 const SDL_Color * g_colors;
 const SDL_Color * g_colorsTheme[2] = {g_colorsDOS, g_colorsSmaky100};
+
+void
+GetThemeRGB (int color, Uint8 * r, Uint8 * g, Uint8 * b, Uint8 * a)
+{
+  /* Special hack for the dark style where the white is not white */
+  if (color == COLORBLANC && g_theme == 0 && GetWorldStyle () == DARK)
+  {
+    *r = 0xD0;
+    *g = 0xD0;
+    *b = 0xD0;
+    *a = g_colors[color].a;
+    return;
+  }
+
+  *r = g_colors[color].r;
+  *g = g_colors[color].g;
+  *b = g_colors[color].b;
+  *a = g_colors[color].a;
+}
 
 /* ========= */
 /* GetRandom */
@@ -989,6 +1009,8 @@ CopyPixel (Pixmap * ppms, Pt os, Pixmap * ppmd, Pt od, Pt dim)
 void
 DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color)
 {
+  Uint8 r, g, b, a;
+
   if (!ppm) /* source dans l'écran ? */
   {
     p1.x += origine.x;
@@ -1004,11 +1026,11 @@ DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color)
     p2.y += ppm->orig.y;
   }
 
+  GetThemeRGB (color, &r, &g, &b, &a);
+
   SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
   SDL_SetRenderTarget (g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor (
-    g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b,
-    g_colors[color].a);
+  SDL_SetRenderDrawColor (g_renderer, r, g, b, a);
   SDL_SetRenderTarget (g_renderer, ppm ? ppm->texture : g_screen.texture);
   SDL_RenderDrawLine (g_renderer, p1.x, p1.y, p2.x, p2.y);
   SDL_SetRenderTarget (g_renderer, target);
@@ -1029,17 +1051,19 @@ DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color)
 void
 DrawRect (Pixmap * ppm, Rect rect, int color)
 {
+  Uint8    r, g, b, a;
   SDL_Rect _rect;
+
   _rect.x = rect.p1.x;
   _rect.y = rect.p1.y;
   _rect.w = rect.p2.x - rect.p1.x;
   _rect.h = rect.p2.y - rect.p1.y;
 
+  GetThemeRGB (color, &r, &g, &b, &a);
+
   SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
   SDL_SetRenderTarget (g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor (
-    g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b,
-    g_colors[color].a);
+  SDL_SetRenderDrawColor (g_renderer, r, g, b, a);
   SDL_RenderDrawRect (g_renderer, &_rect);
   SDL_SetRenderTarget (g_renderer, target);
 }
@@ -1060,17 +1084,19 @@ DrawRect (Pixmap * ppm, Rect rect, int color)
 void
 DrawFillRect (Pixmap * ppm, Rect rect, int color)
 {
+  Uint8    r, g, b, a;
   SDL_Rect _rect;
+
   _rect.x = rect.p1.x;
   _rect.y = rect.p1.y;
   _rect.w = rect.p2.x - rect.p1.x;
   _rect.h = rect.p2.y - rect.p1.y;
 
+  GetThemeRGB (color, &r, &g, &b, &a);
+
   SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
   SDL_SetRenderTarget (g_renderer, ppm ? ppm->texture : g_screen.texture);
-  SDL_SetRenderDrawColor (
-    g_renderer, g_colors[color].r, g_colors[color].g, g_colors[color].b,
-    g_colors[color].a);
+  SDL_SetRenderDrawColor (g_renderer, r, g, b, a);
   SDL_RenderFillRect (g_renderer, &_rect);
   SDL_SetRenderTarget (g_renderer, target);
 }
@@ -1125,7 +1151,7 @@ RestorePixmap (Pixmap * ppm)
  */
 
 static int
-LoadImage (int numero, Pixmap * pim)
+LoadImage (int numero, Pixmap * pim, Style style)
 {
   int    err = 1;
   char   name[4096]; /* nom de l'image BLUPIXnn.IMAGE */
@@ -1147,18 +1173,42 @@ LoadImage (int numero, Pixmap * pim)
   if (numero < 22 || numero == 33)
     lang = "";
 
-  if (g_theme == 0)
-    snprintf (
-      name, sizeof (name), "%s../share/blupimania/image/%sblupix%02d.color.png",
-      SDL_GetBasePath (), lang, numero);
-  else
-    snprintf (
-      name, sizeof (name), "%s../share/blupimania/image/%sblupix%02d.smaky.png",
-      SDL_GetBasePath (), lang, numero);
+  snprintf (
+    name, sizeof (name), "%s../share/blupimania/image/%sblupix%02d.webp",
+    SDL_GetBasePath (), lang, numero);
 
-  SDL_Surface * surface = IMG_Load (name);
-  SDL_Texture * texture = SDL_CreateTextureFromSurface (g_renderer, surface);
-  SDL_FreeSurface (surface);
+  SDL_Texture *   texture;
+  IMG_Animation * anim;
+  int             index;
+
+  anim = IMG_LoadWEBPAnimation (name);
+
+  index = 1;
+  if (g_theme == 1)
+    index = anim->count > 2 ? 2 : 0;
+  else if (anim->count > 2)
+  {
+    switch (style)
+    {
+    case NORMAL:
+      break;
+    case PASTEL:
+      index = 3;
+      break;
+    case DARK:
+      index = 4;
+      break;
+    case ROSY:
+      index = 5;
+      break;
+    case BLUISH:
+      index = 0;
+      break;
+    }
+  }
+
+  texture = SDL_CreateTextureFromSurface (g_renderer, anim->frames[index]);
+  IMG_FreeAnimation (anim);
 
   Uint32 format;
   Sint32 access, ow, oh;
@@ -1253,11 +1303,11 @@ GivePixmap (Pixmap * ppm)
  */
 
 short
-GetImage (Pixmap * ppm, short numero)
+GetImage (Pixmap * ppm, short numero, Style style)
 {
   int err;
 
-  err = LoadImage (numero, ppm); /* charge l'image */
+  err = LoadImage (numero, ppm, style); /* charge l'image */
   if (err)
     goto error;
 error:
@@ -1357,23 +1407,27 @@ data:
  */
 
 int
-LoadSprites (void)
+LoadSprites (Style style)
 {
   int err;
 
-  err = GetImage (&pmicon1c, IMAICON + 0); /* charge l'image des icônes */
+  err =
+    GetImage (&pmicon1c, IMAICON + 0, style); /* charge l'image des icônes */
   if (err)
     return err;
 
-  err = GetImage (&pmicon2c, IMAICON + 1); /* charge l'image des icônes */
+  err =
+    GetImage (&pmicon2c, IMAICON + 1, style); /* charge l'image des icônes */
   if (err)
     return err;
 
-  err = GetImage (&pmicon3c, IMAICON + 2); /* charge l'image des icônes */
+  err =
+    GetImage (&pmicon3c, IMAICON + 2, style); /* charge l'image des icônes */
   if (err)
     return err;
 
-  err = GetImage (&pmicon4c, IMAICON + 3); /* charge l'image des icônes */
+  err =
+    GetImage (&pmicon4c, IMAICON + 3, style); /* charge l'image des icônes */
   if (err)
     return err;
 
