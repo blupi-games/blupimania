@@ -3657,7 +3657,7 @@ static short tanim31[] =				/* identification */
 	ACTION_DEBUT,		62,136,		DELNORM,4,	2,1,3,1,
 	ACTION_AIDE,		236,139,	DELNORM,8,	105,106,106,107,107,104,104,105,
 	ACTION_QUITTE,		503,138,	DELNORM,4,	50,33,50,36,
-        ACTION_REGLAGE2,        355,90,         DELNORM,2,      128+104,256+76,
+        ACTION_REGLAGE2,        360,95,         DELNORM,2,      256+76,128+104,
 	-1
 };
 
@@ -5143,7 +5143,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     if (phase == PHASE_IDENT && !!g_updateVersion[0])
     {
       static SDL_bool clear = SDL_FALSE;
-      Pt              dest  = {LYIMAGE () - 15, 0};
+      Pt              dest  = {LYIMAGE () - 15, 19};
 
       if (g_updateBlinking % 80 < 40)
       {
@@ -5164,7 +5164,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         if (err)
           FatalBreak (err);
 
-        Pt dim = {13, 380};
+        Pt dim = {13, 370};
         CopyPixel (&pixmap, dest, 0, dest, dim);
         GivePixmap (&pixmap);
         clear = SDL_FALSE;
