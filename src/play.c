@@ -638,7 +638,7 @@ MondeVide (void)
     Conversion d'une banque en fichier.
  */
 
-char
+static char
 BanqueToFile (char banque)
 {
   if (banque >= 'a' && banque <= 'h')
@@ -659,7 +659,7 @@ BanqueToFile (char banque)
     Cherche le nombre maximum de mondes possibles.
  */
 
-void
+static void
 MondeMax (char banque)
 {
   maxmonde = FileGetLength (BanqueToFile (banque)) / sizeof (Monde);
@@ -667,7 +667,7 @@ MondeMax (char banque)
     maxmonde++; /* si construit -> toujours un monde vide à la fin */
 }
 
-void
+static void
 convshort (short * s)
 {
   char   t;
@@ -678,7 +678,7 @@ convshort (short * s)
   p[1] = t;
 }
 
-void
+static void
 ConvMonde (Monde * m)
 {
   int i, j;
@@ -703,7 +703,7 @@ ConvMonde (Monde * m)
     Retourne 0 si la lecture est ok.
  */
 
-short
+static short
 MondeRead (short monde, char banque)
 {
   short err = 0;
@@ -741,7 +741,7 @@ vide:
     Retourne 0 si l'�criture est ok.
  */
 
-short
+static short
 MondeWrite (short monde, char banque)
 {
   short err;
@@ -773,7 +773,7 @@ GetWorldStyle ()
     Retourne 0 si la lecture est ok.
  */
 
-short
+static short
 JoueurRead (struct arguments * arguments)
 {
   short err;
@@ -818,7 +818,7 @@ JoueurRead (struct arguments * arguments)
     Retourne 0 si l'écriture est ok.
  */
 
-short
+static short
 JoueurWrite (void)
 {
   short  err;
@@ -851,7 +851,7 @@ JoueurWrite (void)
     Retourne le numéro d'image correspondant à une phase de jeu.
  */
 
-short
+static short
 ConvPhaseToNumImage (Phase ph)
 {
   switch (ph)
@@ -972,7 +972,7 @@ ConvPhaseToNumImage (Phase ph)
     Affiche une image de base dans la fenêtre.
  */
 
-void
+static void
 ShowImage (void)
 {
   Rect         rect;
