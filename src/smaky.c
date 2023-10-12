@@ -1286,10 +1286,8 @@ short
 GivePixmap (Pixmap * ppm)
 {
   if (ppm->texture)
-  {
     SDL_DestroyTexture (ppm->texture);
-    ppm->texture = NULL;
-  }
+  SDL_memset (ppm, 0, sizeof (*ppm));
   return 0;
 }
 
