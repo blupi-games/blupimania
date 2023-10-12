@@ -5111,7 +5111,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     if (phase == PHASE_IDENT && !!g_updateVersion[0])
     {
       static SDL_bool clear = SDL_FALSE;
-      Pt              dest  = {LYIMAGE() - 15, 0};
+      Pt              dest  = {LYIMAGE () - 15, 0};
 
       if (g_updateBlinking % 80 < 40)
       {
