@@ -2222,9 +2222,8 @@ MondeDetruit (short m)
   DrawStatusBar (100, 100);
 
   FileDelete (BanqueToFile (banque)); /* détruit l'ancien fichier définitif */
-  FileRename (
-    '-',
-    BanqueToFile (banque)); /* renomme le fichier temporaire -> définitif */
+  /* renomme le fichier temporaire -> définitif */
+  FileRename ('-', BanqueToFile (banque));
 
   maxmonde--;
   return 0;
@@ -3003,7 +3002,6 @@ ChangePhase (Phase newphase)
       PhaseEditClose ();
     }
     DecorClose (); /* fermeture des décors */
-    MoveClose ();  /* fermeture des objets en mouvement */
     IconClose ();  /* fermeture des icônes */
     break;
 
@@ -5544,7 +5542,6 @@ PlayRelease (void)
   UnloadTextures ();
   DecorClose (); /* fermeture des décors */
   IconClose ();  /* fermeture des icônes */
-  MoveClose ();  /* fermeture des objets en mouvement */
 
   if (g_updateThread)
   {

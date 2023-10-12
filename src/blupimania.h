@@ -345,7 +345,6 @@ short MoveBuild (short outil, int key);
 void  MoveScroll (short quick);
 void  MoveNewMonde (short freq);
 short MoveOpen (void);
-void  MoveClose (void);
 
 int   MovePartieLg (void);
 short MovePartieWrite (int pos, char file);
@@ -390,9 +389,9 @@ short DecorPartieRead (long pos, char file);
 /* bm_icone.c */
 /* ---------- */
 
-void  IconDrawAll (void);
-void  IconDrawFlush (void);
-void  IconDrawOpen (void);
+void IconDrawAll (void);
+void IconDrawFlush (void);
+void IconDrawOpen (void);
 short
 IconDrawPut (short ico, short btransp, Pt pos, short posz, Pt cel, Reg clip);
 void     IconDrawUpdate (Reg rg);
@@ -434,17 +433,14 @@ void     MusicResume (void);
 SDL_bool MusicStoppedOnDemand (void);
 void     PlayNoiseVolume (short volume);
 void     PlayMusicVolume (short volume);
-void     PlaySoundLoop (short mode);
 void     PlayAudio (short sound, const Pt * cel);
 SDL_bool SoundPlaying (short sound);
 
 Style     GetWorldStyle (void);
 void      ClrEvents (void);
-short     GetEvent (Pt * ppos);
 int       SDLEventToSmakyKey (const SDL_Event * event);
 KeyStatus GetKeyStatus (void);
 short     IfColor (void);
-void      ModColor (short color, short red, short green, short blue);
 void      DrawSprite (short num, Pt p1, Pt p2, Pt dim);
 void      DrawSpriteTemp (short num, Pt p1, Pt p2, Pt dim);
 short     GetSprite (Pixmap * ppm, short numero, short mode);

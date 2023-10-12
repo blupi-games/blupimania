@@ -136,8 +136,8 @@ typedef struct {
   short  reserve[10];      /* réserve */
 } Partie;
 
-void  NewAction (short i, Action action, short posz);
-short ObjetPut (Pt cel, Objet obj);
+static void  NewAction (short i, Action action, short posz);
+static short ObjetPut (Pt cel, Objet obj);
 
 /* -------- */
 /* AutoInit */
@@ -147,7 +147,7 @@ short ObjetPut (Pt cel, Objet obj);
     Initialise un automate.
  */
 
-void
+static void
 AutoInit (Auto * p, short idata, short * pdata, short size)
 {
   p->idata  = idata;
@@ -166,7 +166,7 @@ AutoInit (Auto * p, short idata, short * pdata, short size)
     Retourne 1 (true) si c'est fini.
  */
 
-short
+static short
 AutoNext (Auto * p, short result[], const Pt * cel)
 {
   short c;
@@ -302,7 +302,7 @@ MoveGetCel (Pt cel)
         toto = 0	->	ne tient compte que du décor
  */
 
-short
+static short
 GetObstacle (Pt cel, short toto)
 {
   short i;
@@ -340,7 +340,7 @@ move:
     Retourne une valeur ACMARCHE?? selon le sens.
  */
 
-Action
+static Action
 GetOrientation (Action action)
 {
   switch (action)
@@ -527,7 +527,7 @@ GetOrientation (Action action)
     Retourne 0 si c'est une action qui ne tourne pas !
  */
 
-short
+static short
 GetRotation (Action action)
 {
   switch (action)
@@ -557,7 +557,7 @@ GetRotation (Action action)
     Retourne le rang du toto initialisé (-1 si erreur).
  */
 
-short
+static short
 MoveInit (Pt poscel, short action, short posz)
 {
   short i;
@@ -610,7 +610,7 @@ MoveInit (Pt poscel, short action, short posz)
     Fait éventuellement partir les ascenseurs.
  */
 
-void
+static void
 DepartNext (void)
 {
   short d;
@@ -652,7 +652,7 @@ DepartNext (void)
     Bouge si nécessaire un objet animé du décor.
  */
 
-void
+static void
 ObjetNextOne (short i)
 {
   short result[1];
@@ -687,15 +687,13 @@ ObjetNextOne (short i)
     Bouge si nécessaire les objets animés du décor.
  */
 
-void
+static void
 ObjetNext (void)
 {
   short i;
 
   for (i = 0; i < MAXOBJET; i++)
-  {
     ObjetNextOne (i);
-  }
 }
 
 /* -------- */
@@ -707,7 +705,7 @@ ObjetNext (void)
     Retourne 0 (false) si la liste est pleine.
  */
 
-short
+static short
 ObjetPut (Pt cel, Objet obj)
 {
   short i;
@@ -739,7 +737,7 @@ ObjetPut (Pt cel, Objet obj)
     Génère un mouvement quelconque selon une table.
  */
 
-void
+static void
 TableMovie (short i, Action action, short * ptable)
 {
   AutoInit (&toto[i].automove, action, ptable, 3);
@@ -756,7 +754,7 @@ TableMovie (short i, Action action, short * ptable)
         lg		->	déplacement à effectuer (+/- dx;dy)
  */
 
-void
+static void
 InitMovie (short i, short nbmove, Pt lg)
 {
   if (nbmove < 1)
@@ -778,7 +776,7 @@ InitMovie (short i, short nbmove, Pt lg)
     Retourne 1 (true) si le mouvement est terminé.
  */
 
-short
+static short
 CalcMovie (short i, short result[])
 {
   Pt last, new;
@@ -832,7 +830,7 @@ CalcMovie (short i, short result[])
         1 -> marche plus jolie
  */
 
-short
+static short
 GetTypeMarche (short i)
 {
   if (
@@ -851,7 +849,7 @@ GetTypeMarche (short i)
     Démarre une nouvelle action pour un toto.
  */
 
-void
+static void
 NewAction (short i, Action action, short posz)
 {
   short   nbmove;
@@ -1190,7 +1188,7 @@ NewAction (short i, Action action, short posz)
     Retourne 0 (rien) si l'obstacle n'est pas un mur (sens-unique).
  */
 
-short
+static short
 GetMur (Pt cel, short toto)
 {
   short icon;
@@ -1214,7 +1212,7 @@ GetMur (Pt cel, short toto)
     Essaye de le tourner dans le même sens que le précédent utilisé !
  */
 
-void
+static void
 TourneAction (short i)
 {
   Action nextaction = toto[i].action;
@@ -1414,7 +1412,7 @@ TourneAction (short i)
     Fait péter toutes les bombes correspondant à un détonateur.
  */
 
-void
+static void
 BombeBaoum (short detonateur)
 {
   short bombe;
@@ -1454,7 +1452,7 @@ BombeBaoum (short detonateur)
     Retourne 0 si c'est possible.
  */
 
-short
+static short
 SauteAction (short i, Pt celsaut)
 {
   short icon, obstacle;
@@ -1517,7 +1515,7 @@ SauteAction (short i, Pt celsaut)
     Si oui, retourne 1 (vrai).
  */
 
-short
+static short
 IfPousseCaisse (Pt celarr, short caisse, Action orientation)
 {
   short icon;
@@ -1581,7 +1579,7 @@ IfPousseCaisse (Pt celarr, short caisse, Action orientation)
     Autrement, retourne le rang du toto.
  */
 
-short
+static short
 SearchTotoForTank (Pt cel)
 {
   short i;
@@ -1620,7 +1618,7 @@ SearchTotoForTank (Pt cel)
     Retourne 1 si une action est entreprise.
  */
 
-short
+static short
 SpecAction (short i, short obstacle, Pt testcel)
 {
   Action orientation, nextaction;
@@ -2231,7 +2229,7 @@ SpecAction (short i, short obstacle, Pt testcel)
     Si oui, retourne 1 (true).
  */
 
-short
+static short
 IfSuperAction (short i, Pt cel, Action direction, short back)
 {
   short icon;
@@ -2317,7 +2315,7 @@ IfSuperAction (short i, Pt cel, Action direction, short back)
     Si oui, retourne 1 (true).
  */
 
-short
+static short
 IfLineAction (short i, Pt cel, Action direction, short back)
 {
   short nb, icon, obstacle;
@@ -2419,7 +2417,7 @@ IfLineAction (short i, Pt cel, Action direction, short back)
     Retourne 1 (true) si toto decide de tourner.
  */
 
-short
+static short
 TurnCoin (short i, Action * pnextaction)
 {
   Pt     left, right, back, bleft, bright;
@@ -2522,7 +2520,7 @@ TurnCoin (short i, Action * pnextaction)
     Retourne 1 (true) si y'a qq chose de mieux à faire.
  */
 
-short
+static short
 VisionAction (short i, Action * pnextaction)
 {
   /* S'il s'agit d'un tank immobile, on regarde dans les 4 directions. */
@@ -2645,7 +2643,7 @@ VisionAction (short i, Action * pnextaction)
     un obstacle rencontré.
  */
 
-void
+static void
 SoundAmbiance (short obstacle, const Pt * cel)
 {
   if (
@@ -2670,7 +2668,7 @@ SoundAmbiance (short obstacle, const Pt * cel)
     Cherche une action pour le toto piloté par le joueur.
  */
 
-void
+static void
 JoueurAction (short i, char event, Action orientation, Pt testcel)
 {
   short     obstacle;
@@ -2992,7 +2990,7 @@ rekey:
     Ne teste pas la cellule d'arrivée !
  */
 
-short
+static short
 IfFreeLine (Pt depart, Pt arrivee)
 {
   Pt    dir;
@@ -3048,7 +3046,7 @@ IfFreeLine (Pt depart, Pt arrivee)
     Retourne -1 si y'en a pas !
  */
 
-short
+static short
 GetJoueur (void)
 {
   short i;
@@ -3070,7 +3068,7 @@ GetJoueur (void)
     de la cellule cliquée dans le décor.
  */
 
-void
+static void
 JoueurCap (char event, Pt pmouse)
 {
   Pt    cel, inter;
@@ -3179,7 +3177,7 @@ error:
     est terminée, pour déterminer ce que toto fera ensuite.
  */
 
-void
+static void
 NextAction (char event, short i)
 {
   Pt     testcel;
@@ -3646,7 +3644,7 @@ MoveBack (Pt cel)
     pas trop, vu le petit nombre de toto à trier (<10) !
  */
 
-void
+static void
 TrieToto (char * ptable)
 {
   short i, ii, j;
@@ -3694,7 +3692,7 @@ TrieToto (char * ptable)
     Retourne -1 si y'en a aucun !
  */
 
-short
+static short
 DetectToto (Pt pmouse, Pt ovisu, char ordre[])
 {
   short i, j;
@@ -3774,7 +3772,7 @@ DetectToto (Pt pmouse, Pt ovisu, char ordre[])
     est interruptible, suite à un événement prioritaire.
  */
 
-short
+static short
 IfInterrupt (short i, short event)
 {
   if (toto[i].joueur == 0)
@@ -3806,7 +3804,7 @@ IfInterrupt (short i, short event)
     Dessine un toto animé.
  */
 
-void
+static void
 DrawOne (short i, Pt ovisu)
 {
   short btransp;
@@ -3854,7 +3852,7 @@ DrawOne (short i, Pt ovisu)
     Fait éventuellement partir les tanks stoppés si y'a un toto qui s'pointe.
  */
 
-void
+static void
 StartTank (void)
 {
   Pt     cel;
@@ -4357,19 +4355,6 @@ MoveOpen (void)
 {
   lastdetect = -1;
   return 0;
-}
-
-/* ========= */
-/* MoveClose */
-/* ========= */
-
-/*
-    Fermeture générale.
- */
-
-void
-MoveClose (void)
-{
 }
 
 /* ============ */

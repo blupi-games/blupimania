@@ -31,7 +31,6 @@ static unsigned int nextrand[10]; /* valeurs aléatoires suivantes */
 
 static short     soundon = 1; /* son on/off */
 static int       filsson = 0; /* son à entendre */
-static int       filsrep = 0; /* pas de répétition */
 static KeyStatus keystatus;   /* etat des flèches du clavier */
 
 static Pixmap pmsave = {0}; /* pixmap sauvé en mémoire étendue (XMS) */
@@ -326,23 +325,6 @@ PlayMusicVolume (short volume)
   Mix_VolumeMusic (g_musicVolume);
 }
 
-/* ============= */
-/* PlaySoundLoop */
-/* ============= */
-
-/*
-    Met en boucle (répétition) les bruits donnés avec PlaySound.
-    Si mode =  0  ->  normal (single)
-    Si mode >  0  ->  nb de répétitions
-    Si mode = -1  ->  répétition infinie (loop)
- */
-
-void
-PlaySoundLoop (short mode)
-{
-  filsrep = mode; /* donne le mode au processus fils */
-}
-
 /* ========= */
 /* PlaySound */
 /* ========= */
@@ -442,22 +424,6 @@ void
 ClrEvents (void)
 {
   g_clearKeyEvents = SDL_TRUE;
-}
-
-/* ======== */
-/* GetEvent */
-/* ======== */
-
-/*
-    Lecture d'un événement du clavier, sans attendre.
-    Retourne la touche pressée si != 0.
- */
-
-short
-GetEvent (Pt * ppos)
-{
-  *ppos = g_lastmouse; /* rend la dernière position de la souris */
-  return 0;
 }
 
 int
@@ -746,23 +712,7 @@ GetKeyStatus (void)
 short
 IfColor (void)
 {
-  if (g_theme == 0)
-    return 1; /* couleur */
-  return 0;   /* noir/blanc */
-}
-
-/* ======== */
-/* ModColor */
-/* ======== */
-
-/*
-    Modifie les composantes rouge/vert/bleu d'une couleur.
-    Une composante est comprise entre 0 et 255.
- */
-
-void
-ModColor (short color, short red, short green, short blue)
-{
+  return g_theme == 0; /* couleur */
 }
 
 /* ========= */
@@ -1553,7 +1503,7 @@ LoadSounds (void)
   return 0;
 }
 
-void
+static void
 UnloadSounds (void)
 {
   for (int i = 0; i < countof (g_sounds); ++i)
@@ -1771,28 +1721,6 @@ FileRename (char oldfile, char newfile)
   oldfilename[strlen (oldfilename) - 5] = oldfile;
   newfilename[strlen (newfilename) - 5] = newfile;
   return rename (oldfilename, newfilename);
-}
-
-/* ----------- */
-/* IfFileExist */
-/* ----------- */
-
-/*
-    Teste si un fichier existe.
-    Si oui, retourne 1 (true).
- */
-
-short
-IfFileExist (char * pfilename)
-{
-  FILE * channel;
-
-  channel = fopen (pfilename, "r"); /* ouvre le fichier */
-  if (channel == NULL)
-    return 0; /* fichier n'existe pas */
-
-  fclose (channel); /* ferme le fichier */
-  return 1;         /* fichier existe */
 }
 
 static int
