@@ -27,6 +27,9 @@
 static SDL_bool         g_standby = SDL_FALSE;
 static struct arguments arguments;
 
+static SDL_Cursor * g_cursor; /* mouse sprite */
+static short        g_zoom;
+
 int                      g_settingsOverload;
 static volatile SDL_bool g_updateAbort       = SDL_FALSE;
 static SDL_Thread *      g_updateThread      = NULL;
@@ -484,21 +487,48 @@ ChangeLanguage (short language)
   g_langue = language;
 }
 
+static void
+LoadCursor ()
+{
+  char cursorFile[4096] = {0};
+  snprintf (
+    cursorFile, sizeof (cursorFile),
+    "%s../share/blupimania/image/cursor.%s.png", SDL_GetBasePath (),
+    g_theme == 0 ? "image" : "smaky");
+
+  SDL_Surface * surface       = IMG_Load (cursorFile);
+  SDL_Surface * surfaceScaled = SDL_CreateRGBSurfaceWithFormat (
+    0, surface->w * g_zoom, surface->h * g_zoom, 32, SDL_PIXELFORMAT_RGBA32);
+  SDL_BlitScaled (surface, NULL, surfaceScaled, NULL);
+  SDL_FreeSurface (surface);
+
+  if (g_cursor)
+    SDL_FreeCursor (g_cursor);
+  g_cursor = SDL_CreateColorCursor (surfaceScaled, 2 * g_zoom, 2 * g_zoom);
+  SDL_FreeSurface (surfaceScaled);
+
+  SDL_SetCursor (g_cursor);
+}
+
 void
 ChangeScreen (short zoom)
 {
   ++zoom;
-  SDL_bool fullscreen = zoom == 3;
+  g_zoom = zoom;
+
+  SDL_bool fullscreen = g_zoom == 3;
 
   SDL_SetWindowFullscreen (
     g_window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   SDL_SetWindowBordered (g_window, fullscreen ? SDL_FALSE : SDL_TRUE);
 
   if (!fullscreen)
-    SDL_SetWindowSize (g_window, LXIMAGE () * zoom, LYIMAGE () * zoom);
+    SDL_SetWindowSize (g_window, LXIMAGE () * g_zoom, LYIMAGE () * g_zoom);
 
   SDL_RenderClear (g_renderer);
   SDL_RenderPresent (g_renderer);
+
+  LoadCursor ();
 
   int displayIndex = SDL_GetWindowDisplayIndex (g_window);
   SDL_SetWindowPosition (
@@ -522,6 +552,8 @@ ChangeTheme (short theme)
     g_afterglow = SDL_TRUE;
     break;
   }
+
+  LoadCursor ();
 }
 
 /* ----------- */
