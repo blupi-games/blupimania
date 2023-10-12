@@ -55,7 +55,7 @@ static listreg  ListRegOld[MAXREGION];        /* liste des régions */
     Si oui retourne 1 (true), si non retourne 0 (false).
  */
 
-short
+static short
 IfNilRegion (Reg rg)
 {
   return (rg.r.p1.x == 0 && rg.r.p1.y == 0 && rg.r.p2.x == 0 && rg.r.p2.y == 0);
@@ -70,7 +70,7 @@ IfNilRegion (Reg rg)
     Si oui retourne 1 (true), si non retourne 0 (false).
  */
 
-short
+static short
 IfSectRegion (Reg r1, Reg r2)
 {
   return (r1.r.p2.x >= r2.r.p1.x) && (r1.r.p1.x < r2.r.p2.x) &&
@@ -86,7 +86,7 @@ IfSectRegion (Reg r1, Reg r2)
     La nouvelle région englobe les deux régions initiales.
  */
 
-Reg
+static Reg
 OrRegion (Reg r1, Reg r2)
 {
   Reg rg;
@@ -107,7 +107,7 @@ OrRegion (Reg r1, Reg r2)
     La nouvelle région peut être nulle (p1=p2=0).
  */
 
-Reg
+static Reg
 AndRegion (Reg r1, Reg r2)
 {
   Reg rg;

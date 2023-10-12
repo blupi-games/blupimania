@@ -390,10 +390,6 @@ short DecorPartieRead (long pos, char file);
 /* bm_icone.c */
 /* ---------- */
 
-short IfNilRegion (Reg rg);
-short IfSectRegion (Reg r1, Reg r2);
-Reg   OrRegion (Reg r1, Reg r2);
-Reg   AndRegion (Reg r1, Reg r2);
 void  IconDrawAll (void);
 void  IconDrawFlush (void);
 void  IconDrawOpen (void);
