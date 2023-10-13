@@ -406,6 +406,20 @@ PlayAudio (short sound, const Pt * cel)
   Mix_PlayChannel (sound, g_sounds[sound], 0);
 }
 
+void
+SoundPause ()
+{
+  for (int channel = 0; channel < SOUND_MUSIC11; ++channel)
+    Mix_Pause (channel);
+}
+
+void
+SoundResume ()
+{
+  for (int channel = 0; channel < SOUND_MUSIC11; ++channel)
+    Mix_Resume (channel);
+}
+
 SDL_bool
 SoundPlaying (short sound)
 {

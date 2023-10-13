@@ -434,6 +434,8 @@ SDL_bool MusicStoppedOnDemand (void);
 void     PlayNoiseVolume (short volume);
 void     PlayMusicVolume (short volume);
 void     PlayAudio (short sound, const Pt * cel);
+void     SoundPause (void);
+void     SoundResume (void);
 SDL_bool SoundPlaying (short sound);
 
 Style     GetWorldStyle (void);

@@ -5436,6 +5436,10 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       g_pause ^= 1;   /* met/enlève la pause */
       DrawPause ();   /* dessine le bouton pause */
       DrawArrows (0); /* dessine les flèches */
+      if (g_pause)
+        SoundPause ();
+      else
+        SoundResume ();
     }
 
     switch (fj.vitesse)
@@ -5735,12 +5739,14 @@ main (int argc, char * argv[])
         g_standby = SDL_FALSE;
         SDL_SetWindowTitle (g_window, "Blupimania");
         MusicResume ();
+        SoundResume ();
         continue;
 
       case SDL_WINDOWEVENT_FOCUS_LOST:
         g_standby = SDL_TRUE;
         SDL_SetWindowTitle (g_window, stop[g_langue]);
         MusicPause ();
+        SoundPause ();
         continue;
       }
 #endif /* !DEBUG */
