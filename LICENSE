@@ -15,6 +15,7 @@ This game is linked on some static libraries:
   SDL2_image (zlib license)
   SDL2_mixer (zlib license)
   zlib (own license)
+  libwebp (google license)
 
 
 Blupimania is licensed under GPLv3, see LICENSE.all/copyright for details.
