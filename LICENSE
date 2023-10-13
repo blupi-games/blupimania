@@ -1,21 +1,17 @@
 
 This game is linked on some static libraries:
 
-  argagg (MIT)
-  FFmpeg (LGPLv2.1)
-  GNU/gettext (GPLv3)
+  libasound (LGPLv2.1)
   libcurl (MIT/X derivate)
-  GNU/libiconv (GPLv3)
   libogg (own license)
   libpng (own license)
   libsndfile (LGPLv3)
   libvorbis (own license)
-  SDL_kitchensink (MIT)
+  libwebp (google license)
   SDL2 (zlib license)
   SDL2_image (zlib license)
   SDL2_mixer (zlib license)
   zlib (own license)
-  libwebp (google license)
 
 
 Blupimania is licensed under GPLv3, see LICENSE.all/copyright for details.
