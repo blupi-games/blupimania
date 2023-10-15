@@ -102,7 +102,8 @@ typedef enum {
   PHASE_OPER,
   PHASE_DEPLACE,
   PHASE_ATTENTE,
-  PHASE_REGLAGE2
+  PHASE_REGLAGE2,
+  PHASE_GOODBYE
 } Phase;
 
 /* ----------------------------- */
@@ -966,6 +967,8 @@ ConvPhaseToNumImage (Phase ph)
     return 52;
   case PHASE_REGLAGE2:
     return 53;
+  case PHASE_GOODBYE:
+    return 54;
   }
   return -1;
 }
@@ -2882,6 +2885,7 @@ RedrawPhase (Phase phase)
   case PHASE_FINI6:
   case PHASE_FINI7:
   case PHASE_FINI8:
+  case PHASE_GOODBYE:
     break;
 
   case PHASE_IDENT:
@@ -3819,8 +3823,19 @@ AnimDrawIcon (Pixmap * ppm, short icon, Pt pos, char bOther)
 {
   Pt orig = {0, 0};
   Pt dim  = {LYICO, LXICO};
-  CopyPixel /* copie l'image originale */
-    (&pmimage, pos, &pmtemp, orig, dim);
+
+  /* handle Y overflows */
+  if (pos.y < 0)
+  {
+    dim.y  = LYICO + pos.y;
+    orig.y = -pos.y;
+    pos.y  = 0;
+  }
+  else if (pos.y > LYIMAGE () - LYICO)
+    dim.y = LYIMAGE () - pos.y;
+
+  /* copie l'image originale */
+  CopyPixel (&pmimage, pos, &pmtemp, orig, dim);
 
   if (bOther)
     AnimIconAddBack (pos, 0); /* ajoute les autres icônes derrière */
@@ -3830,8 +3845,8 @@ AnimDrawIcon (Pixmap * ppm, short icon, Pt pos, char bOther)
   if (bOther)
     AnimIconAddBack (pos, 1); /* ajoute les autres icônes devant */
 
-  CopyPixel /* met dans l'écran */
-    (&pmtemp, orig, ppm, pos, dim);
+  /* met dans l'écran */
+  CopyPixel (&pmtemp, orig, ppm, pos, dim);
 }
 
 /* -------- */
@@ -4340,7 +4355,7 @@ GenericNext (void)
   }
 
   if (tgeneric[generic * 4] == 1)
-    ppm = 0;
+    ppm = NULL;
   else
     ppm = &pmimage;
 
@@ -4350,6 +4365,51 @@ GenericNext (void)
   AnimDrawIcon (ppm, tgeneric[generic * 4 + 3], pos, 0);
 
   generic++;
+}
+
+void
+GoodbyeNext (void)
+{
+  Pt         pos;
+  static int x    = 0;
+  static int y    = LYIMAGE () + 80;
+  static int icon = 79;
+
+  if (!x)
+    x = GetRandom (0, LXICO, LXIMAGE () - LXICO);
+
+  ShowImage ();
+
+  pos.x = x;
+
+  pos.y = y;
+  AnimDrawIcon (NULL, 47, pos, 0);
+
+  pos.y = y + LYICO;
+  AnimDrawIcon (NULL, icon, pos, 0);
+
+  y -= 10;
+
+  /* restart */
+  if (y < -LYICO * 2)
+  {
+    y = LYIMAGE () + 80;
+    x = 0;
+
+    int select = GetRandom (0, -1, 3);
+    switch (select)
+    {
+    case 0:
+      icon = 79;
+      break;
+    case 1:
+      icon = 63;
+      break;
+    case 2:
+      icon = 0;
+      break;
+    }
+  }
 }
 
 /* ------------- */
@@ -5066,6 +5126,16 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     return 1;
   }
 
+  if (phase == PHASE_GOODBYE)
+  {
+    if (
+      key == KEYCLIC || key == KEYENTER || key == KEYRETURN ||
+      key == KEYCENTER || key == KEYQUIT || key == KEYHOME || key == KEYUNDO)
+      return 2;
+    if (next)
+      GoodbyeNext ();
+  }
+
   if (phase != PHASE_PLAY)
   {
     g_timerSkip = 4; /* Use the normal speed in the menus */
@@ -5174,7 +5244,8 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     if (
       phase == PHASE_INIT && key == KEYQUIT && StopPartie (key, pos) == KEYHOME)
     {
-      return 2;
+      ChangePhase (PHASE_GOODBYE);
+      return 1;
     }
 
     if (key == KEYQUIT || key == KEYHOME || key == KEYUNDO)
@@ -5201,7 +5272,10 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       term = ExecuteAction (key, pos);
 
     if ((term == 2 || g_stopMenu) && StopPartie (key, pos) == KEYHOME)
-      return 2;
+    {
+      ChangePhase (PHASE_GOODBYE);
+      return 1;
+    }
 
     if (term != 0 && !g_stopMenu)
     {
