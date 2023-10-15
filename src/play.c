@@ -2564,23 +2564,14 @@ PartieDisque (short key, Pt pos)
     g_saveMenu = SDL_TRUE;
   }
 
-  // while (1)
-  {
-    // key = GetEvent(&pos);
-    if (key == KEYCLIC || key == KEYCLICR)
-    {
-      key = PartieClicToEvent (pos);
-    }
+  if (key == KEYCLIC || key == KEYCLICR)
+    key = PartieClicToEvent (pos);
 
-    if (
-      key == KEYUNDO || key == KEYQUIT || key == KEYHOME || key == KEYF1 ||
-      key == KEYF2 || key == KEYF3 || key == KEYF4 || key == '1' ||
-      key == '2' || key == '3' || key == '4')
-      goto next;
+  if (!(key == KEYUNDO || key == KEYQUIT || key == KEYHOME || key == KEYF1 ||
+        key == KEYF2 || key == KEYF3 || key == KEYF4 || key == '1' ||
+        key == '2' || key == '3' || key == '4'))
     return;
-  }
 
-next:
   open              = SDL_FALSE;
   g_saveMenu        = SDL_FALSE;
   g_ignoreKeyClicUp = SDL_TRUE;
