@@ -25,6 +25,7 @@ static Pixmap pmicon1c = {0}; /* pixmap des icônes1 (chair) */
 static Pixmap pmicon2c = {0}; /* pixmap des icônes2 (chair) */
 static Pixmap pmicon3c = {0}; /* pixmap des icônes3 (chair) */
 static Pixmap pmicon4c = {0}; /* pixmap des icônes4 (chair) */
+static Pixmap pmicon5c = {0}; /* pixmap des icônes5 (chair) */
 static Pt     origine;        /* coin sup/gauche de l'origine */
 
 static unsigned int nextrand[10]; /* valeurs aléatoires suivantes */
@@ -1325,6 +1326,12 @@ GetSprite (Pixmap * ppm, short numero, short mode)
     no -= 128 * 3;
     goto data;
   }
+  else if ((numero & ICONMASK) < 128 * 5)
+  {
+    ppm->texture = pmicon5c.texture;
+    no -= 128 * 4;
+    goto data;
+  }
   else
     return 1;
 
@@ -1404,6 +1411,11 @@ LoadSprites (Style style)
   if (err)
     return err;
 
+  err =
+    GetImage (&pmicon5c, IMAICON + 4, style); /* charge l'image des icônes */
+  if (err)
+    return err;
+
   return 0;
 }
 
@@ -1414,6 +1426,7 @@ UnloadSprites ()
   GivePixmap (&pmicon2c);
   GivePixmap (&pmicon3c);
   GivePixmap (&pmicon4c);
+  GivePixmap (&pmicon5c);
 }
 
 static void

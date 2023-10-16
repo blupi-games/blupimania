@@ -4008,6 +4008,13 @@ MoveNext (char event, Pt pmouse)
                          (toto[i].icon >= 33 && toto[i].icon <= 44)))
       toto[i].icon += 128; /* icône avec antenne */
 
+    if (
+      toto[i].joueur && (toto[i].icon >= 128 + 64 && toto[i].icon <= 128 + 75))
+      toto[i].icon += 512 - 128; /* icône avec antenne */
+
+    if (toto[i].joueur && (toto[i].icon >= 48 && toto[i].icon <= 51))
+      toto[i].icon += 512; /* icône avec antenne */
+
     if (toto[i].tank != 0)
     {
       orientation = GetOrientation (toto[i].action);
