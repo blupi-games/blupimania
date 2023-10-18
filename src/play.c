@@ -4334,7 +4334,7 @@ static short tgeneric[] = {1, 45,  128, 1, //
     Retourne 1 si c'est fini !
  */
 
-void
+static void
 GenericNext (void)
 {
   Pixmap * ppm;
@@ -4359,8 +4359,8 @@ GenericNext (void)
   generic++;
 }
 
-void
-GoodbyeNext (void)
+static void
+GoodbyeNext (int index)
 {
   Pt         pos;
   static int x    = 0;
