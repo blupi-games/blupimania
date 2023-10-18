@@ -4362,43 +4362,61 @@ GenericNext (void)
 static void
 GoodbyeNext (int index)
 {
-  Pt         pos;
-  static int x    = 0;
-  static int y    = LYIMAGE () + 80;
-  static int icon = 79;
+  Pt              pos;
+  static int      x[2]     = {0, 0};
+  static int      y1[2]    = {LYIMAGE () + 80, LYIMAGE () + 90};
+  static int      y2[2]    = {LYIMAGE () + 80 + LYICO, LYIMAGE () + 90 + LYICO};
+  static int      icon[2]  = {79, 63};
+  static SDL_bool fall[2]  = {SDL_FALSE, SDL_FALSE};
+  static int      speed[2] = {8, 12};
 
-  if (!x)
-    x = GetRandom (0, LXICO, LXIMAGE () - LXICO);
+  if (!x[index])
+  {
+    if (index == 0)
+      x[index] = GetRandom (0, 0, LXIMAGE () / 2 - LXICO);
+    else
+      x[index] = GetRandom (0, LXIMAGE () / 2, LXIMAGE () - LXICO);
+  }
 
-  ShowImage ();
+  pos.x = x[index];
 
-  pos.x = x;
-
-  pos.y = y;
+  pos.y = y1[index];
   AnimDrawIcon (NULL, 47, pos, 0);
 
-  pos.y = y + LYICO;
-  AnimDrawIcon (NULL, icon, pos, 0);
+  pos.y = y2[index];
+  AnimDrawIcon (NULL, icon[index], pos, 0);
 
-  y -= 10;
+  y1[index] += -speed[index];
+  if (fall[index] && y1[index] < LYIMAGE () / 6)
+  {
+    y1[index] += -speed[index];
+    y2[index] += +speed[index] * 2;
+    icon[index] = 28;
+  }
+  else
+    y2[index] += -speed[index];
 
   /* restart */
-  if (y < -LYICO * 2)
+  if (y1[index] < -LYICO * 2)
   {
-    y = LYIMAGE () + 80;
-    x = 0;
+    y1[index]    = LYIMAGE () + 80;
+    y2[index]    = LYIMAGE () + 80 + LYICO;
+    x[index]     = 0;
+    fall[index]  = SDL_FALSE;
+    speed[index] = 6 + GetRandom (0, 0, 7);
 
-    int select = GetRandom (0, -1, 3);
+    int select = GetRandom (0, 0, 3);
     switch (select)
     {
     case 0:
-      icon = 79;
+      icon[index] = 79;
       break;
     case 1:
-      icon = 63;
+      icon[index] = 63;
       break;
     case 2:
-      icon = 0;
+      icon[index] = 79;
+      fall[index] = SDL_TRUE;
       break;
     }
   }
@@ -5125,7 +5143,11 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       key == KEYCENTER || key == KEYQUIT || key == KEYHOME || key == KEYUNDO)
       return 2;
     if (next)
-      GoodbyeNext ();
+    {
+      ShowImage ();
+      for (int i = 0; i < 2; ++i)
+        GoodbyeNext (i);
+    }
   }
 
   if (phase != PHASE_PLAY)
