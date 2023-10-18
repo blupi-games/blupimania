@@ -819,7 +819,7 @@ JoueurRead (struct arguments * arguments)
   {
     fj.noisevolume = 10 - 3;
     fj.musicvolume = 10 - 6;
-    fj.screen = 1; /* Use the double windowed zoom by default */
+    fj.screen      = 1; /* Use the double windowed zoom by default */
   }
 
   if (arguments)
