@@ -780,10 +780,10 @@ ScrollPixelRect (
 {
   Pt p1, p2, _dim;
 
-  (*pzone).p1.x = pos.x;
-  (*pzone).p1.y = pos.y;
-  (*pzone).p2.x = pos.x + dim.x;
-  (*pzone).p2.y = pos.y + dim.y;
+  pzone->p1.x = pos.x;
+  pzone->p1.y = pos.y;
+  pzone->p2.x = pos.x + dim.x;
+  pzone->p2.y = pos.y + dim.y;
 
   if (shift.x == 0 && shift.y == 0)
     goto fill;
@@ -803,7 +803,7 @@ ScrollPixelRect (
     _dim.y = dim.y;
     _dim.x = dim.x + shift.x;
     CopyPixel (ppm, p1, &tmp, p2, _dim);
-    (*pzone).p2.x = pos.x - shift.x;
+    pzone->p2.x = pos.x - shift.x;
   }
   if (shift.x > 0 && shift.x < dim.x)
   {
@@ -814,7 +814,7 @@ ScrollPixelRect (
     _dim.y = dim.y;
     _dim.x = dim.x - shift.x;
     CopyPixel (ppm, p1, &tmp, p2, _dim);
-    (*pzone).p1.x = pos.x + dim.x - shift.x;
+    pzone->p1.x = pos.x + dim.x - shift.x;
   }
   if (shift.y < 0 && shift.y > -dim.y)
   {
@@ -825,7 +825,7 @@ ScrollPixelRect (
     _dim.y = dim.y + shift.y;
     _dim.x = dim.x;
     CopyPixel (ppm, p1, &tmp, p2, _dim);
-    (*pzone).p2.y = pos.y - shift.y;
+    pzone->p2.y = pos.y - shift.y;
   }
   if (shift.y > 0 && shift.y < dim.y)
   {
@@ -836,7 +836,7 @@ ScrollPixelRect (
     _dim.y = dim.y - shift.y;
     _dim.x = dim.x;
     CopyPixel (ppm, p1, &tmp, p2, _dim);
-    (*pzone).p1.y = pos.y + dim.y - shift.y;
+    pzone->p1.y = pos.y + dim.y - shift.y;
   }
 
   DuplPixel (&tmp, ppm);
@@ -1276,13 +1276,7 @@ GivePixmap (Pixmap * ppm)
 short
 GetImage (Pixmap * ppm, short numero, Style style)
 {
-  int err;
-
-  err = LoadImage (numero, ppm, style); /* charge l'image */
-  if (err)
-    goto error;
-error:
-  return err;
+  return LoadImage (numero, ppm, style); /* charge l'image */
 }
 
 /* ======= */
@@ -1312,36 +1306,30 @@ GetSprite (Pixmap * ppm, short numero, short mode)
   if ((numero & ICONMASK) < 128 * 1)
   {
     ppm->texture = pmicon1c.texture;
-    goto data;
   }
   else if ((numero & ICONMASK) < 128 * 2)
   {
     ppm->texture = pmicon2c.texture;
     no -= 128 * 1;
-    goto data;
   }
   else if ((numero & ICONMASK) < 128 * 3)
   {
     ppm->texture = pmicon3c.texture;
     no -= 128 * 2;
-    goto data;
   }
   else if ((numero & ICONMASK) < 128 * 4)
   {
     ppm->texture = pmicon4c.texture;
     no -= 128 * 3;
-    goto data;
   }
   else if ((numero & ICONMASK) < 128 * 5)
   {
     ppm->texture = pmicon5c.texture;
     no -= 128 * 4;
-    goto data;
   }
   else
     return 1;
 
-data:
   ppm->orig.x = LXICO * ((no & ICONMASK) % 16);
   ppm->orig.y = LYICO * ((no & ICONMASK) / 16);
 
