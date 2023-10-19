@@ -214,14 +214,16 @@ MusicStart (short song)
     return;
 
   static const char * musics[] = {
-    "bmx000.ogg", "bmx001.ogg", "bmx002.ogg", "bmx003.ogg",
-    "bmx004.ogg", "bmx005.ogg", "bmx006.ogg", "bmx007.ogg",
-    "bmx008.ogg", "bmx009.ogg", "bmx010.ogg", "bmx011.ogg",
+    "bmx001.ogg", "bmx002.ogg", "bmx003.ogg", "bmx004.ogg",
+    "bmx005.ogg", "bmx006.ogg", "bmx007.ogg", "bmx008.ogg",
+    "bmx009.ogg", "bmx010.ogg", "bmx011.ogg",
   };
 
   int idx = 0;
 
-  if (song != 3)
+  if (song == 3)
+    idx = 2;
+  if (song == 4)
   {
     while ((idx = GetRandom (1, 0, countof (musics))) == prev)
       ;
