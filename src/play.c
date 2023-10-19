@@ -5146,6 +5146,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       key == KEYCLIC || key == KEYENTER || key == KEYRETURN ||
       key == KEYCENTER || key == KEYQUIT || key == KEYHOME || key == KEYUNDO)
       return 2;
+
     if (next)
     {
       ShowImage ();
