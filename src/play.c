@@ -321,7 +321,7 @@ typedef struct {
   short reserve[10]; /* réserve */
 } Partie;
 
-void        AnimDrawInit (void);
+static void AnimDrawInit (void);
 static void PlayRelease (void);
 void        FatalBreak (short err);
 
@@ -675,9 +675,8 @@ static char
 BanqueToFile (char banque)
 {
   if (banque >= 'a' && banque <= 'h')
-  {
     return banque - 'a' + '1'; /* 1..8 */
-  }
+
   if (banque >= 'i' && banque <= 'l')
     return banque - 'i' + 'e'; /* e..h */
 
@@ -791,10 +790,7 @@ MondeWrite (short monde, char banque)
 Style
 GetWorldStyle ()
 {
-  if (phase != PHASE_PLAY)
-    return NORMAL;
-
-  return descmonde.color;
+  return phase != PHASE_PLAY ? NORMAL : descmonde.color;
 }
 
 /* ---------- */
@@ -1320,9 +1316,7 @@ ShowImage (void)
     pmimageNum = -1;
   }
   else
-  {
     AnimDrawInit (); /* affiche les animations au départ */
-  }
 }
 
 /* ------------- */
@@ -1668,13 +1662,9 @@ DrawArrows (char mode)
   Rect  rect;
 
   if (g_typejeu == 0 || g_pause)
-  {
     icon = ICO_ARROWS;
-  }
   else
-  {
     icon = ICO_TELECOM;
-  }
 
   src.x = 0;
   src.y = 0;
@@ -1818,13 +1808,14 @@ DrawBigNum (Pt pos, short num)
     Affiche l'objectif du jeu.
  */
 
-void
+static void
 DrawObjectif (void)
 {
   Rect                rect;
   const char *        ptext     = descmonde.text;
   static const char * tomake[3] = {
-    "Puzzle to build ...", "Enigme \271 construire ...",
+    "Puzzle to build ...",        //
+    "Enigme \271 construire ...", //
     "R\267tsel zum bauen ..."};
 
   switch (phase)
@@ -1865,7 +1856,7 @@ DrawObjectif (void)
     Retourne le rectangle à utiliser pour la barre d'avance.
  */
 
-void
+static void
 RectStatusBar (Rect * prect)
 {
   switch (phase)
@@ -1896,7 +1887,7 @@ RectStatusBar (Rect * prect)
     Affiche une barre d'avance en %.
  */
 
-void
+static void
 DrawStatusBar (short avance, short max)
 {
   short pos;
@@ -1979,7 +1970,7 @@ DrawStatusBar (short avance, short max)
     Détecte le monde à atteindre selon la position de la souris.
  */
 
-short
+static short
 DetectStatusBar (Pt pos, short max, Rect * prect)
 {
   short monde, progres;
@@ -2008,7 +1999,7 @@ DetectStatusBar (Pt pos, short max, Rect * prect)
     Affiche le numéro du monde actuel.
  */
 
-void
+static void
 DrawNumMonde (void)
 {
   Pt pos, src, dim;
@@ -2070,7 +2061,7 @@ DrawUpdate (const char * version, Pt pos)
     Choix d'un monde tant que la souris est pressée.
  */
 
-void
+static void
 TrackingStatusBar (Pt pos)
 {
   Rect  rect     = {0};
@@ -2098,7 +2089,7 @@ TrackingStatusBar (Pt pos)
     Retourne 0 si tout est ok.
  */
 
-short
+static short
 MondeDeplace (short src, short dst)
 {
   short i;
@@ -2158,7 +2149,7 @@ MondeDeplace (short src, short dst)
     Retourne 0 si tout est ok.
  */
 
-short
+static short
 MondeDuplique (short m)
 {
   short max, i;
@@ -2194,7 +2185,7 @@ MondeDuplique (short m)
     Retourne 0 si tout est ok.
  */
 
-short
+static short
 MondeDetruit (short m)
 {
   short max, i, j;
@@ -2246,7 +2237,7 @@ error:
    cours.
  */
 
-int
+static int
 PlayPartieLg (void)
 {
   return sizeof (Monde) + sizeof (Partie);
@@ -2260,7 +2251,7 @@ PlayPartieLg (void)
     Sauve les variables de la partie en cours.
  */
 
-short
+static short
 PlayPartieWrite (int pos, char file)
 {
   short  err;
@@ -2290,7 +2281,7 @@ PlayPartieWrite (int pos, char file)
     Lit les variables de la partie en cours.
  */
 
-short
+static short
 PlayPartieRead (int pos, char file)
 {
   short  err;
@@ -2331,7 +2322,7 @@ PlayPartieRead (int pos, char file)
     c'est-à-dire s'il correspond à cette version de soft !
  */
 
-short
+static short
 PartieCheckFile ()
 {
   short  err;
@@ -2373,7 +2364,7 @@ PartieCheckFile ()
     Sauve la partie en cours.
  */
 
-short
+static short
 PartieSauve (short rang)
 {
   int   pos;
@@ -2418,7 +2409,7 @@ PartieSauve (short rang)
     Reprend la partie en cours.
  */
 
-short
+static short
 PartiePrend (short rang)
 {
   int   pos;
@@ -2475,7 +2466,7 @@ PartiePrend (short rang)
     Dessine l'icône prend ou sauve au milieu de la fenêtre.
  */
 
-void
+static void
 PartieDrawIcon (short key)
 {
   Pt pos, zero = {0, 0}, dim = {LYICO, LXICO};
@@ -2504,7 +2495,7 @@ PartieDrawIcon (short key)
     Conversion d'un clic à une position donnée en un événement clavier.
  */
 
-short
+static short
 PartieClicToEvent (Pt pos)
 {
   short * ptable;
@@ -2548,7 +2539,7 @@ PartieClicToEvent (Pt pos)
     Prend ou sauve la partie en cours.
  */
 
-void
+static void
 PartieDisque (short key, Pt pos)
 {
   short           mode = key;
@@ -2609,7 +2600,7 @@ PartieDisque (short key, Pt pos)
     Dessine les icônes stoppe oui/non au milieu de la fenêtre.
  */
 
-void
+static void
 StopDrawIcon (void)
 {
   Pt pos, p = {0, 0}, dim = {LYICO, LXICO};
@@ -2632,7 +2623,7 @@ StopDrawIcon (void)
     Conversion d'un clic à une position donnée en un événement clavier.
  */
 
-short
+static short
 StopClicToEvent (Pt pos)
 {
   pos.x -= POSXDRAW + 20;
@@ -2655,7 +2646,7 @@ StopClicToEvent (Pt pos)
     Demande s'il faut stopper la partie en cours.
  */
 
-short
+static short
 StopPartie (short key, Pt pos)
 {
   static Pixmap   pmsave = {0};
@@ -2719,7 +2710,7 @@ next:
     Prépare l'édition du nom des joueurs.
  */
 
-void
+static void
 JoueurEditOpen (void)
 {
   Rect rect;
@@ -2741,7 +2732,7 @@ JoueurEditOpen (void)
     Fin de l'édition du nom des joueurs.
  */
 
-void
+static void
 JoueurEditClose (void)
 {
   EditClose ();
@@ -2756,7 +2747,7 @@ JoueurEditClose (void)
     Affiche tous les noms des joueurs.
  */
 
-void
+static void
 DrawIdent (void)
 {
   short  joueur;
@@ -2826,7 +2817,7 @@ DrawIdent (void)
     Prépare le monde dans descmonde pour pouvoir l'éditer.
  */
 
-void
+static void
 PhaseEditOpen (void)
 {
   MondeRead (g_monde, banque); /* lit le monde à éditer sur disque */
@@ -2842,7 +2833,7 @@ PhaseEditOpen (void)
     Fin de l'édition du monde dans descmonde.
  */
 
-void
+static void
 PhaseEditClose (void)
 {
   short i;
@@ -2857,7 +2848,7 @@ PhaseEditClose (void)
   g_typeedit = 0; /* fin de l'édition */
 }
 
-short
+static short
 RedrawPhase (Phase phase)
 {
   Rect rect;
@@ -2954,7 +2945,7 @@ RedrawPhase (Phase phase)
     Retourne !=0 en cas d'erreur.
  */
 
-short
+static short
 ChangePhase (Phase newphase)
 {
   short err, type;
@@ -3426,7 +3417,7 @@ static short timage53[] =                                     /* réglages 2 */
     Retourne le pointeur à la table timage??[].
  */
 
-short *
+static short *
 GetTimage (void)
 {
   short * pt;
@@ -3506,7 +3497,7 @@ GetTimage (void)
     Retourne -1 en cas d'erreur.
  */
 
-PhAction
+static PhAction
 ClicToAction (Pt pos)
 {
   short * pt;
@@ -3538,7 +3529,7 @@ ClicToAction (Pt pos)
     Retourne -1 en cas d'erreur.
  */
 
-PhAction
+static PhAction
 EventToAction (char event)
 {
   short * pt;
@@ -3705,7 +3696,7 @@ static short tanim53[] =				/* réglages 2 */
     Cherche une table selon la phase de jeu.
  */
 
-short *
+static short *
 AnimGetTable (void)
 {
   short * pt;
@@ -3750,7 +3741,7 @@ AnimGetTable (void)
     Cherche une animation dans la table.
  */
 
-short *
+static short *
 AnimSearch (PhAction ac)
 {
   short * pt = AnimGetTable ();
@@ -3775,7 +3766,7 @@ AnimSearch (PhAction ac)
     Ajoute dans pmtemp toutes les icônes placées derrière ou devant.
  */
 
-void
+static void
 AnimIconAddBack (Pt pos, char bFront)
 {
   short * pt = animpb;
@@ -3814,7 +3805,7 @@ AnimIconAddBack (Pt pos, char bFront)
     Dessine une icône en conservant l'image de fond.
  */
 
-void
+static void
 AnimDrawIcon (Pixmap * ppm, short icon, Pt pos, char bOther)
 {
   Pt orig = {0, 0};
@@ -3853,7 +3844,7 @@ AnimDrawIcon (Pixmap * ppm, short icon, Pt pos, char bOther)
     Dessine l'animation en cours.
  */
 
-short
+static short
 AnimDraw (void)
 {
   short icon;
@@ -3880,7 +3871,7 @@ AnimDraw (void)
     Dessine toutes les animations en position initiale.
  */
 
-void
+static void
 AnimDrawInit (void)
 {
   short * pt = AnimGetTable ();
@@ -3942,7 +3933,7 @@ AnimDrawInit (void)
     Initialise une nouvelle animation (si nécessaire).
  */
 
-void
+static void
 AnimTracking (Pt pos)
 {
   short * pt;
@@ -4435,7 +4426,7 @@ GoodbyeNext (int index)
     Retourne 2 s'il faut quitter.
  */
 
-short
+static short
 ExecuteAction (char event, Pt pos)
 {
   PhAction action;
@@ -4888,7 +4879,7 @@ static short tmusic[] = {1, SOUND_MUSIC11, //
     Gère les musiques de fond, selon la phase.
  */
 
-void
+static void
 MusicBackground (void)
 {
   short * ptable = tmusic;
@@ -4927,7 +4918,7 @@ MusicBackground (void)
   }
 }
 
-void
+static void
 LoadTextures ()
 {
   g_screen.texture = SDL_CreateTexture (
@@ -4972,7 +4963,7 @@ LoadTextures ()
   pmtemp.dy = LYICO;
 }
 
-void
+static void
 UnloadTextures ()
 {
   GivePixmap (&g_screen);
