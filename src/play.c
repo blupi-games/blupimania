@@ -2462,7 +2462,7 @@ PartiePrend (short rang)
   IconDrawClose (1);
 
   ChangeCouleur (); /* change les couleurs */
-  MusicStart (4 + g_monde);
+  MusicStart (4);
 
   return 0;
 }
@@ -3180,7 +3180,11 @@ ChangePhase (Phase newphase)
     DrawArrows (0); /* dessine les flèches */
     DrawPause ();   /* dessine le bouton pause */
     if (g_typeedit == 0)
-      MusicStart (4 + g_monde);
+      MusicStart (4);
+    break;
+
+  case PHASE_GOODBYE:
+    MusicStart (5);
     break;
 
   default:

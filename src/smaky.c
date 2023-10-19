@@ -198,11 +198,12 @@ StartRandom (short g, short mode)
 
 /*
     Démarre une musique de fond donnée (song).
-    song = 0	->		musique pendant générique initial
-    song = 1	->		musique si terminé un niveau
-    song = 2	->		musique si terminé une énigme
-    song = 3	->		musique pendant réglages
-    song = 4	->		musique pendant jeu (choix aléatoire)
+    song = 0  ->  musique pendant générique initial
+    song = 1  ->  musique si terminé un niveau
+    song = 2  ->  musique si terminé une énigme
+    song = 3  ->  musique pendant réglages
+    song = 4  ->  musique pendant jeu (choix aléatoire)
+    song = 5  ->  goodbye screen music
  */
 
 void
@@ -229,6 +230,8 @@ MusicStart (short song)
       ;
     prev = idx;
   }
+  else if (song == 5)
+    idx = 9;
 
   char filename[4096];
   snprintf (
