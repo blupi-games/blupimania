@@ -5316,7 +5316,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       key == KEYCLIC || key == KEYCLICREL || g_keyMousePressed ||
       g_keyFunctionUp == 1 || (key >= KEYF4 && key <= KEYF1))
     {
-      ev = PaletteEvent (key, g_keyMousePos);
+      ev = PaletteEvent (key, g_lastmouse);
       if (key == KEYCLIC || key == KEYCLICREL || (key >= KEYF4 && key <= KEYF1))
         forPalette = SDL_TRUE;
     }

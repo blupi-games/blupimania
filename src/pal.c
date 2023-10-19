@@ -839,6 +839,10 @@ PaletteEvent (short event, Pt pos)
     return 0;
   }
 
+  /* Use a different mouse pos for the palette (left and right parts) */
+  if (pos.x < 50)
+    pos = g_keyMousePos;
+
   rang = SpecButton (pos);
   if (rang != 0)
   {
