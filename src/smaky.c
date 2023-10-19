@@ -256,7 +256,8 @@ MusicStart (short song)
     return;
   }
 
-  g_musicStopped = SDL_FALSE;
+  /* Don't restart music in the case of the goodbye screen */
+  g_musicStopped = song == 5;
 }
 
 /* ========= */
