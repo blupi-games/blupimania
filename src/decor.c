@@ -430,7 +430,7 @@ DecorIconMask (Pt pos, short posz, Pt cel)
     Ces directions devront être connectées.
  */
 
-short
+static short
 MurGetConnex (Pt cel)
 {
   short icon;
@@ -502,7 +502,7 @@ MurGetConnex (Pt cel)
     Met un mur dans une cellule, et raccorde les cellules voisines.
  */
 
-void
+static void
 MurBuild (Pt cel, short type)
 {
   short icon, oldicon, newicon;
