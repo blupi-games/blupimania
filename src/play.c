@@ -4382,17 +4382,19 @@ GoodbyeNext (int index)
   AnimDrawIcon (NULL, icon[index], pos, 0);
 
   y1[index] += -speed[index];
-  if (fall[index] && y1[index] < LYIMAGE () / 6)
+  if (fall[index] && (icon[index] == 28 || y1[index] < GetRandom (0, 0, 80)))
   {
     y1[index] += -speed[index];
-    y2[index] += +speed[index] * 2;
+    y2[index] += +20;
     icon[index] = 28;
   }
   else
     y2[index] += -speed[index];
 
   /* restart */
-  if (y1[index] < -LYICO * 2)
+  if (
+    (!fall[index] && y2[index] < -LYICO) ||
+    (fall[index] && y1[index] < -LYICO * 2 && y2[index] > LYIMAGE ()))
   {
     y1[index]    = LYIMAGE () + 80;
     y2[index]    = LYIMAGE () + 80 + LYICO;
