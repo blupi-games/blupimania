@@ -253,8 +253,8 @@ SDL_Window *   g_window;
 Pixmap         g_screen = {0};
 
 int      g_rendererType    = 0;
-Sint32   g_timerInterval   = 25;
-Sint32   g_timerSkip       = 4;
+Sint32   g_timerInterval   = 50;
+Sint32   g_timerSkip       = 2;
 Pt       g_lastmouse       = {0};
 SDL_bool g_clearKeyEvents  = SDL_FALSE;
 SDL_bool g_ignoreKeyClicUp = SDL_FALSE;
@@ -5152,7 +5152,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
 
   if (phase != PHASE_PLAY)
   {
-    g_timerSkip = 4; /* Use the normal speed in the menus */
+    g_timerSkip = 2; /* Use the normal speed in the menus */
 
     if (
       phase == PHASE_INIT &&
@@ -5534,15 +5534,15 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     {
     case 0:
       delai       = DELSLOW;
-      g_timerSkip = 6;
+      g_timerSkip = 4;
       break;
     case 2:
       delai       = DELQUICK;
-      g_timerSkip = 2;
+      g_timerSkip = 0;
       break;
     default:
       delai       = DELNORM;
-      g_timerSkip = 4;
+      g_timerSkip = 2;
       break;
     }
 
@@ -5842,7 +5842,7 @@ main (int argc, char * argv[])
 
     if (
       event.type == SDL_USEREVENT && event.user.code == FRAME_TICK &&
-      !(skip++ % g_timerSkip) && !g_standby)
+      (!g_timerSkip || !(skip++ % g_timerSkip)) && !g_standby)
     {
       next        = SDL_TRUE;
       key         = nextKeys[0];

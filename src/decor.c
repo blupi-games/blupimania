@@ -1915,7 +1915,7 @@ DecorMixPx (Pixmap * ppmold, Pixmap * ppmnew, short total, short part)
   dim.x = part;
   CopyPixel (ppmnew, p1, 0, p2, dim);
 
-  SDL_Delay (20);
+  SDL_Delay (10);
 }
 
 /* ---------- */
@@ -1946,7 +1946,7 @@ DecorMixMx (Pixmap * ppmold, Pixmap * ppmnew, short total, short part)
   dim.x = part;
   CopyPixel (ppmnew, p2, 0, p, dim);
 
-  SDL_Delay (20);
+  SDL_Delay (10);
 }
 
 /* ---------- */
@@ -1979,7 +1979,7 @@ DecorMixPy (Pixmap * ppmold, Pixmap * ppmnew, short total, short part)
   dim.y = part;
   CopyPixel (ppmnew, p1, 0, p2, dim);
 
-  SDL_Delay (20);
+  SDL_Delay (10);
 }
 
 /* ---------- */
@@ -2012,7 +2012,7 @@ DecorMixMy (Pixmap * ppmold, Pixmap * ppmnew, short total, short part)
   dim.y = part;
   CopyPixel (ppmnew, p1, 0, p2, dim);
 
-  SDL_Delay (20);
+  SDL_Delay (10);
 }
 
 /* =============== */
