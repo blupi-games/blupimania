@@ -5221,7 +5221,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       static SDL_bool clear = SDL_FALSE;
       Pt              dest  = {LYIMAGE () - 15, 19};
 
-      if (g_updateBlinking % 80 < 40)
+      if (g_updateBlinking % 60 < 30)
       {
         if (!clear)
         {
