@@ -250,7 +250,8 @@ short g_construit;    /* 1 -> construit */
 
 SDL_Renderer * g_renderer;
 SDL_Window *   g_window;
-Pixmap         g_screen = {0};
+Pixmap         g_screen     = {0};
+SDL_bool       g_invalidate = SDL_TRUE;
 
 int      g_rendererType    = 0;
 Sint32   g_timerInterval   = 50;
@@ -305,7 +306,6 @@ SDL_bool g_afterglow        = SDL_TRUE;
 Pixmap   g_screenBase       = {0};
 Pixmap   g_screenAfterglow0 = {0};
 Pixmap   g_screenAfterglow1 = {0};
-Pixmap   g_screenAfterglow2 = {0};
 
 typedef struct {
   short ident;       /* identificateur */
@@ -4929,8 +4929,9 @@ LoadTextures ()
     g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE (),
     LYIMAGE ());
   SDL_SetTextureBlendMode (g_screen.texture, SDL_BLENDMODE_BLEND);
-  g_screen.dx = LXIMAGE ();
-  g_screen.dy = LYIMAGE ();
+  g_screen.dx  = LXIMAGE ();
+  g_screen.dy  = LYIMAGE ();
+  g_invalidate = SDL_TRUE;
 
   g_screenBase.texture = SDL_CreateTexture (
     g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE (),
@@ -4953,13 +4954,6 @@ LoadTextures ()
   g_screenAfterglow1.dx = LXIMAGE ();
   g_screenAfterglow1.dy = LYIMAGE ();
 
-  g_screenAfterglow2.texture = SDL_CreateTexture (
-    g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXIMAGE (),
-    LYIMAGE ());
-  SDL_SetTextureBlendMode (g_screenAfterglow2.texture, SDL_BLENDMODE_BLEND);
-  g_screenAfterglow2.dx = LXIMAGE ();
-  g_screenAfterglow2.dy = LYIMAGE ();
-
   pmtemp.texture = SDL_CreateTexture (
     g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, LXICO, LYICO);
   SDL_SetTextureBlendMode (pmtemp.texture, SDL_BLENDMODE_BLEND);
@@ -4974,7 +4968,6 @@ UnloadTextures ()
   GivePixmap (&g_screenBase);
   GivePixmap (&g_screenAfterglow0);
   GivePixmap (&g_screenAfterglow1);
-  GivePixmap (&g_screenAfterglow2);
   GivePixmap (&pmtemp);
 }
 
@@ -5212,6 +5205,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
             SDL_Delay (30);
           }
 
+          g_invalidate = SDL_TRUE;
           ChangePhase (PHASE_INIT);
           return 1;
         }
@@ -5671,63 +5665,67 @@ MainLoop (Uint32 interval, void * param)
 void
 Render ()
 {
+  static int    invalidateCounter = 0;
+  const int     afterGlowCounter  = 5;
   SDL_Texture * target;
 
   if (!g_afterglow)
   {
-    SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
+    if (g_invalidate)
+      SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
     SDL_RenderPresent (g_renderer);
+    g_invalidate = SDL_FALSE;
     return;
   }
 
-  // Copy new texture to base texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
-  SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+  if (g_invalidate)
+    invalidateCounter = 0;
 
-  // Apply previous (green) tetxure on the base texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
-  SDL_SetTextureAlphaMod (g_screenAfterglow0.texture, 128);
-  SDL_RenderCopy (g_renderer, g_screenAfterglow0.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+  if (invalidateCounter < afterGlowCounter)
+  {
+    // Copy new texture to base texture
+    target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
+    SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
+    SDL_SetRenderTarget (g_renderer, target);
 
-  // Apply previous older (green) tetxure on the base texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
-  SDL_SetTextureAlphaMod (g_screenAfterglow1.texture, 128);
-  SDL_RenderCopy (g_renderer, g_screenAfterglow1.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+    // Apply previous (green) tetxure on the base texture
+    target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
+    SDL_SetTextureAlphaMod (g_screenAfterglow0.texture, 160);
+    SDL_RenderCopy (g_renderer, g_screenAfterglow0.texture, NULL, NULL);
+    SDL_SetRenderTarget (g_renderer, target);
 
-  // Apply previous older (green) tetxure on the base texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
-  SDL_SetTextureAlphaMod (g_screenAfterglow2.texture, 128);
-  SDL_RenderCopy (g_renderer, g_screenAfterglow2.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+    // Apply previous older (green) tetxure on the base texture
+    target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, g_screenBase.texture);
+    SDL_SetTextureAlphaMod (g_screenAfterglow1.texture, 80);
+    SDL_RenderCopy (g_renderer, g_screenAfterglow1.texture, NULL, NULL);
+    SDL_SetRenderTarget (g_renderer, target);
+  }
 
   // Show the base texture
-  SDL_RenderCopy (g_renderer, g_screenBase.texture, NULL, NULL);
+  if (invalidateCounter < afterGlowCounter)
+    SDL_RenderCopy (g_renderer, g_screenBase.texture, NULL, NULL);
   SDL_RenderPresent (g_renderer);
 
-  // Save the previous (green) texture as older texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenAfterglow1.texture);
-  SDL_RenderCopy (g_renderer, g_screenAfterglow0.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+  if (invalidateCounter < afterGlowCounter)
+  {
+    // Save the previous (green) texture as older texture
+    target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, g_screenAfterglow1.texture);
+    SDL_RenderCopy (g_renderer, g_screenAfterglow0.texture, NULL, NULL);
+    SDL_SetRenderTarget (g_renderer, target);
 
-  // Save the previous (green) texture as older texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenAfterglow2.texture);
-  SDL_RenderCopy (g_renderer, g_screenAfterglow1.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+    // Save the current texture as next previous (green) texture
+    target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, g_screenAfterglow0.texture);
+    SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
+    SDL_SetRenderTarget (g_renderer, target);
+  }
 
-  // Save the current texture as next previous (green) texture
-  target = SDL_GetRenderTarget (g_renderer);
-  SDL_SetRenderTarget (g_renderer, g_screenAfterglow0.texture);
-  SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
-  SDL_SetRenderTarget (g_renderer, target);
+  ++invalidateCounter;
+  g_invalidate = SDL_FALSE;
 }
 
 /* =================== */
