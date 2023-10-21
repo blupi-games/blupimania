@@ -1200,12 +1200,22 @@ LoadImage (int numero, Pixmap * pim, Style style)
   pim->dx = ow;
   pim->dy = oh;
 
+  /* Change from STATIC access to TARGET */
   pim->texture = SDL_CreateTexture (
     g_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, pim->dx,
     pim->dy);
   SDL_SetTextureBlendMode (pim->texture, SDL_BLENDMODE_BLEND);
 
   SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
+
+  if (numero < 20)
+  {
+    /* Remove noise */
+    SDL_SetRenderTarget (g_renderer, texture);
+    SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 0);
+    SDL_RenderClear (g_renderer);
+  }
+
   SDL_SetRenderTarget (g_renderer, pim->texture);
   SDL_RenderCopy (g_renderer, texture, NULL, NULL);
   SDL_DestroyTexture (texture);
