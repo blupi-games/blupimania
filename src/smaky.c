@@ -1211,7 +1211,7 @@ LoadImage (int numero, Pixmap * pim, Style style)
   if (numero < 20)
   {
     /* Remove noise */
-    SDL_SetRenderTarget (g_renderer, texture);
+    SDL_SetRenderTarget (g_renderer, pim->texture);
     SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 0);
     SDL_RenderClear (g_renderer);
   }
