@@ -5453,6 +5453,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     {
       int stop = 0;
       fromClic = SDL_FALSE;
+      SoundPause ();
       if (g_typeedit == 1 || (stop = StopPartie (key, pos)) == KEYHOME)
       {
         if (g_typeedit)
@@ -5462,7 +5463,10 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         return 1;
       }
       if (stop == KEYUNDO)
+      {
+        SoundResume ();
         return 1;
+      }
     }
 
     if (g_subMenu || g_stopMenu || g_saveMenu)
