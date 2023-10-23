@@ -963,9 +963,6 @@ CopyPixel (Pixmap * ppms, Pt os, Pixmap * ppmd, Pt od, Pt dim)
     g_renderer, ppms ? ppms->texture : g_screen.texture, &srcRect, &dstRect);
   SDL_SetRenderTarget (g_renderer, target);
 
-  if (!ppmd)
-    g_invalidate = SDL_TRUE;
-
   return 0;
 }
 
@@ -1009,9 +1006,6 @@ DrawLine (Pixmap * ppm, Pt p1, Pt p2, int color)
   SDL_SetRenderTarget (g_renderer, ppm ? ppm->texture : g_screen.texture);
   SDL_RenderDrawLine (g_renderer, p1.x, p1.y, p2.x, p2.y);
   SDL_SetRenderTarget (g_renderer, target);
-
-  if (!ppm)
-    g_invalidate = SDL_TRUE;
 }
 
 /* ======== */
@@ -1044,9 +1038,6 @@ DrawRect (Pixmap * ppm, Rect rect, int color)
   SDL_SetRenderDrawColor (g_renderer, r, g, b, a);
   SDL_RenderDrawRect (g_renderer, &_rect);
   SDL_SetRenderTarget (g_renderer, target);
-
-  if (!ppm)
-    g_invalidate = SDL_TRUE;
 }
 
 /* ============ */
@@ -1080,9 +1071,6 @@ DrawFillRect (Pixmap * ppm, Rect rect, int color)
   SDL_SetRenderDrawColor (g_renderer, r, g, b, a);
   SDL_RenderFillRect (g_renderer, &_rect);
   SDL_SetRenderTarget (g_renderer, target);
-
-  if (!ppm)
-    g_invalidate = SDL_TRUE;
 }
 
 /* ========== */
