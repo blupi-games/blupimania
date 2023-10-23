@@ -277,6 +277,13 @@ IconDrawOne (
     pmtemp.orig.x = 0;
     pmtemp.orig.y = 0;
 
+    /* Remove noise */
+    SDL_Texture * target = SDL_GetRenderTarget (g_renderer);
+    SDL_SetRenderTarget (g_renderer, pmtemp.texture);
+    SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, 0);
+    SDL_RenderClear (g_renderer);
+    SDL_SetRenderTarget (g_renderer, target);
+
     Pt maskDim = {LYICO, LXICO};
     GetSprite (&mask, ICO_SOLMASK, 1);
     CopyPixel (&mask, p0, &pmtemp, p0, maskDim);
