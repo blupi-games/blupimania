@@ -875,7 +875,8 @@ PaletteEvent (short event, Pt pos)
   {
     press            = _rang;
     SDL_bool subMenu = g_subMenu;
-    if (SPaletteTracking (_rang, g_lastmouse, event)) /* action dans sous-palette ... */
+    if (SPaletteTracking (
+          _rang, g_lastmouse, event)) /* action dans sous-palette ... */
     {
       if (typepress)
         return 0;
