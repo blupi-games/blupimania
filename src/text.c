@@ -301,11 +301,12 @@ DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
  */
 
 Pt
-DrawString (Pixmap * ppm, Pt pos, char * pstring, short size)
+DrawString (
+  Pixmap * ppm, Pt pos, char * pstring, short size, SDL_bool underline)
 {
   char c;
-
-  charsize = size;
+  Pt   start = pos;
+  charsize   = size;
 
   if (size == TEXTSIZELIT)
   {
@@ -315,6 +316,13 @@ DrawString (Pixmap * ppm, Pt pos, char * pstring, short size)
 
   while ((c = *pstring++, c != 0))
     DrawAccent (ppm, &pos, c, NULL); /* dessine le caractère */
+
+  if (underline)
+  {
+    start.y += 2;
+    pos.y += 2;
+    DrawLine (ppm, start, pos, COLORNOIR);
+  }
 
   return pos;
 }
@@ -469,7 +477,7 @@ DrawParagraph (Pixmap * ppm, Rect rect, const char * pstring, short size)
       lg    = GetWord (&pnext, word);
       if (pos.x + lg <= rect.p2.x)
       {
-        DrawString (ppm, pos, word, size); /* affiche un mot */
+        DrawString (ppm, pos, word, size, SDL_FALSE); /* affiche un mot */
         pstring = pnext;
       }
       pos.x += lg;

@@ -243,7 +243,7 @@ DrawReste (Pt pos, short rest)
   }
 
   pos.y += TEXTSIZELIT;
-  DrawString (0, pos, chaine, TEXTSIZELIT);
+  DrawString (0, pos, chaine, TEXTSIZELIT, SDL_FALSE);
 }
 
 /* ------------ */
@@ -281,7 +281,8 @@ DrawTriangle (short rang)
   chaine[0] = 127; /* code du petit triangle */
   chaine[1] = 0;
   pos.y += TEXTSIZELIT;
-  DrawString (0, pos, chaine, TEXTSIZELIT); /* dessine le petit triangle */
+  DrawString (
+    0, pos, chaine, TEXTSIZELIT, SDL_FALSE); /* dessine le petit triangle */
 }
 
 /* ----------- */
@@ -1027,13 +1028,13 @@ DrawEditRest (Pt pos, short reste, short etat)
   p.y       = pos.y + TEXTSIZELIT + 2;
   chaine[0] = 125;
   chaine[1] = 0;
-  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine la flèche ^ */
+  DrawString (0, p, chaine, TEXTSIZELIT, SDL_FALSE); /* dessine la flèche ^ */
 
   p.x       = pos.x + LXICO / 2 + 3;
   p.y       = pos.y + LYICO / 2 - 2;
   chaine[0] = 126;
   chaine[1] = 0;
-  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine la flèche v */
+  DrawString (0, p, chaine, TEXTSIZELIT, SDL_FALSE); /* dessine la flèche v */
 
   p.x = pos.x + LXICO / 2 + 1;
   p.y = pos.y + LYICO / 4 + 5;
@@ -1052,7 +1053,7 @@ DrawEditRest (Pt pos, short reste, short etat)
     chaine[2] = 0;
   }
 
-  DrawString (0, p, chaine, TEXTSIZELIT); /* dessine le chiffre */
+  DrawString (0, p, chaine, TEXTSIZELIT, SDL_FALSE); /* dessine le chiffre */
 }
 
 /* ---------- */

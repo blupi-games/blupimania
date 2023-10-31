@@ -226,7 +226,8 @@ typedef struct {
   short language;                /* language (en, fr, de) */
   short screen;                  /* zoom (normal, double, fullscreen) */
   short theme;                   /* theme (DOS, Smaky 100) */
-  short reserve2[90];            /* réserve */
+  short resolved[MAXJOUEUR][9];  /* fully resolved by levels */
+  short reserve2[54];            /* réserve */
 } Joueur;
 
 /* --------------------------- */
@@ -2049,7 +2050,7 @@ DrawUpdate (const char * version, Pt pos)
 
   snprintf (text, sizeof (text), format[g_langue], version);
 
-  DrawString (0, pos, text, TEXTSIZELIT);
+  DrawString (0, pos, text, TEXTSIZELIT, SDL_FALSE);
 }
 
 /* ----------------- */
@@ -2749,10 +2750,11 @@ JoueurEditClose (void)
 static void
 DrawIdent (void)
 {
-  short  joueur;
-  char   chaine[20];
-  char * p;
-  Pt     pos;
+  short joueur;
+  char  chaine[20];
+  Pt    pos;
+
+  SDL_memset (chaine, 0, sizeof (chaine));
 
   joueur = fj.joueur;
   for (fj.joueur = 0; fj.joueur < MAXJOUEUR; fj.joueur++)
@@ -2762,47 +2764,54 @@ DrawIdent (void)
   }
   fj.joueur = joueur;
 
-  pos.x = 500;
   pos.y = LYIMAGE () - 286;
   for (joueur = 0; joueur < MAXJOUEUR; joueur++)
   {
+    pos.x = 500;
     if (fj.nom[joueur][0] != 0)
     {
-      p    = chaine;
-      *p++ = 'A';
-      *p++ = ':';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][0] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][2] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][4] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][6] + 1, 0);
-      DrawString (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
-    }
-    pos.y += 15;
+      SDL_snprintf (chaine, sizeof (chaine), "A:");
+      DrawString (0, pos, chaine, TEXTSIZELIT, SDL_FALSE);
 
+      pos.x += 15;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][0] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][0]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][2] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][2]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][4] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][4]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][6] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][6]);
+    }
+
+    pos.x = 500;
+    pos.y += 15;
     if (fj.nom[joueur][0] != 0)
     {
-      p    = chaine;
-      *p++ = 'T';
-      *p++ = ':';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][1] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][3] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][5] + 1, 0);
-      *p++ = ' ';
-      *p++ = ' ';
-      PutNum (&p, fj.progres[joueur][7] + 1, 0);
-      DrawString (0, pos, chaine, TEXTSIZELIT); /* affiche la progression */
+      SDL_snprintf (chaine, sizeof (chaine), "T:");
+      DrawString (0, pos, chaine, TEXTSIZELIT, SDL_FALSE);
+
+      pos.x += 15;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][1] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][1]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][3] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][3]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][5] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][5]);
+
+      pos.x += 22;
+      SDL_snprintf (chaine, sizeof (chaine), "%2d", fj.progres[joueur][7] + 1);
+      DrawString (0, pos, chaine, TEXTSIZELIT, fj.resolved[joueur][7]);
     }
     pos.y += 40 - 15;
   }
@@ -5557,6 +5566,8 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         if (g_monde >= max - 1)
         {
           ChangePhase (PHASE_FINI0 + fj.niveau[fj.joueur]);
+          fj.resolved[fj.joueur][fj.niveau[fj.joueur]] = SDL_TRUE;
+          JoueurWrite();
           return 1;
         }
         ChangePhase (PHASE_SUIVANT);

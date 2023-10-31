@@ -407,7 +407,8 @@ void     IconClose (void);
 #define TEXTSIZELIT 10 /* petite taille */
 #define TEXTSIZEMID 21 /* taille moyenne */
 
-Pt DrawString (Pixmap * ppm, Pt pos, char * pstring, short size);
+Pt DrawString (
+  Pixmap * ppm, Pt pos, char * pstring, short size, SDL_bool underline);
 Pt DrawPercent (
   Pixmap * ppm, Pt pos, char * pstring, Rect * clipLeft, Rect * clipRight);
 Rect GetRectText (Pt pos, char * pstring, short size);
