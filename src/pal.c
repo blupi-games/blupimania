@@ -885,14 +885,13 @@ PaletteEvent (short event, Pt pos)
   }
 
   rang = GetButtonRang (pos);
-  // if ( rang != press && rang < MAXICONY )
-  {
-    DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
-    DrawF1toF4 (press);
-    press = rang;
-    if (event != KEYCLICREL || typepress != 0)
-      DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typep);
-  }
+
+  DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typer);
+  DrawF1toF4 (press);
+  press = rang;
+  if (event != KEYCLICREL || typepress != 0)
+    DrawButton (GetButtonPos (press), ticon[press][tspal[press]], typep);
+
   return event == KEYCLICREL ? 2 : 1;
 
 end:
@@ -1079,7 +1078,6 @@ GetEditPos (short x, short y)
 
   pos.x = 20 + (LXICO / 2 + 18) * x;
   pos.y = 38 + (LYICO / 2 + 10) * y;
-
   return pos;
 }
 
@@ -1100,7 +1098,6 @@ GetEditRang (Pt pos, short * px, short * py, short * ptype)
   Pt    pb;
 
   for (y = 0; y < MAXEDITY; y++)
-  {
     for (x = 0; x < MAXEDITX; x++)
     {
       pb = GetEditPos (x, y);
@@ -1129,7 +1126,7 @@ GetEditRang (Pt pos, short * px, short * py, short * ptype)
         return 1; /* trouvé */
       }
     }
-  }
+
   return 0;
 }
 
@@ -1395,8 +1392,8 @@ InfoDraw (
   GetPixmap (&pminfo, p1, 0, 1);
 
   GetSprite (&pm, ICO_INFO, 1);
-  DuplPixel (
-    &pm, &pminfo); /* copie l'icône dans pminfo pour pouvoir modifier */
+  /* copie l'icône dans pminfo pour pouvoir modifier */
+  DuplPixel (&pm, &pminfo);
 
   rect.p1.y = 10;
   rect.p2.y = 10 + 4;
