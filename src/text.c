@@ -834,7 +834,7 @@ EditDraw (void)
  */
 
 short
-EditEvent (short key, Pt pos)
+EditEvent (short key)
 {
   short err = -1;
 

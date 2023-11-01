@@ -5270,7 +5270,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
 
     if (phase == PHASE_IDENT && key != KEYRETURN)
     {
-      if (EditEvent (key, pos) >= 0)
+      if (EditEvent (key) >= 0)
         return 1;
     }
 
@@ -5278,7 +5278,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
     {
       if (PaletteEditEvent (descmonde.palette, key, pos) == 0)
         return 1;
-      if (EditEvent (key, pos) >= 0)
+      if (EditEvent (key) >= 0)
         return 1;
     }
 

@@ -414,7 +414,7 @@ Pt DrawPercent (
 Rect GetRectText (Pt pos, char * pstring, short size);
 void DrawParagraph (Pixmap * ppm, Rect rect, const char * pstring, short size);
 
-short EditEvent (short key, Pt pos);
+short EditEvent (short key);
 short EditOpen (char * p, short max, Rect rect);
 short EditClose (void);
 
