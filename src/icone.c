@@ -598,16 +598,18 @@ IconDrawClose (short bdraw)
 
     p1.y = ListRegOld[i].reg.r.p2.y - ListRegOld[i].reg.r.p1.y;
     p1.x = ListRegOld[i].reg.r.p2.x - ListRegOld[i].reg.r.p1.x;
-    CopyPixel /* met le décor de fond */
-      (ppmdecor, ListRegOld[i].reg.r.p1, &pmwork, ListRegOld[i].reg.r.p1, p1);
+    /* met le décor de fond */
+    CopyPixel (
+      ppmdecor, ListRegOld[i].reg.r.p1, &pmwork, ListRegOld[i].reg.r.p1, p1);
 
     for (j = 0; j < MAXICONDRAW && ListIconDrawNew[j].icon; j++)
       if (IfSectRegion (ListRegOld[i].reg, ListIconDrawNew[j].bbox))
       {
-        SuperCelHover _hover = IconDrawOne /* dessine l'icône */
-          (ListIconDrawNew[j].icon, ListIconDrawNew[j].btransp,
-           ListIconDrawNew[j].pos, ListIconDrawNew[j].posz,
-           ListIconDrawNew[j].cel, ListIconDrawNew[j].clip, &pmwork);
+        /* dessine l'icône */
+        SuperCelHover _hover = IconDrawOne (
+          ListIconDrawNew[j].icon, ListIconDrawNew[j].btransp,
+          ListIconDrawNew[j].pos, ListIconDrawNew[j].posz,
+          ListIconDrawNew[j].cel, ListIconDrawNew[j].clip, &pmwork);
         if (_hover.icon)
           hover = _hover;
       }
@@ -637,11 +639,8 @@ IconDrawClose (short bdraw)
         SDL_SetTextureColorMod (tmp.texture, 32, 32, 32);
       }
 
-      CopyPixel             /* dessine la chair */
-        (&tmp,              /* source */
-         hover.p1, &pmwork, /* destination */
-         hover.p2, hover.dim);
-
+      /* dessine la chair */
+      CopyPixel (&tmp, hover.p1, &pmwork, hover.p2, hover.dim);
       GivePixmap (&tmp);
     }
 
@@ -658,8 +657,8 @@ IconDrawClose (short bdraw)
       p2.x  = POSXDRAW + ro.r.p1.x;
       dim.y = ro.r.p2.y - ro.r.p1.y;
       dim.x = ro.r.p2.x - ro.r.p1.x;
-      CopyPixel /* met l'image dans l'écran */
-        (&pmwork, p1, 0, p2, dim);
+      /* met l'image dans l'écran */
+      CopyPixel (&pmwork, p1, 0, p2, dim);
     }
   }
 
