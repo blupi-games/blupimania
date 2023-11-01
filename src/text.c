@@ -26,7 +26,7 @@ static short  cx;       /* position de curseur "|" en x */
 static short  begin;    /* début où afficher [car] */
 static short  charsize; /* taille des caractères */
 
-static char tchasselit[128 - 32] = {
+static const char tchasselit[128 - 32] = {
   0x04, 0x04, 0x07, 0x0A, 0x08, 0x0A, 0x0A, 0x04, //
   0x05, 0x05, 0x0A, 0x09, 0x03, 0x07, 0x04, 0x07, //
   0x07, 0x07, 0x08, 0x08, 0x07, 0x08, 0x07, 0x07, //
@@ -41,7 +41,7 @@ static char tchasselit[128 - 32] = {
   0x07, 0x07, 0x06, 0x05, 0x03, 0x09, 0x09, 0x07  //
 };
 
-static char tchassemid[128 - 32] = {
+static const char tchassemid[128 - 32] = {
   0x09, 0x08, 0x0D, 0x0B, 0x13, 0x18, 0x18, 0x07, //
   0x0C, 0x0C, 0x0E, 0x0E, 0x08, 0x0E, 0x08, 0x0C, //
   0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, //
@@ -56,7 +56,7 @@ static char tchassemid[128 - 32] = {
   0x12, 0x12, 0x10, 0x07, 0x0B, 0x19, 0x19, 0x0D  //
 };
 
-static char tchacc[32] = {
+static const char tchacc[32] = {
   91,  92,  93,  94,        //
   0,   0,   0,   0,   0, 0, //
   'a', 'a', 'a', 'a',       //
@@ -106,7 +106,7 @@ LgChar (char c)
   }
 }
 
-static char taccent[] = {
+static const char taccent[] = {
   KEYAAIGU, 'a', 91, 2, 6,    //
   KEYAGRAVE, 'a', 92, 2, 4,   //
   KEYACIRCON, 'a', 93, 1, 3,  //
@@ -254,8 +254,8 @@ DrawChar (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
 static void
 DrawAccent (Pixmap * ppm, Pt * ppos, char c, Rect * clip)
 {
-  char * paccent;
-  Pt     pnext, pacc;
+  const char * paccent;
+  Pt           pnext, pacc;
 
   if (c < 0) /* lettre accentuée ? */
   {
