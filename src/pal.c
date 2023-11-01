@@ -457,8 +457,8 @@ SPaletteOpen (short rang, Pixmap * ppm)
 
   r.p1.x = pos.x;
   r.p1.y = pos.y;
-  r.p2.x = pos.x + dim.x;
-  r.p2.y = pos.y + dim.y;
+  r.p2.x = pos.x + dim.x - 1;
+  r.p2.y = pos.y + dim.y - 1;
   DrawFillRect (0, r, COLORBLANC);
 
   r.p1.x = pos.x;
