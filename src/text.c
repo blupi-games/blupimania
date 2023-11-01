@@ -506,7 +506,7 @@ DrawParagraph (Pixmap * ppm, Rect rect, const char * pstring, short size)
     Effectue quelques calculs pour afficher une ligne en édition.
  */
 
-void
+static void
 CalcJustif (void)
 {
   short dim; /* largeur pour la ligne */
@@ -565,7 +565,7 @@ CalcJustif (void)
     Affiche un texte pendant l'édition d'une ligne.
  */
 
-void
+static void
 EditAff (void)
 {
   short i;
@@ -611,7 +611,7 @@ EditAff (void)
     Insère un caractère dans la ligne.
  */
 
-short
+static short
 InsChar (char car)
 {
   char *s, *d;
@@ -640,7 +640,7 @@ InsChar (char car)
     Détruit un caractère dans la ligne.
  */
 
-short
+static short
 DelChar (void)
 {
   char *s, *d;
@@ -671,7 +671,7 @@ DelChar (void)
     Si oui, retourne l'accent. Si non, retourne zéro.
  */
 
-short
+static short
 AccentFirst (char key)
 {
   short i = 0;
@@ -703,7 +703,7 @@ AccentFirst (char key)
     Si oui, retourne le nouveau caractère. Si non, retourne zéro.
  */
 
-char
+static char
 AccentUnder (char key, char accent)
 {
   short i = 0;
@@ -750,7 +750,7 @@ AccentUnder (char key, char accent)
     Inverse le curseur "|".
  */
 
-void
+static void
 InvCurs (short color)
 {
   Pt p1, p2;
@@ -774,7 +774,7 @@ InvCurs (short color)
     Enlève le curseur "|" si nécessaire.
  */
 
-void
+static void
 ClrCurs (void)
 {
   if (ifcx == 0)
@@ -792,7 +792,7 @@ ClrCurs (void)
     Met le curseur "|" si nécessaire.
  */
 
-void
+static void
 SetCurs (void)
 {
   if (ifcx != 0)
@@ -810,7 +810,7 @@ SetCurs (void)
     Affiche la chaîne éditée.
  */
 
-void
+static void
 EditDraw (void)
 {
   if (pchaine == 0)
