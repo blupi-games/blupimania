@@ -739,9 +739,9 @@ PaletteGetPress (void)
 short
 SpecButton (Pt pos)
 {
-  short * pt;
+  const short * pt;
 
-  static short table0[] =       /* table si jeu avec flèches */
+  static const short table0[] = /* table si jeu avec flèches */
     {25, 92, 17, 17, KEYUP,     //
      7,  75, 17, 17, KEYLEFT,   //
      43, 75, 17, 17, KEYRIGHT,  //
@@ -754,7 +754,7 @@ SpecButton (Pt pos)
 
      0};
 
-  static short table1[] =        /* table si jeu avec télécommande */
+  static const short table1[] =  /* table si jeu avec télécommande */
     {7,  68, 24, 9,  KEYGOFRONT, //
      7,  59, 24, 9,  KEYGOBACK,  //
      36, 76, 8,  26, KEYGOLEFT,  //
