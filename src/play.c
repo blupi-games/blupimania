@@ -5605,7 +5605,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         {
           ChangePhase (PHASE_FINI0 + fj.niveau[fj.joueur]);
           fj.resolved[fj.joueur][fj.niveau[fj.joueur]] = SDL_TRUE;
-          JoueurWrite();
+          JoueurWrite ();
           return 1;
         }
         ChangePhase (PHASE_SUIVANT);
