@@ -290,11 +290,11 @@ static char     musiquehex[10];          /* musique hazard exclusif */
 static short    lastnoisevolume = 8 - 3; /* dernier volume bruiutages */
 static short    lastmusicvolume = 8 - 3; /* dernier volume musique */
 
-static short * animpb;   /* animation de base en cours */
-static short * animpt;   /* animation en cours */
-static short   animnext; /* pas en cours (0..n) */
-static short   animdel;  /* délai avant la première animation */
-static Pt      animpos;  /* dernière position de la souris */
+static const short * animpb;   /* animation de base en cours */
+static const short * animpt;   /* animation en cours */
+static short         animnext; /* pas en cours (0..n) */
+static short         animdel;  /* délai avant la première animation */
+static Pt            animpos;  /* dernière position de la souris */
 
 static short passrang;  /* rang du mot de passe */
 static short passindex; /* index de l'édition du mot de passe */
@@ -3428,14 +3428,10 @@ static short timage53[] =                                     /* réglages 2 */
 static short *
 GetTimage (void)
 {
-  short * pt;
-
   switch (ConvPhaseToNumImage (phase))
   {
   case 21:
-    pt = timage21;
-    return pt;
-
+    return timage21;
   case 22:
     return timage22;
   case 23:
@@ -3568,33 +3564,34 @@ EventToAction (char event)
 /* ------------------------------------------------ */
 
 /* clang-format off */
-static short tanim21[] =				/* initial */
+static const short tanim21[] =				/* initial */
 {
-	ACTION_NIVEAU8,		320,122,	DELNORM,6,
-	128+88,128+89,128+90,128+89,128+90,128+89,
+	ACTION_NIVEAU8,		320,122,	DELNORM,6,	128+88,128+89,128+90,128+89,128+90,128+89,
 
-	ACTION_NIVEAU1,		141,327,	DELNORM,12,
-	128+97,128+96,128+97,128+96,128+97,128+96,
-												128+98,128+98,128+98,128+96,128+97,128+96,
+	ACTION_NIVEAU1,		141,327,	DELNORM,12,	128+97,128+96,128+97,128+96,128+97,128+96,
+								128+98,128+98,128+98,128+96,128+97,128+96,
 
 	ACTION_NIVEAU0,		107,310,	DELNORM,12,	128+81,128+80,128+81,128+80,128+81,128+80,
-												128+82,128+82,128+82,128+80,128+81,128+80,
+								128+82,128+82,128+82,128+80,128+81,128+80,
 
 	ACTION_NIVEAU2,		285,303,	DELNORM,8,	128+83,128+84,128+85,128+84,
-												128+83,128+83,128+83,128+83,
+								128+83,128+83,128+83,128+83,
 
 	ACTION_NIVEAU3,		331,292,	DELNORM,10,	128+99,128+100,128+101,128+100,128+101,128+100,
-												128+99,128+99,128+99,128+99,
+								128+99,128+99,128+99,128+99,
 
 	ACTION_NIVEAU5,		176,182,	DELNORM,16,	128+1,128+16,128+10,128+10,128+10,128+16,
-												128+1,128+1,128+1,128+18,128+4,128+4,
-												128+4,128+18,128+1,128+1,
+								128+1,128+1,128+1,128+18,128+4,128+4,
+								128+4,128+18,128+1,128+1,
 
 	ACTION_NIVEAU4,		137,164,	DELNORM,4,	1,2,1,3,
+
 	ACTION_NIVEAU6,		375,185,	DELNORM,12,	128+86,128+87,128+86,128+87,128+86,128+87,
-												128+86,128+87,128+86,128+87,128+87,128+87,
+								128+86,128+87,128+86,128+87,128+87,128+87,
+
 	ACTION_NIVEAU7,		416,175,	DELNORM,12,	128+102,128+103,128+102,128+103,128+102,128+103,
-												128+102,128+103,128+102,128+103,128+103,128+103,
+								128+102,128+103,128+102,128+103,128+103,128+103,
+
 	ACTION_REGLAGE,		538,149,	DELNORM,2,	256+76,128+104,
 	ACTION_IDENT,		551,96,		DELNORM,4,	128+116,128+117,128+116,128+115,
 	ACTION_AIDE,		485,91,		DELNORM,8,	105,106,106,107,107,104,104,105,
@@ -3602,45 +3599,66 @@ static short tanim21[] =				/* initial */
 	-1
 };
 
-static short tanim22[] =				/* objectif */
+static const short tanim21w[] =	{			/* initial (win) */
+	ACTION_NIVEAU8,		320,122,	DELNORM,6,	128+88,128+89,128+90,128+89,128+90,128+89,
+	ACTION_NIVEAU1,		141,327,	DELNORM,12,	512+113,512+112,512+113,512+112,512+113,512+112,
+								512+114,512+114,512+114,512+112,512+113,512+112,
+	ACTION_NIVEAU0,		107,310,	DELNORM,12,	512+97,512+96,512+97,512+96,512+97,512+96,
+								512+98,512+98,512+98,512+96,512+97,512+96,
+	ACTION_NIVEAU2,		285,303,	DELNORM,8,	512+99,512+100,512+101,512+100,
+								512+99,512+99,512+99,512+99,
+	ACTION_NIVEAU3,		331,292,	DELNORM,10,	512+115,512+116,512+117,512+116,512+117,512+116,
+								512+115,512+115,512+115,512+115,
+	ACTION_NIVEAU5,		176,182,	DELNORM,16,	512+17,512+16,512+10,512+10,512+10,512+16,
+								512+17,512+17,512+17,512+18,512+4,512+4,
+								512+4,512+18,512+17,512+17,
+	ACTION_NIVEAU4,		137,164,	DELNORM,4,	512+1,512+2,512+1,512+3,
+	ACTION_NIVEAU6,		375,185,	DELNORM,12,	512+102,512+103,512+102,512+103,512+102,512+103,
+								512+102,512+103,512+102,512+103,512+103,512+103,
+	ACTION_NIVEAU7,		416,175,	DELNORM,12,	512+118,512+119,512+118,512+119,512+118,512+119,
+								512+118,512+119,512+118,512+119,512+119,512+119,
+	-1
+};
+
+static const short tanim22[] =				/* objectif */
 {
 	ACTION_JOUE,		89,137,		DELNORM,4,	2,1,3,1,
 	ACTION_ANNULE,		482,136,	DELSLOW,15,	68,68,68,64,64,64,33,33,33,64,64,64,68,68,68,
 	-1
 };
 
-static short tanim23[] =				/* recommence */
+static const short tanim23[] =				/* recommence */
 {
 	ACTION_JOUE,		173,140,	DELNORM,4,	6,4,5,4,
 	ACTION_STOPPEKO,	469,134,	DELSLOW,15,	68,68,68,64,64,64,33,33,33,64,64,64,68,68,68,
 	-1
 };
 
-static short tanim24[] =				/* suivant */
+static const short tanim24[] =				/* suivant */
 {
 	ACTION_SUIVANT,		42,140,		DELNORM,5,	20,21,21,21,1,
 	ACTION_STOPPEOK,	475,139,	DELSLOW,15,	68,68,68,64,64,64,33,33,33,64,64,64,68,68,68,
 	-1
 };
 
-static short tanim25[] =				/* privé */
+static const short tanim25[] =				/* privé */
 {
 	ACTION_JOUE,		89,137,		DELNORM,4,	2,1,3,1,
 	ACTION_DEBUT,		482,136,	DELSLOW,15,	68,68,68,64,64,64,33,33,33,64,64,64,68,68,68,
 	-1
 };
 
-static short tanim26[] =				/* paramètres */
+static const short tanim26[] =				/* paramètres */
 {
 	-1
 };
 
-static short tanim27[] =				/* déplace */
+static const short tanim27[] =				/* déplace */
 {
 	-1
 };
 
-static short tanim30[] =				/* opération */
+static const short tanim30[] =				/* opération */
 {
 	ACTION_DETRUIT,		118,98,		DELNORM,8,	58,59,58,58,59,58,59,18,
 	ACTION_DEPLACE,		118,98,		DELNORM,8,	58,59,58,58,59,58,59,18,
@@ -3649,7 +3667,7 @@ static short tanim30[] =				/* opération */
 	-1
 };
 
-static short tanim31[] =				/* identification */
+static const short tanim31[] =				/* identification */
 {
 	ACTION_DEBUT,		62,136,		DELNORM,4,	2,1,3,1,
 	ACTION_AIDE,		236,139,	DELNORM,8,	105,106,106,107,107,104,104,105,
@@ -3658,13 +3676,13 @@ static short tanim31[] =				/* identification */
 	-1
 };
 
-static short tanim33[] =				/* fini niveau */
+static const short tanim33[] =				/* fini niveau */
 {
 	ACTION_FINI,		53,138,		DELNORM,4,	46,45,18,45,
 	-1
 };
 
-static short tanim37[] =				/* réglages */
+static const short tanim37[] =				/* réglages */
 {
 	ACTION_VITESSE0,	158,298,	3,12,		2,2,2,1,1,1,3,3,3,1,1,1,
 	ACTION_VITESSE1,	158,298,	2,8,		2,2,1,1,3,3,1,1,
@@ -3684,7 +3702,7 @@ static short tanim37[] =				/* réglages */
 	-1
 };
 
-static short tanim53[] =				/* réglages 2 */
+static const short tanim53[] =				/* réglages 2 */
 {
 	ACTION_SCREEN_1,	480,298,	DELNORM,2,	256+128+93,256+128+94,
 	ACTION_SCREEN_2,	480,298,	DELNORM,2,	256+128+93,256+128+94,
@@ -3704,17 +3722,13 @@ static short tanim53[] =				/* réglages 2 */
     Cherche une table selon la phase de jeu.
  */
 
-static short *
+static const short *
 AnimGetTable (void)
 {
-  short * pt;
-
   switch (ConvPhaseToNumImage (phase))
   {
   case 21:
-    pt = tanim21;
-    return pt;
-
+    return tanim21;
   case 22:
     return tanim22;
   case 23:
@@ -3749,10 +3763,10 @@ AnimGetTable (void)
     Cherche une animation dans la table.
  */
 
-static short *
+static const short *
 AnimSearch (PhAction ac)
 {
-  short * pt = AnimGetTable ();
+  const short * pt = AnimGetTable ();
 
   if (pt == 0)
     return 0;
@@ -3766,6 +3780,13 @@ AnimSearch (PhAction ac)
   return 0;
 }
 
+static SDL_bool
+IsAltenateAnim (const short * pt)
+{
+  return pt[0] >= ACTION_NIVEAU0 && pt[0] <= ACTION_NIVEAU7 &&
+         fj.resolved[fj.joueur][pt[0] - ACTION_NIVEAU0];
+}
+
 /* --------------- */
 /* AnimIconAddBack */
 /* --------------- */
@@ -3777,10 +3798,12 @@ AnimSearch (PhAction ac)
 static void
 AnimIconAddBack (Pt pos, char bFront)
 {
-  short * pt = animpb;
-  Pt      ipos;
-  Pt      orig = {0, 0};
-  Pt      dim  = {LYICO, LXICO};
+  const short * pt = animpb;
+  const short * _pt;
+  const short * _animpt = animpt;
+  Pt            ipos;
+  Pt            orig = {0, 0};
+  Pt            dim  = {LYICO, LXICO};
 
   if (phase != PHASE_INIT || pt == 0)
     return;
@@ -3789,7 +3812,15 @@ AnimIconAddBack (Pt pos, char bFront)
   {
     if (bFront == 0 && pt >= animpt)
       return;
-    if (bFront == 0 || pt > animpt)
+
+    _pt = pt;
+    if (IsAltenateAnim (pt))
+    {
+      pt      = tanim21w + (pt - tanim21);
+      _animpt = tanim21w + (animpt - tanim21);
+    }
+
+    if (bFront == 0 || pt > _animpt)
     {
       ipos.x = pt[1];
       ipos.y = LYIMAGE () - pt[2] - 1;
@@ -3801,6 +3832,9 @@ AnimIconAddBack (Pt pos, char bFront)
         DrawSpriteTemp (pt[5], orig, _pos, dim);
       }
     }
+
+    pt      = _pt;
+    _animpt = animpt;
     pt += 5 + pt[4];
   }
 }
@@ -3861,14 +3895,18 @@ AnimDraw (void)
   if (animpt == 0)
     return DELNORM;
 
-  icon = animpt[5 + animnext % animpt[4]];
+  const short * _animpt = animpt;
+  if (IsAltenateAnim (animpt))
+    _animpt = tanim21w + (animpt - tanim21);
 
-  pos.x = animpt[1];
-  pos.y = LYIMAGE () - animpt[2] - 1;
+  icon = _animpt[5 + animnext % _animpt[4]];
+
+  pos.x = _animpt[1];
+  pos.y = LYIMAGE () - _animpt[2] - 1;
 
   AnimDrawIcon (0, icon, pos, 1); /* dessine l'icône */
 
-  return animpt[3]; /* retourne le délai */
+  return _animpt[3]; /* retourne le délai */
 }
 
 /* ------------ */
@@ -3882,7 +3920,7 @@ AnimDraw (void)
 static void
 AnimDrawInit (void)
 {
-  short * pt = AnimGetTable ();
+  const short * pt = AnimGetTable ();
 
   if (pt == 0)
     return;
@@ -3944,7 +3982,7 @@ AnimDrawInit (void)
 static void
 AnimTracking (Pt pos)
 {
-  short * pt;
+  const short * pt;
 
   pt = AnimGetTable ();
   if (pt == 0)
