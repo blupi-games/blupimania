@@ -2689,6 +2689,7 @@ StopPartie (short key, Pt pos)
   }
 
 next:
+  SoundHalt ();
   PlayEvSound (SOUND_CLIC);
 
   p.y = 0;

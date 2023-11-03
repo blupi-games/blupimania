@@ -426,6 +426,13 @@ SoundResume ()
     Mix_Resume (channel);
 }
 
+void
+SoundHalt ()
+{
+  for (int channel = 0; channel < SOUND_MUSIC11; ++channel)
+    Mix_HaltChannel (channel);
+}
+
 SDL_bool
 SoundPlaying (short sound)
 {

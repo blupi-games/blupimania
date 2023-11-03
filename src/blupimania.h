@@ -438,6 +438,7 @@ void     PlayMusicVolume (short volume);
 void     PlayAudio (short sound, const Pt * cel);
 void     SoundPause (void);
 void     SoundResume (void);
+void     SoundHalt (void);
 SDL_bool SoundPlaying (short sound);
 
 Style     GetWorldStyle (void);
