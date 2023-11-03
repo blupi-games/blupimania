@@ -352,7 +352,7 @@ PlayAudio (short sound, const Pt * cel)
   if (!g_sounds[sound])
     return;
 
-  if (SoundPlaying (sound))
+  if (!g_pause && SoundPlaying (sound))
     return;
 
   Sint32 volume = g_soundVolume;
