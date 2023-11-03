@@ -2665,6 +2665,7 @@ StopPartie (short key, Pt pos)
     PlayEvSound (SOUND_CLIC);
     if (GetPixmap (&pmsave, sdim, 0, 2) != 0)
       return KEYHOME;
+
     p.y = 0;
     p.x = 0;
     CopyPixel (0, spos, &pmsave, p, sdim); /* sauve l'écran */
@@ -2675,18 +2676,14 @@ StopPartie (short key, Pt pos)
 
   StopDrawIcon (); /* dessine les icônes */
 
-  // while (1)
+  if (key == KEYCLIC)
   {
-    // key = GetEvent(&pos);
-    if (key == KEYCLIC)
-    {
-      key = StopClicToEvent (pos);
-      if ((key == KEYUNDO || key == KEYHOME))
-        goto next;
-    }
-
-    return 0;
+    key = StopClicToEvent (pos);
+    if ((key == KEYUNDO || key == KEYHOME))
+      goto next;
   }
+
+  return 0;
 
 next:
   SoundHalt ();
@@ -2696,7 +2693,7 @@ next:
   p.x = 0;
   CopyPixel (&pmsave, p, 0, spos, sdim); /* restitue l'écran */
   GivePixmap (&pmsave);
-  // SDL_RenderPresent(g_renderer);
+
   open       = SDL_FALSE;
   g_stopMenu = SDL_FALSE;
 
