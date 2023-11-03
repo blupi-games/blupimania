@@ -569,7 +569,6 @@ ChangeTheme (short theme)
 void
 PlayEvSound (short sound)
 {
-  // if ( musique != 0 )  return;		/* rien si musique en cours */
   PlayAudio (sound, NULL);
 }
 

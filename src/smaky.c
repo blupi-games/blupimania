@@ -344,6 +344,7 @@ PlayAudio (short sound, const Pt * cel)
 {
   if (soundon == 0)
     return;
+
   filsson = sound; /* donne le numéro au processus fils */
 
   if (sound < 1 || sound >= SOUND_MAX)
