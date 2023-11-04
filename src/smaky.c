@@ -41,7 +41,7 @@ static Mix_Chunk * g_sounds[SOUND_MAX] = {NULL};
 static Mix_Music * g_music             = NULL;
 static SDL_bool    g_musicStopped      = SDL_FALSE;
 
-static short           animLang = 0;
+static short           animLang = -1;
 static IMG_Animation * animCache[64];
 
 static const SDL_Color g_colorsDOS[] = {
@@ -1163,7 +1163,10 @@ LoadImage (int numero, Pixmap * pim, Style style)
   SDL_Texture * texture;
   int           index;
 
-  if (!animCache[numero] || animLang != g_langue)
+  if (animLang != g_langue)
+    UnloadAnim ();
+
+  if (!animCache[numero])
   {
     animCache[numero] = IMG_LoadWEBPAnimation (name);
     animLang          = g_langue;
