@@ -1783,7 +1783,7 @@ DecorModif (Pt cel, short newicon)
   /* Génère dans pmnewdecor l'image de la nouvelle partie du décor,
       en redessinant toutes les cellules placées derrière. */
 
-  GetPixmap (&pmnewdecor, dim, 1, 1); /* noirci le pixmap du décor */
+  GetPixmap (&pmnewdecor, dim, 1); /* noirci le pixmap du décor */
 
   int k = 0;
   for (int i = cel.y - 3; i <= MAXCELY; i++, k++)
@@ -2382,19 +2382,19 @@ LoadDecor ()
 
   p.y = DIMYDRAW;
   p.x = DIMXDRAW;
-  err = GetPixmap (&pmdecor, p, 1, 1);
+  err = GetPixmap (&pmdecor, p, 1);
   if (err)
     return err;
 
   p.y = LYICO;
   p.x = LXICO;
-  err = GetPixmap (&pmsuper, p, -1, 1);
+  err = GetPixmap (&pmsuper, p, -1);
   if (err)
     return err;
 
   p.y = LYICO;
   p.x = LXICO;
-  err = GetPixmap (&pmsback, p, -1, 1);
+  err = GetPixmap (&pmsback, p, -1);
 
   return err;
 }
@@ -2513,7 +2513,7 @@ DecorPartieRead (long pos, char file)
 
   p.y = DIMYDRAW;
   p.x = DIMXDRAW;
-  err = GetPixmap (&pmdecor, p, 1, 1);
+  err = GetPixmap (&pmdecor, p, 1);
   if (err)
     return err;
 

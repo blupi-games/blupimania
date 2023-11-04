@@ -623,7 +623,7 @@ IconDrawClose (short bdraw)
       {
         hover.dim.y = LYICO;
         hover.dim.x = LXICO;
-        GetPixmap (&tmp, hover.dim, 2, 0);
+        GetPixmap (&tmp, hover.dim, 2);
         GetSprite (&pmicon, ICO_CELARROWS, 1);
         DuplPixel (&pmicon, &tmp);
         SDL_SetTextureAlphaMod (tmp.texture, 128);
@@ -632,7 +632,7 @@ IconDrawClose (short bdraw)
       {
         hover.dim.y = LYICO;
         hover.dim.x = LXICO;
-        GetPixmap (&tmp, hover.dim, 2, 0);
+        GetPixmap (&tmp, hover.dim, 2);
         GetSprite (&pmicon, g_superInvalid ? ICO_CROIX : hover.icon, 1);
         DuplPixel (&pmicon, &tmp);
         SDL_SetTextureAlphaMod (tmp.texture, 128);
@@ -683,7 +683,7 @@ IconOpen (void)
 
   p.y = DIMYDRAW;
   p.x = DIMXDRAW;
-  err = GetPixmap (&pmwork, p, 0, 1);
+  err = GetPixmap (&pmwork, p, 0);
   if (err)
     return err;
 
@@ -691,7 +691,7 @@ IconOpen (void)
 
   p.y = LYICO;
   p.x = LXICO;
-  err = GetPixmap (&pmcopy, p, 0, 1);
+  err = GetPixmap (&pmcopy, p, 0);
   if (err)
     return err;
 

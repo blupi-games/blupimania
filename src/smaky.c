@@ -798,7 +798,7 @@ ScrollPixelRect (
     goto fill;
 
   Pixmap tmp = {0};
-  GetPixmap (&tmp, dim, 1, 0);
+  GetPixmap (&tmp, dim, 1);
   DuplPixel (ppm, &tmp);
 
   if (shift.x < 0 && shift.x > -dim.x)
@@ -1229,13 +1229,10 @@ LoadImage (int numero, Pixmap * pim, Style style)
     Ouvre un pixmap quelconque, tout blanc ou tout noir.
         fill:	0 -> pixmap tout blanc
                 1 -> pixmap tout noir
-        color:	0 -> monochrome (1 bit/pixel)
-                1 -> couleur (si possible)
-                2 -> couleur (toujours)
  */
 
 short
-GetPixmap (Pixmap * ppm, Pt dim, short fill, short color)
+GetPixmap (Pixmap * ppm, Pt dim, short fill)
 {
   if (ppm->texture)
     SDL_DestroyTexture (ppm->texture);

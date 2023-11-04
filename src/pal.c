@@ -450,7 +450,7 @@ SPaletteOpen (short rang, Pixmap * ppm)
   Pt game;
   game.x = LXIMAGE ();
   game.y = LYIMAGE ();
-  if (GetPixmap (ppm, game, 0, 2) != 0)
+  if (GetPixmap (ppm, game, 0) != 0)
     return 1;
 
   CopyPixel (0, p, ppm, p, game); /* sauve l'écran */
@@ -1389,7 +1389,7 @@ InfoDraw (
 
   p1.y = LYICO;
   p1.x = LXICO;
-  GetPixmap (&pminfo, p1, 0, 1);
+  GetPixmap (&pminfo, p1, 0);
 
   GetSprite (&pm, ICO_INFO, 1);
   /* copie l'icône dans pminfo pour pouvoir modifier */

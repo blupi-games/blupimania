@@ -2662,7 +2662,7 @@ StopPartie (short key, Pt pos)
   if (open == SDL_FALSE)
   {
     PlayEvSound (SOUND_CLIC);
-    if (GetPixmap (&pmsave, sdim, 0, 2) != 0)
+    if (GetPixmap (&pmsave, sdim, 0) != 0)
       return KEYHOME;
 
     p.y = 0;
