@@ -41,6 +41,9 @@ static Mix_Chunk * g_sounds[SOUND_MAX] = {NULL};
 static Mix_Music * g_music             = NULL;
 static SDL_bool    g_musicStopped      = SDL_FALSE;
 
+static short           animLang = 0;
+static IMG_Animation * animCache[64];
+
 static const SDL_Color g_colorsDOS[] = {
   {255, 255, 255, SDL_ALPHA_OPAQUE}, // BLANC
   {255, 255, 0, SDL_ALPHA_OPAQUE},   // JAUNE
@@ -1157,16 +1160,19 @@ LoadImage (int numero, Pixmap * pim, Style style)
     name, sizeof (name), "%s../share/blupimania/image/%sblupix%02d.webp",
     SDL_GetBasePath (), lang, numero);
 
-  SDL_Texture *   texture;
-  IMG_Animation * anim;
-  int             index;
+  SDL_Texture * texture;
+  int           index;
 
-  anim = IMG_LoadWEBPAnimation (name);
+  if (!animCache[numero] || animLang != g_langue)
+  {
+    animCache[numero] = IMG_LoadWEBPAnimation (name);
+    animLang          = g_langue;
+  }
 
   index = 1;
   if (g_theme == 1)
-    index = anim->count > 2 ? 2 : 0;
-  else if (anim->count > 2)
+    index = animCache[numero]->count > 2 ? 2 : 0;
+  else if (animCache[numero]->count > 2)
   {
     switch (style)
     {
@@ -1187,8 +1193,8 @@ LoadImage (int numero, Pixmap * pim, Style style)
     }
   }
 
-  texture = SDL_CreateTextureFromSurface (g_renderer, anim->frames[index]);
-  IMG_FreeAnimation (anim);
+  texture =
+    SDL_CreateTextureFromSurface (g_renderer, animCache[numero]->frames[index]);
 
   Uint32 format;
   Sint32 access, ow, oh;
@@ -1435,6 +1441,17 @@ UnloadSprites ()
   GivePixmap (&pmicon3c);
   GivePixmap (&pmicon4c);
   GivePixmap (&pmicon5c);
+}
+
+void
+UnloadAnim ()
+{
+  for (int i = 0; i < countof (animCache); ++i)
+    if (animCache[i])
+    {
+      IMG_FreeAnimation (animCache[i]);
+      animCache[i] = NULL;
+    }
 }
 
 static void
@@ -2063,6 +2080,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
 void
 CloseMachine (struct arguments * arguments)
 {
+  UnloadAnim ();
   UnloadSprites ();
   UnloadSounds ();
 

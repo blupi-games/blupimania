@@ -482,6 +482,7 @@ void Render ();
 
 int  LoadSprites (Style style);
 void UnloadSprites ();
+void UnloadAnim ();
 int  LoadDecor ();
 void UnloadDecor ();
 
