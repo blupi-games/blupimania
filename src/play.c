@@ -515,6 +515,7 @@ LoadCursor ()
 void
 ChangeScreen (short zoom)
 {
+  static SDL_bool _fullscreen;
   ++zoom;
   g_zoom = zoom;
 
@@ -527,7 +528,7 @@ ChangeScreen (short zoom)
   if (!fullscreen)
     SDL_SetWindowSize (g_window, LXIMAGE () * g_zoom, LYIMAGE () * g_zoom);
 
-  SDL_RenderClear (g_renderer);
+  BlackScreen ();
   SDL_RenderPresent (g_renderer);
 
   LoadCursor ();
@@ -537,6 +538,15 @@ ChangeScreen (short zoom)
     g_window, SDL_WINDOWPOS_CENTERED_DISPLAY (displayIndex),
     SDL_WINDOWPOS_CENTERED_DISPLAY (displayIndex));
   SDL_Delay (100);
+
+  BlackScreen ();
+  SDL_RenderPresent (g_renderer);
+
+  if (_fullscreen != fullscreen)
+  {
+    PushUserEvent (RESET, NULL);
+    _fullscreen = fullscreen;
+  }
 }
 
 void
@@ -5788,8 +5798,6 @@ main (int argc, char * argv[])
       event.type == SDL_RENDER_TARGETS_RESET ||
       (event.type == SDL_USEREVENT && event.user.code == RESET))
     {
-      BlackScreen ();
-
       UnloadSprites ();
       UnloadTextures ();
       UnloadDecor ();
@@ -5808,7 +5816,9 @@ main (int argc, char * argv[])
           FatalBreak (err);
       }
 
+      BlackScreen ();
       RedrawPhase (phase);
+      Render ();
       continue;
     }
 
