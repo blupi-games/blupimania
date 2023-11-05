@@ -111,6 +111,7 @@ typedef enum {
 /* ----------------------------- */
 
 typedef enum {
+  ACTION_NULL = -1,
   ACTION_AIDE,
   ACTION_AIDE11,
   ACTION_AIDE12,
