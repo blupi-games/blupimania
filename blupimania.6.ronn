@@ -72,11 +72,11 @@ A very complete documentation is available in game.
 
 - <kbd>F8</kbd>: Normal speed
 
-- <kbd>F9</kbd>.: Hare speed
+- <kbd>F9</kbd>: Hare speed
 
-- <kbd>F10</kbd>.: Save game
+- <kbd>F10</kbd>: Save game
 
-- <kbd>F9</kbd>.: Recall game
+- <kbd>F11</kbd>: Recall game
 
 - <kbd>.</kbd>: Pause
 
