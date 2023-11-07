@@ -5725,6 +5725,12 @@ Render ()
 {
   SDL_Texture * target;
 
+  /* HACK: clear noise with (especially) macOS M1 */
+  SDL_RenderSetLogicalSize (g_renderer, 0, 0);
+  SDL_SetRenderDrawColor (g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_RenderFillRect (g_renderer, NULL);
+  SDL_RenderSetLogicalSize (g_renderer, LXIMAGE (), LYIMAGE ());
+
   if (!g_afterglow)
   {
     SDL_RenderCopy (g_renderer, g_screen.texture, NULL, NULL);
