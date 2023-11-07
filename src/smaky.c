@@ -2003,7 +2003,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
 
   g_window = SDL_CreateWindow (
     "Blupimania", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LXIMAGE (),
-    LYIMAGE (), 0);
+    LYIMAGE (), SDL_WINDOW_ALLOW_HIGHDPI);
 
   if (!g_window)
   {
