@@ -2131,10 +2131,7 @@ MachinePartieLg (void)
 short
 MachinePartieWrite (long pos, char file)
 {
-  short err;
-
-  err = FileWrite (&nextrand, pos, sizeof (unsigned long) * 10, file);
-  return err;
+  return FileWrite (&nextrand, pos, sizeof (unsigned long) * 10, file);
 }
 
 /* ================= */
@@ -2148,8 +2145,5 @@ MachinePartieWrite (long pos, char file)
 short
 MachinePartieRead (long pos, char file)
 {
-  short err;
-
-  err = FileRead (&nextrand, pos, sizeof (unsigned long) * 10, file);
-  return err;
+  return FileRead (&nextrand, pos, sizeof (unsigned long) * 10, file);
 }
