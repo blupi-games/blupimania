@@ -2001,6 +2001,8 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
     return EXIT_FAILURE;
   }
 
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+
   g_window = SDL_CreateWindow (
     "Blupimania", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LXIMAGE (),
     LYIMAGE (), SDL_WINDOW_ALLOW_HIGHDPI);
