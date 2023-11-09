@@ -381,10 +381,8 @@ IconDrawOne (
     Pt p1 = {0, 0};
     Pt p2 = list[j].off;
     dim   = list[j].dim;
-    CopyPixel    /* dessine la chair */
-      (&pmicon2, /* source */
-       p1, ppm,  /* destination */
-       p2, dim);
+    /* dessine la chair */
+    CopyPixel (&pmicon2, p1, ppm, p2, dim);
   }
 
   return hover;
