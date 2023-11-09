@@ -587,14 +587,17 @@ SDLEventToSmakyKey (const SDL_Event * event)
     case SDLK_F4:
       key = KEYF4;
       break;
-    case SDLK_F10:
+    case SDLK_F9:
       key = KEYSAVE;
       break;
-    case SDLK_F11:
+    case SDLK_F10:
       key = KEYLOAD;
       break;
-    case SDLK_F12:
+    case SDLK_F11:
       key = KEYIO;
+      break;
+    case SDLK_F12:
+      key = KEYF12;
       break;
     case SDLK_KP_7:
       if (g_pause || g_typejeu != 1 || g_modetelecom == 1)
@@ -638,9 +641,6 @@ SDLEventToSmakyKey (const SDL_Event * event)
       break;
     case SDLK_F8:
       key = KEYF8;
-      break;
-    case SDLK_F9:
-      key = KEYF9;
       break;
 #ifdef DEBUG
     case SDLK_PAGEDOWN:

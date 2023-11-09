@@ -5408,7 +5408,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       return 1;
     }
 
-    if (key == KEYF5) /* bruitages oui/non */
+    if (key == KEYF12) /* bruitages oui/non */
     {
       if (fj.noisevolume == 0)
       {
@@ -5433,7 +5433,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       return 1;
     }
 
-    if (key == KEYF6) /* décalage progressif/rapide */
+    if (key == KEYF8) /* décalage progressif/rapide */
     {
       if (fj.scroll)
         fj.scroll = 0;
@@ -5442,17 +5442,17 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       return 1;
     }
 
-    if (key == KEYF7) /* vitesse = tortue */
+    if (key == KEYF5) /* vitesse = tortue */
     {
       fj.vitesse = 0;
       return 1;
     }
-    if (key == KEYF8) /* vitesse = normal */
+    if (key == KEYF6) /* vitesse = normal */
     {
       fj.vitesse = 1;
       return 1;
     }
-    if (key == KEYF9) /* vitesse = guépard */
+    if (key == KEYF7) /* vitesse = guépard */
     {
       fj.vitesse = 2;
       return 1;
