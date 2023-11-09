@@ -1372,7 +1372,7 @@ DrawSpriteTemp (short num, Pt p1, Pt p2, Pt dim)
     Dessine un bouton rond relâché ou enfoncé.
  */
 
-void
+static void
 DrawRadioButton (Pt pos, short state)
 {
   short icon;
@@ -1400,7 +1400,7 @@ DrawRadioButton (Pt pos, short state)
     Dessine le numéro du joueur en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawJoueur (void)
 {
   short i;
@@ -1427,7 +1427,7 @@ DrawJoueur (void)
     Dessine la vitesse en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawVitesse (void)
 {
   short i;
@@ -1454,7 +1454,7 @@ DrawVitesse (void)
     Dessine le mode de scroll en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawScroll (void)
 {
   short i;
@@ -1481,7 +1481,7 @@ DrawScroll (void)
     Dessine le contenu d'un potentiomètre pour bruitage.
  */
 
-void
+static void
 DrawVolume (short pot, short volume)
 {
   Rect rect;
@@ -1516,7 +1516,7 @@ DrawVolume (short pot, short volume)
     Dessine le mode de bruitage en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawBruitage ()
 {
   DrawVolume (0, fj.noisevolume);
@@ -1531,7 +1531,7 @@ DrawBruitage ()
     Dessine le mode de télécommande en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawTelecom (void)
 {
   short i;
@@ -1558,7 +1558,7 @@ DrawTelecom (void)
     Draw the language selector
  */
 
-void
+static void
 DrawLanguage (void)
 {
   short i;
@@ -1585,7 +1585,7 @@ DrawLanguage (void)
     Draw the screen settings
  */
 
-void
+static void
 DrawScreen (void)
 {
   short i;
@@ -1612,7 +1612,7 @@ DrawScreen (void)
     Draw the theme selection
  */
 
-void
+static void
 DrawTheme (void)
 {
   short i;
@@ -1639,7 +1639,7 @@ DrawTheme (void)
     Dessine le mode de couleur en enfonçant un bouton rond.
  */
 
-void
+static void
 DrawCouleur (void)
 {
   short i;
@@ -1666,7 +1666,7 @@ DrawCouleur (void)
     Affiche les 4 flèches ou la télécommande.
  */
 
-void
+static void
 DrawArrows (char mode)
 {
   short icon;
@@ -1733,7 +1733,7 @@ DrawArrows (char mode)
     Affiche le bouton pause.
  */
 
-void
+static void
 DrawPause (void)
 {
   Pt src, dst, dim;
@@ -1766,7 +1766,7 @@ DrawPause (void)
         num		->	chiffre 0..9
  */
 
-void
+static void
 DrawBigDigit (Pt pos, short num)
 {
   Pt src, dim;
@@ -1788,7 +1788,7 @@ DrawBigDigit (Pt pos, short num)
     Affiche un gros nombre compris entre 0 et 99.
  */
 
-void
+static void
 DrawBigNum (Pt pos, short num)
 {
   DrawBigDigit (pos, 10); /* efface les dizaines */
