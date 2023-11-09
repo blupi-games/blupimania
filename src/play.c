@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <SDL2/SDL_mixer.h>
+
 #ifdef USE_CURL
 #include <curl/curl.h>
 #endif /* USE_CURL */
@@ -5420,6 +5422,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         fj.musicvolume = lastmusicvolume;
         PlayNoiseVolume (fj.noisevolume);
         PlayMusicVolume (fj.musicvolume);
+        Mix_MasterVolume (MIX_MAX_VOLUME);
       }
       else
       {
@@ -5429,6 +5432,7 @@ PlayEvent (int key, Pt pos, SDL_bool next)
         fj.musicvolume  = 0;
         PlayNoiseVolume (0);
         PlayMusicVolume (0);
+        Mix_MasterVolume (0);
       }
       return 1;
     }

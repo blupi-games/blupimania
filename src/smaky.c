@@ -317,6 +317,8 @@ PlayNoiseVolume (short volume)
 {
   soundon       = volume == 0 ? 0 : 1;
   g_soundVolume = volume * 10;
+  if (volume)
+    Mix_MasterVolume (MIX_MAX_VOLUME);
 }
 
 /* =============== */
@@ -332,6 +334,8 @@ PlayMusicVolume (short volume)
 {
   g_musicVolume = volume * 10;
   Mix_VolumeMusic (g_musicVolume);
+  if (volume)
+    Mix_MasterVolume (MIX_MAX_VOLUME);
 }
 
 /* ========= */
