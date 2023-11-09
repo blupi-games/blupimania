@@ -490,7 +490,7 @@ ChangeLanguage (short language)
 }
 
 static void
-LoadCursor ()
+LoadMouseCursor ()
 {
   char cursorFile[4096] = {0};
   snprintf (
@@ -531,7 +531,7 @@ ChangeScreen (short zoom)
   BlackScreen ();
   SDL_RenderPresent (g_renderer);
 
-  LoadCursor ();
+  LoadMouseCursor ();
 
   int displayIndex = SDL_GetWindowDisplayIndex (g_window);
   SDL_SetWindowPosition (
@@ -565,7 +565,7 @@ ChangeTheme (short theme)
     break;
   }
 
-  LoadCursor ();
+  LoadMouseCursor ();
 }
 
 /* ----------- */
