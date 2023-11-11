@@ -64,19 +64,19 @@ A very complete documentation is available in game.
 - <kbd>F1</kbd>..<kbd>F4</kbd>: Places corresponding object from the icon
   palette in front of a radio-controlled Blupi
 
-- <kbd>F5</kbd>: Music ON/OFF
+- <kbd>F5</kbd>: Turtle speed
 
-- <kbd>F6</kbd>: Fast panorama ON/OFF
+- <kbd>F6</kbd>: Normal speed
 
-- <kbd>F7</kbd>: Turtle speed
+- <kbd>F7</kbd>: Hare speed
 
-- <kbd>F8</kbd>: Normal speed
+- <kbd>F8</kbd>: Fast panorama ON/OFF
 
-- <kbd>F9</kbd>: Hare speed
+- <kbd>F9</kbd>: Save game
 
-- <kbd>F10</kbd>: Save game
+- <kbd>F10</kbd>: Recall game
 
-- <kbd>F11</kbd>: Recall game
+- <kbd>F12</kbd>: Music ON/OFF
 
 - <kbd>.</kbd>: Pause
 
