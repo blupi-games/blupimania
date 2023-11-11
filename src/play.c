@@ -2065,6 +2065,17 @@ DrawUpdate (const char * version, Pt pos)
   DrawString (0, pos, text, TEXTSIZELIT, SDL_FALSE);
 }
 
+static void
+DrawVersion (const char * version, Pt pos)
+{
+  char                text[256] = {0};
+  static const char * format[3] = {"Version %s", "Version %s", "Version %s"};
+
+  snprintf (text, sizeof (text), format[g_langue], version);
+
+  DrawString (0, pos, text, TEXTSIZELIT, SDL_FALSE);
+}
+
 /* ----------------- */
 /* TrackingStatusBar */
 /* ----------------- */
@@ -5301,6 +5312,12 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       }
 
       g_updateBlinking++;
+
+      /* Version */
+      Pt pos = dest;
+      pos.x = LXIMAGE() - 97;
+      pos.y += 10;
+      DrawVersion(BLUPIMANIA_VERSION_STR, pos);
     }
 
     if (
