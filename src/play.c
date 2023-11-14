@@ -5309,9 +5309,9 @@ PlayEvent (int key, Pt pos, SDL_bool next)
 
       /* Version */
       Pt pos = dest;
-      pos.x = LXIMAGE() - 97;
+      pos.x  = LXIMAGE () - 97;
       pos.y += 10;
-      DrawVersion(BLUPIMANIA_VERSION_STR, pos);
+      DrawVersion (BLUPIMANIA_VERSION_STR, pos);
     }
 
     if (
