@@ -267,7 +267,7 @@ SDL_bool g_keyMousePressed = SDL_FALSE;
 Sint32   g_keyFunctionUp   = 0;
 SDL_bool g_subMenu         = SDL_FALSE;
 SDL_bool g_stopMenu        = SDL_FALSE;
-SDL_bool g_saveMenu        = SDL_FALSE;
+Sint32   g_saveMenu        = 0;
 
 /* --------------------------- */
 /* Variables globales internes */
@@ -2576,7 +2576,7 @@ PartieDisque (short key, Pt pos)
     if (mode != KEYSAVE)
       PartieDrawIcon (KEYLOAD); /* dessine l'icône */
     open       = SDL_TRUE;
-    g_saveMenu = SDL_TRUE;
+    g_saveMenu = mode;
   }
 
   if (key == KEYCLIC || key == KEYCLICR)
@@ -2587,32 +2587,26 @@ PartieDisque (short key, Pt pos)
         key == '2' || key == '3' || key == '4'))
     return;
 
-  open              = SDL_FALSE;
-  g_saveMenu        = SDL_FALSE;
-  g_ignoreKeyClicUp = SDL_TRUE;
-
-  if (mode != KEYLOAD && key <= KEYF1 && key >= KEYF4)
-  {
-    PlayEvSound (SOUND_CLIC);
-    PartieDrawIcon (-KEYSAVE);  /* dessine l'icône d'attente */
-    PartieSauve (-key + KEYF1); /* sauve la partie */
-  }
-
-  if (mode == KEYSAVE && key >= '1' && key <= '4')
+  if (g_saveMenu == KEYSAVE && key >= '1' && key <= '4')
   {
     PlayEvSound (SOUND_CLIC);
     PartieDrawIcon (-KEYSAVE); /* dessine l'icône d'attente */
     PartieSauve (key - '1');   /* sauve la partie */
   }
 
-  if (mode != KEYSAVE && key >= '1' && key <= '4')
+  if (g_saveMenu == KEYLOAD && key >= '1' && key <= '4')
   {
     PlayEvSound (SOUND_CLIC);
     PartieDrawIcon (-KEYLOAD); /* dessine l'icône d'attente */
     PartiePrend (key - '1');   /* reprend une partie */
   }
 
+  open              = SDL_FALSE;
+  g_saveMenu        = 0;
+  g_ignoreKeyClicUp = SDL_TRUE;
+
   IconDrawAll (); /* faudra tout redessiner */
+  PushUserEvent (RESET, NULL);
 }
 
 /* ------------ */
