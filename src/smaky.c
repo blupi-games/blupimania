@@ -86,6 +86,8 @@ static const SDL_Color g_colorsSmaky100[] = {
 /* Variables globales externes */
 /* --------------------------- */
 
+char * g_basePath = NULL;
+
 const SDL_Color * g_colors;
 const SDL_Color * g_colorsTheme[2] = {g_colorsDOS, g_colorsSmaky100};
 
@@ -237,8 +239,8 @@ MusicStart (short song)
 
   char filename[4096];
   snprintf (
-    filename, sizeof (filename), "%s../share/blupimania/music/%s",
-    SDL_GetBasePath (), musics[idx]);
+    filename, sizeof (filename), "%s../share/blupimania/music/%s", g_basePath,
+    musics[idx]);
 
   if (g_music)
     Mix_FreeMusic (g_music);
@@ -1162,7 +1164,7 @@ LoadImage (int numero, Pixmap * pim, Style style)
 
   snprintf (
     name, sizeof (name), "%s../share/blupimania/image/%sblupix%02d.webp",
-    SDL_GetBasePath (), lang, numero);
+    g_basePath, lang, numero);
 
   SDL_Texture * texture;
   int           index;
@@ -1206,6 +1208,7 @@ LoadImage (int numero, Pixmap * pim, Style style)
   Uint32 format;
   Sint32 access, ow, oh;
   SDL_QueryTexture (texture, &format, &access, &ow, &oh);
+  GivePixmap (pim);
   pim->dx = ow;
   pim->dy = oh;
 
@@ -1552,8 +1555,8 @@ LoadSounds (void)
   {
     char filename[4096];
     snprintf (
-      filename, sizeof (filename), "%s../share/blupimania/sound/%s",
-      SDL_GetBasePath (), sounds[i]);
+      filename, sizeof (filename), "%s../share/blupimania/sound/%s", g_basePath,
+      sounds[i]);
     Mix_Chunk * chunk = Mix_LoadWAV (filename);
     if (!chunk)
       continue;
@@ -1624,12 +1627,14 @@ getLocationPattern (char file, char * filename, size_t length)
 
   if (isShare (file))
     snprintf (
-      filename, length, "%s../share/blupimania/data/%sblupixa.dat",
-      SDL_GetBasePath (), lang);
+      filename, length, "%s../share/blupimania/data/%sblupixa.dat", g_basePath,
+      lang);
   else
-    snprintf (
-      filename, length, "%sblupixa.dat",
-      SDL_GetPrefPath ("Epsitec SA", "Blupimania"));
+  {
+    char * prefPath = SDL_GetPrefPath ("Epsitec SA", "Blupimania");
+    snprintf (filename, length, "%sblupixa.dat", prefPath);
+    SDL_free (prefPath);
+  }
 }
 
 /* ======== */
@@ -1982,7 +1987,8 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
       g_langue = 2;
   }
 
-  g_colors = g_colorsTheme[g_theme];
+  g_colors   = g_colorsTheme[g_theme];
+  g_basePath = SDL_GetBasePath ();
 
 #ifdef __LINUX__
   if (!getenv ("ALSA_CONFIG_DIR"))
@@ -2022,8 +2028,7 @@ OpenMachine (int argc, char * argv[], struct arguments * arguments)
     char iconFile[4096] = {0};
     snprintf (
       iconFile, sizeof (iconFile),
-      "%s../share/icons/hicolor/256x256/apps/blupimania.png",
-      SDL_GetBasePath ());
+      "%s../share/icons/hicolor/256x256/apps/blupimania.png", g_basePath);
     SDL_Surface * icon = IMG_Load (iconFile);
     SDL_SetWindowIcon (g_window, icon);
     SDL_FreeSurface (icon);
@@ -2107,6 +2112,8 @@ CloseMachine (struct arguments * arguments)
     free (arguments->renderer);
   if (arguments->driver)
     free (arguments->driver);
+
+  SDL_free (g_basePath);
 }
 
 /* =============== */

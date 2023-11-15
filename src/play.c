@@ -497,7 +497,7 @@ LoadMouseCursor ()
   char cursorFile[4096] = {0};
   snprintf (
     cursorFile, sizeof (cursorFile),
-    "%s../share/blupimania/image/cursor.%s.png", SDL_GetBasePath (),
+    "%s../share/blupimania/image/cursor.%s.png", g_basePath,
     g_theme == 0 ? "image" : "smaky");
 
   SDL_Surface * surface       = IMG_Load (cursorFile);

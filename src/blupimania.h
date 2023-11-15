@@ -304,6 +304,7 @@ extern SDL_bool g_keyMousePressed;
 extern Sint32   g_keyFunctionUp;
 extern SDL_bool g_subMenu;
 extern SDL_bool g_superInvalid;
+extern char *   g_basePath;
 
 extern const SDL_Color * g_colors;
 extern const SDL_Color * g_colorsTheme[2];
