@@ -2594,8 +2594,19 @@ PartieDisque (short key, Pt pos)
     PartieSauve (key - '1');   /* sauve la partie */
   }
 
-  if (g_saveMenu == KEYLOAD && key >= '1' && key <= '4')
+  if (mode == KEYCLIC && key <= KEYF1 && key >= KEYF4)
   {
+    PlayEvSound (SOUND_CLIC);
+    PartieDrawIcon (-KEYSAVE);  /* dessine l'icône d'attente */
+    PartieSauve (-key + KEYF1); /* sauve la partie */
+  }
+
+  SDL_bool load = SDL_FALSE;
+  if (
+    (g_saveMenu == KEYLOAD && key >= '1' && key <= '4') ||
+    (mode == KEYCLIC && key >= '1' && key <= '4'))
+  {
+    load = SDL_TRUE;
     PlayEvSound (SOUND_CLIC);
     PartieDrawIcon (-KEYLOAD); /* dessine l'icône d'attente */
     PartiePrend (key - '1');   /* reprend une partie */
