@@ -2579,7 +2579,7 @@ PartieDisque (short key, Pt pos)
     g_saveMenu = mode;
   }
 
-  if (key == KEYCLIC || key == KEYCLICR)
+  if (key == KEYCLIC)
     key = PartieClicToEvent (pos);
 
   if (!(key == KEYUNDO || key == KEYQUIT || key == KEYHOME || key == KEYF1 ||
