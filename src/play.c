@@ -2617,7 +2617,8 @@ PartieDisque (short key, Pt pos)
   g_ignoreKeyClicUp = SDL_TRUE;
 
   IconDrawAll (); /* faudra tout redessiner */
-  PushUserEvent (RESET, NULL);
+  if (load)
+    PushUserEvent (RESET, NULL);
 }
 
 /* ------------ */
