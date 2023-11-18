@@ -5318,9 +5318,12 @@ PlayEvent (int key, Pt pos, SDL_bool next)
       }
 
       g_updateBlinking++;
+    }
 
+    if (phase == PHASE_IDENT)
+    {
       /* Version */
-      Pt pos = dest;
+      Pt pos = {LYIMAGE () - 15, 19};
       pos.x  = LXIMAGE () - 97;
       pos.y += 10;
       DrawVersion (BLUPIMANIA_VERSION_STR, pos);
