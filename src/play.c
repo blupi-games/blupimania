@@ -5100,7 +5100,7 @@ CheckForUpdates (void * data)
 
   chunk.status = curl_easy_perform (curl);
 
-  if (chunk.status)
+  if (chunk.status || !chunk.buffer)
   {
     const char * err = curl_easy_strerror (chunk.status);
     SDL_LogError (
