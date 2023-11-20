@@ -2142,7 +2142,7 @@ MachinePartieLg (void)
 short
 MachinePartieWrite (long pos, char file)
 {
-  return FileWrite (&nextrand, pos, sizeof (unsigned long) * 10, file);
+  return FileWrite (&nextrand, pos, sizeof (unsigned int) * 10, file);
 }
 
 /* ================= */
@@ -2156,5 +2156,5 @@ MachinePartieWrite (long pos, char file)
 short
 MachinePartieRead (long pos, char file)
 {
-  return FileRead (&nextrand, pos, sizeof (unsigned long) * 10, file);
+  return FileRead (&nextrand, pos, sizeof (unsigned int) * 10, file);
 }
