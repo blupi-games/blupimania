@@ -842,7 +842,9 @@ JoueurRead (struct arguments * arguments)
 
   g_modetelecom = fj.modetelecom;
 
-  ChangeLanguage (fj.language);
+  if (err == 0)
+    ChangeLanguage (fj.language);
+
   ChangeScreen (fj.screen);
   ChangeTheme (fj.theme);
 
