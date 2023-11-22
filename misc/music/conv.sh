@@ -1,7 +1,6 @@
 #!/bin/sh
 
-echo "Configure VLC for using 'Timbres of Heaven' sf2 file (fluidsynth)"
-echo "provided by http://midkar.com/soundfonts/"
+echo "Configure VLC to use the Windows soundfont 'GS sound set (16 bit).sf2"
 echo "Change for a gain of 0.10"
 
 for a in *.mid; do
