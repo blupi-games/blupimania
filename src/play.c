@@ -844,6 +844,8 @@ JoueurRead (struct arguments * arguments)
 
   if (err == 0)
     ChangeLanguage (fj.language);
+  else
+    fj.language = g_langue;
 
   ChangeScreen (fj.screen);
   ChangeTheme (fj.theme);
