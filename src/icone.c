@@ -187,7 +187,7 @@ IconRegion (short i, Pt pos)
   Pixmap pm;
   Reg    rg;
 
-  GetSprite (&pm, i, 0); /* donne juste les dimensions */
+  GetSprite (&pm, i); /* donne juste les dimensions */
 
   rg.r.p1.x = pos.x;
   rg.r.p1.y = pos.y; /* coin sup/gauche */
@@ -230,7 +230,7 @@ IconDrawOne (
   const ImageStack * list =
     DecorIconMask (pos, posz, cel); /* fabrique le masque */
 
-  GetSprite (&pmicon, i, 1); /* cherche le pixmap de la chair */
+  GetSprite (&pmicon, i); /* cherche le pixmap de la chair */
   if (super == 1)
     SDL_SetTextureAlphaMod (pmicon.texture, 150);
   else if (super == 2)
@@ -285,7 +285,7 @@ IconDrawOne (
     SDL_SetRenderTarget (g_renderer, target);
 
     Pt maskDim = {LYICO, LXICO};
-    GetSprite (&mask, ICO_SOLMASK, 1);
+    GetSprite (&mask, ICO_SOLMASK);
     CopyPixel (&mask, p0, &pmtemp, p0, maskDim);
 
     /* Calcul la position du "toto" sans la chute */
@@ -348,7 +348,7 @@ IconDrawOne (
   for (int j = 0; list[j].icon; ++j)
   {
     Pixmap pmicon2;
-    GetSprite (&pmicon2, list[j].icon, 1);
+    GetSprite (&pmicon2, list[j].icon);
 
     SDL_bool blupiBaloonStart =
       (((i == 63 || i == 47) && posz < 20) || (i != 63 && i != 47));
@@ -622,7 +622,7 @@ IconDrawClose (short bdraw)
         hover.dim.y = LYICO;
         hover.dim.x = LXICO;
         GetPixmap (&tmp, hover.dim, 2);
-        GetSprite (&pmicon, ICO_CELARROWS, 1);
+        GetSprite (&pmicon, ICO_CELARROWS);
         DuplPixel (&pmicon, &tmp);
         SDL_SetTextureAlphaMod (tmp.texture, 128);
       }
@@ -631,7 +631,7 @@ IconDrawClose (short bdraw)
         hover.dim.y = LYICO;
         hover.dim.x = LXICO;
         GetPixmap (&tmp, hover.dim, 2);
-        GetSprite (&pmicon, g_superInvalid ? ICO_CROIX : hover.icon, 1);
+        GetSprite (&pmicon, g_superInvalid ? ICO_CROIX : hover.icon);
         DuplPixel (&pmicon, &tmp);
         SDL_SetTextureAlphaMod (tmp.texture, 128);
         SDL_SetTextureColorMod (tmp.texture, 32, 32, 32);

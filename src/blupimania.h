@@ -448,7 +448,7 @@ int       SDLEventToSmakyKey (const SDL_Event * event);
 KeyStatus GetKeyStatus (void);
 short     IfColor (void);
 void      DrawSprite (short num, Pt p1, Pt p2, Pt dim);
-short     GetSprite (Pixmap * ppm, short numero, short mode);
+short     GetSprite (Pixmap * ppm, short numero);
 short     GetPixmap (Pixmap * ppm, Pt dim, short fill);
 short     GetImage (Pixmap * ppm, short numero, Style style);
 short     GivePixmap (Pixmap * ppm);

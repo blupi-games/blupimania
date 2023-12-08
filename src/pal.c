@@ -1391,7 +1391,7 @@ InfoDraw (
   p1.x = LXICO;
   GetPixmap (&pminfo, p1, 0);
 
-  GetSprite (&pm, ICO_INFO, 1);
+  GetSprite (&pm, ICO_INFO);
   /* copie l'icône dans pminfo pour pouvoir modifier */
   DuplPixel (&pm, &pminfo);
 

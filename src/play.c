@@ -1356,7 +1356,7 @@ void
 DrawSprite (short num, Pt p1, Pt p2, Pt dim)
 {
   Pixmap pm = {0};
-  GetSprite (&pm, num, 1);
+  GetSprite (&pm, num);
   CopyPixel (&pm, p1, 0, p2, dim);
 }
 
@@ -1364,7 +1364,7 @@ static void
 DrawSpriteTemp (short num, Pt p1, Pt p2, Pt dim)
 {
   Pixmap pm = {0};
-  GetSprite (&pm, num, 1);
+  GetSprite (&pm, num);
   CopyPixel (&pm, p1, &pmtemp, p2, dim);
 }
 

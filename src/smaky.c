@@ -1331,7 +1331,7 @@ GetImage (Pixmap * ppm, short numero, Style style)
  */
 
 short
-GetSprite (Pixmap * ppm, short numero, short mode)
+GetSprite (Pixmap * ppm, short numero)
 {
   int no;
 
