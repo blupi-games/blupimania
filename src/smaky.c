@@ -3,9 +3,12 @@
 /* bm_smaky.c */
 /* ========== */
 
+#define _XOPEN_SOURCE
+
 #include <errno.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
 #include <time.h>
