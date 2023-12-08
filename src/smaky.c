@@ -660,18 +660,22 @@ SDLEventToSmakyKey (const SDL_Event * event)
     {
     case SDLK_LEFT:
     case SDLK_KP_4:
+    case SDLK_KP_7:
       keystatus &= ~STLEFT;
       break;
     case SDLK_RIGHT:
     case SDLK_KP_6:
+    case SDLK_KP_3:
       keystatus &= ~STRIGHT;
       break;
     case SDLK_UP:
     case SDLK_KP_8:
+    case SDLK_KP_9:
       keystatus &= ~STUP;
       break;
     case SDLK_DOWN:
     case SDLK_KP_2:
+    case SDLK_KP_1:
       keystatus &= ~STDOWN;
       break;
     }
