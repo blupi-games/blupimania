@@ -155,7 +155,7 @@ webp_getinfo (SDL_RWops * src, size_t * datasize)
 }
 
 static IMG_Animation *
-IMG_LoadWEBPAnimation_RW (SDL_RWops * src)
+BM_IMG_LoadWEBPAnimation_RW (SDL_RWops * src)
 {
   Sint64                start;
   const char *          error = NULL;
@@ -296,7 +296,8 @@ error:
 }
 
 /* Load an animation from an SDL datasource, optionally specifying the type */
-IMG_Animation *IMG_LoadWEBPAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type)
+IMG_Animation *
+BM_IMG_LoadWEBPAnimationTyped_RW (SDL_RWops *src, SDL_bool freesrc, const char *type)
 {
     IMG_Animation *anim;
 
@@ -314,14 +315,15 @@ IMG_Animation *IMG_LoadWEBPAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, c
         return(NULL);
     }
 
-    anim = IMG_LoadWEBPAnimation_RW(src);
+    anim = BM_IMG_LoadWEBPAnimation_RW (src);
     if (freesrc)
         SDL_RWclose(src);
     return anim;
 }
 
 /* Load an animation from a file */
-IMG_Animation *IMG_LoadWEBPAnimation(const char *file)
+IMG_Animation *
+BM_IMG_LoadWEBPAnimation (const char *file)
 {
     SDL_RWops *src = SDL_RWFromFile(file, "rb");
     const char *ext = SDL_strrchr(file, '.');
@@ -332,5 +334,6 @@ IMG_Animation *IMG_LoadWEBPAnimation(const char *file)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-    return IMG_LoadWEBPAnimationTyped_RW(src, SDL_TRUE, ext);
+    return BM_IMG_LoadWEBPAnimationTyped_RW (src, SDL_TRUE, ext);
 }
+

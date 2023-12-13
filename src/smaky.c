@@ -1180,7 +1180,7 @@ LoadImage (int numero, Pixmap * pim, Style style)
 
   if (!animCache[numero])
   {
-    animCache[numero] = IMG_LoadWEBPAnimation (name);
+    animCache[numero] = BM_IMG_LoadWEBPAnimation (name);
     animLang          = g_langue;
   }
 
