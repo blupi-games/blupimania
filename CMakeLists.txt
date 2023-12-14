@@ -221,7 +221,6 @@ else ()
     SDL2_image::SDL2_image
     SDL2_mixer::SDL2_mixer
     ${CURL_LIBRARIES}
-    ${SDLKitchensink_LIBRARIES}
     pthread
     ${MATH_LIBRARY}
   )
