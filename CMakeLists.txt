@@ -154,11 +154,8 @@ if (NOT BUILD_JS)
     set (blupimania_DEPS ${blupimania_DEPS} SDL2_mixer::SDL2_mixer-static)
   else ()
     find_package (SDL2 REQUIRED)
-    include_directories (${SDL2_INCLUDE_DIRS})
     find_package (SDL2_image REQUIRED)
-    include_directories (${SDL2_IMAGE_INCLUDE_DIRS})
     find_package (SDL2_mixer REQUIRED)
-    include_directories (${SDL2_MIXER_INCLUDE_DIRS})
   endif ()
 endif ()
 
@@ -220,9 +217,9 @@ if ("${STATIC_BUILD}")
   endif ()
 else ()
   set (blupimania_DEPS
-    ${SDL2_LIBRARIES}
-    ${SDL2_MIXER_LIBRARIES}
-    ${SDL2_IMAGE_LIBRARIES}
+    SDL2::SDL2
+    SDL2_image::SDL2_image
+    SDL2_mixer::SDL2_mixer
     ${CURL_LIBRARIES}
     ${SDLKitchensink_LIBRARIES}
     pthread
