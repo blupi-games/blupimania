@@ -135,6 +135,8 @@ if ("${STATIC_BUILD}")
 endif ()
 
 find_package (PkgConfig REQUIRED)
+# Needed for argtable3's ceil
+find_library (MATH_LIBRARY m)
 if (NOT BUILD_JS)
   set (SDL2_DIR       "${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2")
   set (SDL2_image_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/SDL2_image")
@@ -224,6 +226,7 @@ else ()
     ${CURL_LIBRARIES}
     ${SDLKitchensink_LIBRARIES}
     pthread
+    ${MATH_LIBRARY}
   )
 
   if (${PB_HTTP_VERSION_CHECK})
