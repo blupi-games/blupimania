@@ -96,6 +96,7 @@ file (COPY resources/sound DESTINATION share/blupimania)
 file (COPY resources/music DESTINATION share/blupimania)
 file (COPY LICENSE.all DESTINATION share/doc/blupimania)
 file (COPY COPYING DESTINATION share/doc/blupimania)
+file (COPY CREDITS DESTINATION share/doc/blupimania)
 file (RENAME "${CMAKE_BINARY_DIR}/share/doc/blupimania/LICENSE.all"
              "${CMAKE_BINARY_DIR}/share/doc/blupimania/copyright")
 
@@ -260,6 +261,7 @@ if (NOT BUILD_JS)
   install (DIRECTORY resources/music DESTINATION share/blupimania)
   install (FILES LICENSE.all DESTINATION share/doc/blupimania RENAME copyright)
   install (FILES COPYING DESTINATION share/doc/blupimania)
+  install (FILES CREDITS DESTINATION share/doc/blupimania)
 
   if (BUILD_LINUX)
     install (DIRECTORY resources/icon/hicolor DESTINATION share/icons)
