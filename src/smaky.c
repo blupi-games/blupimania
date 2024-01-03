@@ -1810,7 +1810,7 @@ parseOptions (int argc, char * argv[], struct arguments * arguments)
       "s", "speed-rate", NULL, "Change the speed rate [0;1;2] (default: 1)"),
     t = arg_int0 (
       "t", "timer-interval", NULL,
-      "set the timer interval (refresh) (default: 25)"),
+      "set the timer interval (refresh) (default: 50)"),
     f =
       arg_lit0 ("f", "fullscreen", "load in fullscreen [on;off] (default: on)"),
     z = arg_int0 (
