@@ -91,7 +91,7 @@ When you switch to another application, the game is automatically paused.
 - `-s`, `--speedrate`: Change the speed rate `[0;1;2]` (default: `1`).
 
 - `-t`, `--timerinterval`: Set the timer interval (refresh). The default value
-  is 25ms. This is an advanced option because it changes the main events loop
+  is 50ms. This is an advanced option because it changes the main events loop
   frequency.
 
 - `-f`, `--fullscreen`: Load in fullscreen `[on;off]` (default: `off`).
