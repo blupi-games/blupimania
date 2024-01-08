@@ -6,7 +6,7 @@
 
 ## DESCRIPTION
 
-Blupi comes out of a hole holding on to a balloon. Unfortunately he let's it
+Blupi comes out of a hole holding on to a balloon. Unfortunately he lets it
 blow away. Blupi is lost, he turns to the left or the right and does various
 unpredictable things of his own. The object of the game is to help him find
 another balloon, so that he can move on to the next riddle. Blupimania offers
@@ -23,9 +23,9 @@ décor, e.g. by placing a fence to prevent Blupi from falling down a hole.
 
 **Blupi has an antenna**
 
-In this mode Blupi can be remote controlled. There may aIso be other independent
-Blupi moving around the screen. They too must be helped, as the riddie is not
-soived until every Blupi has found a balloon! You have to modify the world
+In this mode Blupi can be remote controlled. There may also be other independent
+Blupi moving around the screen. They too must be helped, as the riddle is not
+solved until every Blupi has found a balloon! You have to modify the world
 around them, e.g. to put a fence in place, you have to move the remote
 controlled Blupi to the place you have chosen.
 
@@ -40,7 +40,7 @@ DirectSound should work fine.
 
 ## SCREEN
 
-The game **Blupimania** runs in windowwed mode. Of course you can decide to
+The game **Blupimania** runs in windowed mode. Of course you can decide to
 change in fullscreen via the settings screen.
 
 If the game cannot run, maybe you should try to start the game with the software
