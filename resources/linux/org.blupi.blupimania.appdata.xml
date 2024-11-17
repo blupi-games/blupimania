@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>org.blupi.blupimania</id>
-	<metadata_license>MIT</metadata_license>
-	<project_license>GPL-3.0+</project_license>
-	<name>Blupimania</name>
-	<summary>Blupimania - A mind boggling (brain twisting) game of logic</summary>
-	<description>
-		<p>Blupi comes out of a hole holding on to a balloon. Unfortunately he let's it blow away.
-			Blupi is lost, he turns to the left or the right and does various unpredictable things
-			of his own. The object of the game is to help him find another balloon, so that he can
-			move on to the next riddle. Blupimania offers the option of creating your own riddles in
-			level 5.</p>
-	</description>
-	<launchable type="desktop-id">blupimania.desktop</launchable>
-	<url type="homepage">https://blupi.org/</url>
-	<screenshots>
-		<screenshot type="default">
-			<image>https://blupi.org/download/screen/blupimania.png</image>
-		</screenshot>
-	</screenshots>
-	<provides>
-		<id>blupimania.desktop</id>
-	</provides>
+  <id>org.blupi.blupimania</id>
+
+  <name>Blupimania</name>
+  <summary>Blupimania - A mind boggling (brain twisting) game of logic</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <description>
+    <p>
+      Blupi comes out of a hole holding on to a balloon. Unfortunately he let&apos;s it blow away. Blupi is lost, he turns to the left or the right and does various unpredictable things of his own. The object of the game is to help him find another balloon, so that he can move on to the next riddle. Blupimania offers the option of creating your own riddles in level 5.
+    </p>
+  </description>
+
+  <url type="homepage">https://blupi.org</url>
+  <launchable type="desktop-id">blupimania.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://blupi.org/download/screen/blupimania.png</image>
+    </screenshot>
+  </screenshots>
+
+  <provides>
+    <id>blupimania.desktop</id>
+    <binary>blupimania</binary>
+  </provides>
 </component>
