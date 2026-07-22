@@ -11,3 +11,8 @@ See the [manpage](blupimania.6.ronn) for a user README.
 
 You can find "mostly" the original Smaky source code from previous versions
 under the tag `v1.5.0`. The DOS version is not available in this repository.
+
+## AI Policy
+
+AI-generated code is not accepted in this project. Everything here is created by
+humans, for humans.
