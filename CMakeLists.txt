@@ -163,7 +163,7 @@ if (NOT BUILD_JS)
   endif ()
 endif ()
 
-if (${PB_HTTP_VERSION_CHECK})
+if (${BM_HTTP_VERSION_CHECK})
   pkg_search_module (CURL REQUIRED libcurl)
   add_definitions (-DUSE_CURL)
 endif ()
@@ -187,7 +187,7 @@ if ("${STATIC_BUILD}")
     endif ()
   endif ()
 
-  if (${PB_HTTP_VERSION_CHECK})
+  if (${BM_HTTP_VERSION_CHECK})
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCURL_STATICLIB")
   endif ()
 endif ()
@@ -199,7 +199,7 @@ endif ()
 add_executable (${blupimania_OUTPUT} ${sources})
 
 if ("${STATIC_BUILD}")
-  if (${PB_HTTP_VERSION_CHECK})
+  if (${BM_HTTP_VERSION_CHECK})
     list (APPEND blupimania_DEPS
       ${CURL_STATIC_LIBRARIES}
     )
@@ -230,7 +230,7 @@ else ()
     ${MATH_LIBRARY}
   )
 
-  if (${PB_HTTP_VERSION_CHECK})
+  if (${BM_HTTP_VERSION_CHECK})
     list (APPEND blupimania_DEPS
       ${CURL_LIBRARIES}
     )
@@ -299,7 +299,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release" AND "${STATIC_BUILD}")
   set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
   # set (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README-user.md")
   set (CPACK_PACKAGE_FILE_NAME ${BM_PACKAGE_NAME})
-  set (CPACK_PACKAGE_VERSION "${PB_VERSION_MAJOR}.${PB_VERSION_MINOR}.${PB_VERSION_PATCH}${PB_VERSION_EXTRA}")
+  set (CPACK_PACKAGE_VERSION "${BM_VERSION_MAJOR}.${BM_VERSION_MINOR}.${BM_VERSION_PATCH}${BM_VERSION_EXTRA}")
   set (CPACK_PACKAGE_INSTALL_DIRECTORY ${BM_PRODUCT_NAME})
   set (CPACK_PACKAGE_EXECUTABLES "blupimania;Blupimania")
 
